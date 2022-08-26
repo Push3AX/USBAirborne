@@ -1,0 +1,2733 @@
+LX51 LINKER/LOCATER V4.66.97.0                                                                      07/21/2022  19:09:34  PAGE 1
+
+
+LX51 LINKER/LOCATER V4.66.97.0, INVOKED BY:
+C:\KEIL\C51\BIN\LX51.EXE .\Obj\Debug.obj, .\Obj\Main.obj TO .\Obj\USBAirborne PRINT (.\Obj\USBAirborne.map) PAGEWIDTH (132) PAGELENG
+>> TH (5000) IXREF WARNINGLEVEL (0) REMOVEUNUSED
+
+
+CPU MODE:     8051 MODE
+MEMORY MODEL: LARGE
+
+
+INPUT MODULES INCLUDED:
+  .\Obj\Debug.obj (DEBUG)
+         COMMENT TYPE 0: C51 V9.60.0.0
+  .\Obj\Main.obj (MAIN)
+         COMMENT TYPE 0: C51 V9.60.0.0
+  C:\KEIL\C51\LIB\C51L.LIB (?C_STARTUP)
+         COMMENT TYPE 1: A51 / ASM51 Assembler
+  C:\KEIL\C51\LIB\C51L.LIB (?C?COPY)
+         COMMENT TYPE 1: A51 / ASM51 Assembler
+  C:\KEIL\C51\LIB\C51L.LIB (?C?CLDPTR)
+         COMMENT TYPE 1: A51 / ASM51 Assembler
+  C:\KEIL\C51\LIB\C51L.LIB (?C?CLDOPTR)
+         COMMENT TYPE 1: A51 / ASM51 Assembler
+  C:\KEIL\C51\LIB\C51L.LIB (?C?CSTOPTR)
+         COMMENT TYPE 1: A51 / ASM51 Assembler
+  C:\KEIL\C51\LIB\C51L.LIB (?C?IILDX)
+         COMMENT TYPE 1: A51 / ASM51 Assembler
+  C:\KEIL\C51\LIB\C51L.LIB (?C?LMUL)
+         COMMENT TYPE 1: A51 / ASM51 Assembler
+  C:\KEIL\C51\LIB\C51L.LIB (?C?ULCMP)
+         COMMENT TYPE 1: A51 / ASM51 Assembler
+  C:\KEIL\C51\LIB\C51L.LIB (?C?ULSHR)
+         COMMENT TYPE 1: A51 / ASM51 Assembler
+  C:\KEIL\C51\LIB\C51L.LIB (?C?LSHL)
+         COMMENT TYPE 1: A51 / ASM51 Assembler
+  C:\KEIL\C51\LIB\C51L.LIB (?C?LSTXDATA)
+         COMMENT TYPE 1: A51 / ASM51 Assembler
+  C:\KEIL\C51\LIB\C51L.LIB (?C?LSTKXDATA)
+         COMMENT TYPE 1: A51 / ASM51 Assembler
+  C:\KEIL\C51\LIB\C51L.LIB (?C?CCASE)
+         COMMENT TYPE 1: A51 / ASM51 Assembler
+  C:\KEIL\C51\LIB\C51L.LIB (?C?LIMUL)
+         COMMENT TYPE 1: A51 / ASM51 Assembler
+  C:\KEIL\C51\LIB\C51L.LIB (PRINTF)
+         COMMENT TYPE 1: A51 / ASM51 Assembler
+  C:\KEIL\C51\LIB\C51L.LIB (?C_INIT)
+         COMMENT TYPE 1: A51 / ASM51 Assembler
+  C:\KEIL\C51\LIB\C51L.LIB (?C?CSTPTR)
+         COMMENT TYPE 1: A51 / ASM51 Assembler
+  C:\KEIL\C51\LIB\C51L.LIB (?C?PLDIXDATA)
+         COMMENT TYPE 1: A51 / ASM51 Assembler
+  C:\KEIL\C51\LIB\C51L.LIB (?C?PSTXDATA)
+         COMMENT TYPE 1: A51 / ASM51 Assembler
+  C:\KEIL\C51\LIB\C51L.LIB (PUTCHAR)
+         COMMENT TYPE 1: A51 / ASM51 Assembler
+
+
+ACTIVE MEMORY CLASSES OF MODULE:  .\Obj\USBAirborne (DEBUG)
+
+BASE        START       END         USED      MEMORY CLASS
+==========================================================
+C:000000H   C:000000H   C:00FFFFH   001762H   CODE
+X:000000H   X:000000H   X:00FFFFH   000156H   XDATA
+C:000000H   C:000000H   C:00FFFFH   000184H   CONST
+I:000020H.0 I:000020H.0 I:00002FH.7 000001H.7 BIT
+I:000000H   I:000000H   I:0000FFH   000081H   IDATA
+I:000000H   I:000000H   I:00007FH   000015H   DATA
+
+
+MEMORY MAP OF MODULE:  .\Obj\USBAirborne (DEBUG)
+
+
+START     STOP      LENGTH    ALIGN  RELOC    MEMORY CLASS   SEGMENT NAME
+=========================================================================
+
+* * * * * * * * * * *   D A T A   M E M O R Y   * * * * * * * * * * * * *
+000000H   000007H   000008H   ---    AT..     DATA           "REG BANK 0"
+000008H   00000FH   000008H   ---    AT..     DATA           "REG BANK 1"
+000010H   000014H   000005H   BYTE   UNIT     DATA           _DATA_GROUP_
+000015H.0 00001FH.7 00000BH.0 ---    ---      **GAP**
+000020H.0 000021H.0 000001H.1 BIT    UNIT     BIT            _BIT_GROUP_
+000021H.1 000021H.6 000000H.6 BIT    UNIT     BIT            ?BI?MAIN
+000021H.7 000021H   000000H.1 ---    ---      **GAP**
+000022H   0000A1H   000080H   BYTE   UNIT     IDATA          ?ID?MAIN
+0000A2H   0000A2H   000001H   BYTE   UNIT     IDATA          ?STACK
+
+* * * * * * * * * * *   C O D E   M E M O R Y   * * * * * * * * * * * * *
+000000H   000002H   000003H   ---    OFFS..   CODE           ?CO??C_STARTUP?0
+000003H   000042H   000040H   BYTE   UNIT     CODE           ?PR?UFI_READCAPACITY?MAIN
+000043H   000045H   000003H   BYTE   OFFS..   CODE           ?MAIN?00043
+000046H   0004ECH   0004A7H   BYTE   UNIT     CODE           ?PR?USB_DEVICEINTERRUPT?MAIN
+0004EDH   000851H   000365H   BYTE   UNIT     CODE           ?PR?PRINTF?PRINTF
+000852H   000B0DH   0002BCH   BYTE   UNIT     CODE           ?C?LIB_CODE
+000B0EH   000C73H   000166H   BYTE   UNIT     CODE           ?PR?UFI_WRITE?MAIN
+000C74H   000D7FH   00010CH   BYTE   UNIT     CODE           ?PR?MCH375BULKUPDATA?MAIN
+000D80H   000E83H   000104H   BYTE   UNIT     CODE           ?PR?UFI_READ10?MAIN
+000E84H   000F58H   0000D5H   BYTE   UNIT     CODE           ?PR?MCH375BULKDOWNDATA?MAIN
+000F59H   000FE8H   000090H   BYTE   UNIT     CODE           ?PR?_BULKTHIRTEEN?MAIN
+000FE9H   001077H   00008FH   BYTE   UNIT     CODE           ?PR?_BULKWRITEFLASH?MAIN
+001078H   001103H   00008CH   BYTE   UNIT     CODE           ?C_C51STARTUP
+001104H   00118DH   00008AH   BYTE   UNIT     CODE           ?PR?UFI_HUNDING?MAIN
+00118EH   001211H   000084H   BYTE   UNIT     CODE           ?PR?_BULKREADFLASH?MAIN
+001212H   001292H   000081H   BYTE   UNIT     CODE           ?PR?MCH375UPCSW?MAIN
+001293H   00130CH   00007AH   BYTE   UNIT     CODE           ?PR?MCH375BULKONLY?MAIN
+00130DH   001383H   000077H   BYTE   UNIT     CODE           ?PR?UFI_INQUIRY?MAIN
+001384H   0013F9H   000076H   BYTE   UNIT     CODE           ?PR?UFI_REQUESTSENSE?MAIN
+0013FAH   00145AH   000061H   BYTE   UNIT     CODE           ?PR?INITUSB_DEVICE?MAIN
+00145BH   0014B3H   000059H   BYTE   UNIT     CODE           ?PR?UFI_READTOC?MAIN
+0014B4H   00150CH   000059H   BYTE   UNIT     CODE           ?PR?UFI_GET_EVE_STA_NOT?MAIN
+00150DH   001564H   000058H   BYTE   UNIT     CODE           ?PR?_ERASEFLASH?MAIN
+001565H   0015AEH   00004AH   BYTE   UNIT     CODE           ?PR?UFI_MODESENSE?MAIN
+0015AFH   0015F8H   00004AH   BYTE   UNIT     CODE           ?PR?UFI_MODESENSE5?MAIN
+0015F9H   001622H   00002AH   BYTE   UNIT     CODE           ?PR?MAIN?MAIN
+001623H   001649H   000027H   BYTE   UNIT     CODE           ?PR?PUTCHAR?PUTCHAR
+00164AH   001669H   000020H   BYTE   UNIT     CODE           ?PR?MINITSTDIO?DEBUG
+00166AH   001687H   00001EH   BYTE   UNIT     CODE           ?C_INITSEG
+001688H   00169EH   000017H   BYTE   UNIT     CODE           ?PR?_MDELAYMS?DEBUG
+00169FH   0016B1H   000013H   BYTE   UNIT     CODE           ?PR?READFLASHSTATUS?MAIN
+0016B2H   0016C3H   000012H   BYTE   UNIT     CODE           ?PR?CFGFSYS?DEBUG
+0016C4H   0016D5H   000012H   BYTE   UNIT     CODE           ?PR?_MDELAYUS?DEBUG
+0016D6H   0016E7H   000012H   BYTE   UNIT     CODE           ?PR?UFI_TESTUNIT?MAIN
+0016E8H   0016F9H   000012H   BYTE   UNIT     CODE           ?PR?UFI_STASTOUNIT?MAIN
+0016FAH   001709H   000010H   BYTE   UNIT     CODE           ?PR?INITHOSTSPI0?MAIN
+00170AH   001719H   000010H   BYTE   UNIT     CODE           ?PR?_WRITEFLASHSTATUS?MAIN
+00171AH   001727H   00000EH   BYTE   UNIT     CODE           ?PR?CHECKFLASHWRITEENABLE?MAIN
+001728H   001735H   00000EH   BYTE   UNIT     CODE           ?PR?UFI_PERORMED?MAIN
+001736H   001743H   00000EH   BYTE   UNIT     CODE           ?PR?UFI_VERIFY?MAIN
+001744H   00174EH   00000BH   BYTE   UNIT     CODE           ?PR?WRITEFLASHFORBIDDEN?MAIN
+00174FH   001759H   00000BH   BYTE   UNIT     CODE           ?PR?WRITEFLASHENABLE?MAIN
+00175AH   001761H   000008H   BYTE   UNIT     CODE           ?PR?WAITFLASHBUSY?MAIN
+001762H   0018E5H   000184H   BYTE   UNIT     CONST          ?CO?MAIN
+
+* * * * * * * * * * *  X D A T A   M E M O R Y  * * * * * * * * * * * * *
+000000H   000009H   00000AH   BYTE   OFFS..   XDATA          ?XD?MAIN?0
+00000AH   000032H   000029H   BYTE   UNIT     XDATA          _XDATA_GROUP_
+000033H   000049H   000017H   ---    ---      **GAP**
+00004AH   0000C9H   000080H   BYTE   OFFS..   XDATA          ?XD?MAIN?1
+0000CAH   0000ECH   000023H   BYTE   UNIT     XDATA          ?XD?MAIN
+0000EDH   000109H   00001DH   ---    ---      **GAP**
+00010AH   000189H   000080H   BYTE   OFFS..   XDATA          ?XD?MAIN?2
+
+* * * * * * * * *   R E M O V E D     S E G M E N T S   * * * * * * * *
+   *DEL*:           000008H   BYTE   UNIT     CODE           ?PR?_CH554UART0SENDBYTE?DEBUG
+   *DEL*:           000008H   BYTE   UNIT     CODE           ?PR?CH554UART0RCVBYTE?DEBUG
+   *DEL*:           000004H   BYTE   UNIT     CODE           ?PR?CH554UART0ALTER?DEBUG
+   *DEL*:           00000AH   BYTE   UNIT     CODE           ?PR?UART1SETUP?DEBUG
+   *DEL*:           000008H   BYTE   UNIT     CODE           ?PR?CH554UART1RCVBYTE?DEBUG
+   *DEL*:           000008H   BYTE   UNIT     CODE           ?PR?_CH554UART1SENDBYTE?DEBUG
+   *DEL*:           000017H   BYTE   UNIT     CODE           ?PR?_CH554WDTMODESELECT?DEBUG
+   *DEL*:           000003H   BYTE   UNIT     CODE           ?PR?_CH554WDTFEED?DEBUG
+   *DEL*:           00000AH   BYTE   UNIT     CODE           ?PR?CH554SOFTRESET?DEBUG
+   *DEL*:           00000EH   BYTE   UNIT     CODE           ?PR?CH554USBDEVWAKEUP?DEBUG
+   *DEL*:           00005BH   BYTE   UNIT     CODE           ?PR?_BYTEREADFLASH?MAIN
+   *DEL*:           000004H   BYTE   UNIT     XDATA          ?XD?_BYTEREADFLASH?MAIN
+   *DEL*:           000061H   BYTE   UNIT     CODE           ?PR?_BYTEWRITEFLASH?MAIN
+   *DEL*:           000005H   BYTE   UNIT     XDATA          ?XD?_BYTEWRITEFLASH?MAIN
+   *DEL*:           000020H   BYTE   UNIT     CODE           ?PR?HIDSENDDATA?MAIN
+   *DEL*:           00003FH   BYTE   UNIT     CODE           ?PR?_SENDKEY?MAIN
+   *DEL*:           0001E2H   BYTE   UNIT     CODE           ?PR?_SENDSTRING?MAIN
+   *DEL*:           000005H   BYTE   UNIT     XDATA          ?XD?_SENDSTRING?MAIN
+   *DEL*:           000027H   BYTE   UNIT     CODE           ?PR?HIDSENDEXPLOIT?MAIN
+
+
+
+OVERLAY MAP OF MODULE:   .\Obj\USBAirborne (DEBUG)
+
+
+FUNCTION/MODULE                  BIT_GROUP   DATA_GROUP   XDATA_GROUP
+--> CALLED FUNCTION/MODULE      START  STOP  START  STOP  START  STOP
+=====================================================================
+USB_DEVICEINTERRUPT/MAIN        ----- -----  ----- -----  000AH 000AH
+  +--> MCH375BULKDOWNDATA/MAIN
+  +--> MCH375BULKONLY/MAIN
+  +--> MCH375BULKUPDATA/MAIN
+  +--> MCH375UPCSW/MAIN
+  +--> PRINTF/PRINTF
+
+MCH375BULKDOWNDATA/MAIN         ----- -----  ----- -----  000BH 000BH
+  +--> _BULKWRITEFLASH/MAIN
+  +--> MCH375UPCSW/MAIN
+
+_BULKWRITEFLASH/MAIN            ----- -----  ----- -----  000CH 0014H
+  +--> WAITFLASHBUSY/MAIN
+  +--> _WRITEFLASHSTATUS/MAIN
+  +--> WRITEFLASHENABLE/MAIN
+  +--> WRITEFLASHFORBIDDEN/MAIN
+
+WAITFLASHBUSY/MAIN              ----- -----  ----- -----  ----- -----
+  +--> READFLASHSTATUS/MAIN
+
+READFLASHSTATUS/MAIN            ----- -----  ----- -----  ----- -----
+
+_WRITEFLASHSTATUS/MAIN          ----- -----  ----- -----  ----- -----
+
+WRITEFLASHENABLE/MAIN           ----- -----  ----- -----  ----- -----
+
+WRITEFLASHFORBIDDEN/MAIN        ----- -----  ----- -----  ----- -----
+
+MCH375UPCSW/MAIN                ----- -----  ----- -----  ----- -----
+
+MCH375BULKONLY/MAIN             ----- -----  ----- -----  ----- -----
+  +--> UFI_HUNDING/MAIN
+
+UFI_HUNDING/MAIN                ----- -----  ----- -----  ----- -----
+  +--> UFI_INQUIRY/MAIN
+  +--> UFI_WRITE/MAIN
+  +--> UFI_TESTUNIT/MAIN
+  +--> UFI_READ10/MAIN
+  +--> UFI_REQUESTSENSE/MAIN
+  +--> UFI_READCAPACITY/MAIN
+  +--> UFI_VERIFY/MAIN
+  +--> UFI_MODESENSE/MAIN
+  +--> UFI_MODESENSE5/MAIN
+  +--> UFI_STASTOUNIT/MAIN
+  +--> UFI_PERORMED/MAIN
+  +--> UFI_READTOC/MAIN
+  +--> UFI_GET_EVE_STA_NOT/MAIN
+  +--> _BULKTHIRTEEN/MAIN
+
+UFI_INQUIRY/MAIN                ----- -----  ----- -----  ----- -----
+
+UFI_WRITE/MAIN                  ----- -----  ----- -----  000BH 000CH
+  +--> _ERASEFLASH/MAIN
+
+_ERASEFLASH/MAIN                ----- -----  ----- -----  000DH 0010H
+  +--> CHECKFLASHWRITEENABLE/MAIN
+  +--> WAITFLASHBUSY/MAIN
+
+CHECKFLASHWRITEENABLE/MAIN      ----- -----  ----- -----  ----- -----
+  +--> READFLASHSTATUS/MAIN
+  +--> WRITEFLASHENABLE/MAIN
+
+UFI_TESTUNIT/MAIN               ----- -----  ----- -----  ----- -----
+
+UFI_READ10/MAIN                 ----- -----  ----- -----  ----- -----
+
+UFI_REQUESTSENSE/MAIN           ----- -----  ----- -----  ----- -----
+
+UFI_READCAPACITY/MAIN           ----- -----  ----- -----  ----- -----
+
+UFI_VERIFY/MAIN                 ----- -----  ----- -----  ----- -----
+
+UFI_MODESENSE/MAIN              ----- -----  ----- -----  ----- -----
+  +--> _BULKTHIRTEEN/MAIN
+
+_BULKTHIRTEEN/MAIN              ----- -----  ----- -----  ----- -----
+
+UFI_MODESENSE5/MAIN             ----- -----  ----- -----  ----- -----
+  +--> _BULKTHIRTEEN/MAIN
+
+UFI_STASTOUNIT/MAIN             ----- -----  ----- -----  ----- -----
+
+UFI_PERORMED/MAIN               ----- -----  ----- -----  ----- -----
+
+UFI_READTOC/MAIN                ----- -----  ----- -----  000BH 001EH
+
+UFI_GET_EVE_STA_NOT/MAIN        ----- -----  ----- -----  000BH 0012H
+
+MCH375BULKUPDATA/MAIN           ----- -----  ----- -----  000BH 000BH
+  +--> _BULKREADFLASH/MAIN
+
+_BULKREADFLASH/MAIN             ----- -----  ----- -----  000CH 0014H
+
+PRINTF/PRINTF                   20H.0 21H.0  0010H 0014H  000BH 0032H
+  +--> PUTCHAR/PUTCHAR
+
+PUTCHAR/PUTCHAR                 ----- -----  ----- -----  ----- -----
+
+*** NEW ROOT ******************
+
+?C_C51STARTUP                   ----- -----  ----- -----  ----- -----
+  +--> MAIN/MAIN
+  +--> ?C_INITSEG
+
+MAIN/MAIN                       ----- -----  ----- -----  ----- -----
+  +--> CFGFSYS/DEBUG
+  +--> _MDELAYMS/DEBUG
+  +--> MINITSTDIO/DEBUG
+  +--> INITHOSTSPI0/MAIN
+  +--> WRITEFLASHENABLE/MAIN
+  +--> _WRITEFLASHSTATUS/MAIN
+  +--> INITUSB_DEVICE/MAIN
+
+CFGFSYS/DEBUG                   ----- -----  ----- -----  ----- -----
+
+_MDELAYMS/DEBUG                 ----- -----  ----- -----  ----- -----
+  +--> _MDELAYUS/DEBUG
+
+_MDELAYUS/DEBUG                 ----- -----  ----- -----  ----- -----
+
+MINITSTDIO/DEBUG                ----- -----  ----- -----  ----- -----
+
+INITHOSTSPI0/MAIN               ----- -----  ----- -----  ----- -----
+
+INITUSB_DEVICE/MAIN             ----- -----  ----- -----  ----- -----
+
+?C_INITSEG                      ----- -----  ----- -----  ----- -----
+
+
+
+PUBLIC SYMBOLS OF MODULE:  .\Obj\USBAirborne (DEBUG)
+
+
+      VALUE       CLASS    TYPE      PUBLIC SYMBOL NAME
+      =================================================
+      0200000CH   XDATA    BYTE      ?_BulkReadFlash?BYTE
+      0200000CH   XDATA    BYTE      ?_BulkWriteFlash?BYTE
+*DEL*:00000000H   XDATA    BYTE      ?_ByteWriteFlash?BYTE
+      0200000BH   XDATA    ---       ?_PRINTF517?BYTE
+      0200000BH   XDATA    ---       ?_PRINTF?BYTE
+      0200000BH   XDATA    ---       ?_SPRINTF517?BYTE
+      0200000BH   XDATA    ---       ?_SPRINTF?BYTE
+      01000A89H   CODE     ---       ?C?CCASE
+      01000961H   CODE     ---       ?C?CLDOPTR
+      01000948H   CODE     ---       ?C?CLDPTR
+      00000000H   NUMBER   ---       ?C?CODESEG
+      01000922H   CODE     ---       ?C?COPY
+      0100098EH   CODE     ---       ?C?CSTOPTR
+      01000ADCH   CODE     ---       ?C?CSTPTR
+      010009B0H   CODE     ---       ?C?IILDX
+      01000AAFH   CODE     ---       ?C?LIMUL
+      010009C6H   CODE     ---       ?C?LMUL
+      01000A39H   CODE     ---       ?C?LSHL
+      01000A58H   CODE     ---       ?C?LSTKXDATA
+      01000A4CH   CODE     ---       ?C?LSTXDATA
+      01000AEEH   CODE     ---       ?C?PLDIXDATA
+      01000B05H   CODE     ---       ?C?PSTXDATA
+      01000A15H   CODE     ---       ?C?ULCMP
+      01000A26H   CODE     ---       ?C?ULSHR
+      00000000H   NUMBER   ---       ?C?XDATASEG
+      010010BFH   CODE     ---       ?C_START
+      01000000H   CODE     ---       ?C_STARTUP
+      0100118EH   CODE     ---       _BulkReadFlash
+      01000F6FH   CODE     ---       _BulkThirteen
+      01000FE9H   CODE     ---       _BulkWriteFlash
+*DEL*:00000000H   CODE     ---       _ByteReadFlash
+*DEL*:00000000H   CODE     ---       _ByteWriteFlash
+*DEL*:00000000H   CODE     ---       _CH554UART0SendByte
+*DEL*:00000000H   CODE     ---       _CH554UART1SendByte
+*DEL*:00000000H   CODE     ---       _CH554WDTFeed
+*DEL*:00000000H   CODE     ---       _CH554WDTModeSelect
+      0100150DH   CODE     ---       _EraseFlash
+      01001688H   CODE     ---       _mDelaymS
+      010016C4H   CODE     ---       _mDelayuS
+      01000558H   CODE     ---       _PRINTF
+      01000558H   CODE     ---       _PRINTF517
+      01001623H   CODE     ---       _PUTCHAR
+*DEL*:00000000H   CODE     ---       _SendKey
+*DEL*:00000000H   CODE     ---       _SendString
+      01000552H   CODE     ---       _SPRINTF
+      01000552H   CODE     ---       _SPRINTF517
+      0100170AH   CODE     ---       _WriteFlashStatus
+*SFR* 000000D0H.6 DATA     BIT       AC
+*SFR* 000000E0H   DATA     BYTE      ACC
+*SFR* 0000009AH   DATA     BYTE      ADC_CFG
+*SFR* 00000080H.0 DATA     BIT       ADC_CHAN0
+*SFR* 00000080H.1 DATA     BIT       ADC_CHAN1
+*SFR* 00000080H   DATA     BYTE      ADC_CTRL
+*SFR* 0000009FH   DATA     BYTE      ADC_DATA
+*SFR* 00000080H.5 DATA     BIT       ADC_IF
+*SFR* 00000080H.4 DATA     BIT       ADC_START
+*SFR* 00000090H.1 DATA     BIT       AIN0
+*SFR* 00000090H.4 DATA     BIT       AIN1
+*SFR* 00000090H.5 DATA     BIT       AIN2
+*SFR* 000000B0H.2 DATA     BIT       AIN3
+*SFR* 000000F0H   DATA     BYTE      B
+      020000D5H   XDATA    BYTE      BcswStatus
+      00000062H   IDATA    ---       buffer
+*SFR* 000000C8H.1 DATA     BIT       C_T2
+*SFR* 00000090H.0 DATA     BIT       CAP1
+*SFR* 00000090H.4 DATA     BIT       CAP1_
+*SFR* 000000C8H.7 DATA     BIT       CAP1F
+*SFR* 00000090H.1 DATA     BIT       CAP2
+      010016B2H   CODE     ---       CfgFsys
+      00000021H.4 BIT      BIT       CH375BULKDOWN
+      00000021H.2 BIT      BIT       CH375BULKUP
+      00000021H.5 BIT      BIT       CH375CSW
+*DEL*:00000000H   CODE     ---       CH554SoftReset
+*DEL*:00000000H   CODE     ---       CH554UART0Alter
+*DEL*:00000000H   CODE     ---       CH554UART0RcvByte
+*DEL*:00000000H   CODE     ---       CH554UART1RcvByte
+*DEL*:00000000H   CODE     ---       CH554USBDevWakeup
+      0100171AH   CODE     ---       CheckFlashWriteEnable
+*SFR* 000000B9H   DATA     BYTE      CLOCK_CFG
+*SFR* 00000080H.3 DATA     BIT       CMP_CHAN
+*SFR* 00000080H.6 DATA     BIT       CMP_IF
+*SFR* 00000080H.7 DATA     BIT       CMPO
+*SFR* 000000C8H.0 DATA     BIT       CP_RL2
+*SFR* 000000D0H.7 DATA     BIT       CY
+      010018A6H   CONST    ---       DBCAPACITY
+      0100185EH   CONST    ---       DBINQUITY_CD_ROM
+      01001882H   CONST    ---       DBINQUITY_USB_Drive
+*SFR* 00000083H   DATA     BYTE      DPH
+*SFR* 00000082H   DATA     BYTE      DPL
+*SFR* 000000A8H.6 DATA     BIT       E_DIS
+*SFR* 000000A8H.7 DATA     BIT       EA
+      02000000H   XDATA    ---       Ep0Buffer
+      0200004AH   XDATA    ---       Ep1Buffer
+      0200010AH   XDATA    ---       Ep2Buffer
+*SFR* 000000A8H.4 DATA     BIT       ES
+*SFR* 000000A8H.1 DATA     BIT       ET0
+*SFR* 000000A8H.3 DATA     BIT       ET1
+*SFR* 000000A8H.5 DATA     BIT       ET2
+*SFR* 000000A8H.0 DATA     BIT       EX0
+*SFR* 000000A8H.2 DATA     BIT       EX1
+*SFR* 000000C8H.3 DATA     BIT       EXEN2
+*SFR* 000000C8H.6 DATA     BIT       EXF2
+*SFR* 000000D0H.5 DATA     BIT       F0
+*SFR* 000000D0H.1 DATA     BIT       F1
+      00000021H.6 BIT      BIT       FSTALL
+*SFR* 000000B1H   DATA     BYTE      GLOBAL_CFG
+*SFR* 000000C7H   DATA     BYTE      GPIO_IE
+      020000E1H   XDATA    ---       HIDData
+      010017B5H   CONST    ---       HIDReportDescriptor
+*DEL*:00000000H   CODE     ---       HIDSendData
+*DEL*:00000000H   CODE     ---       HIDSendExploit
+*SFR* 000000A8H   DATA     BYTE      IE
+*SFR* 00000088H.1 DATA     BIT       IE0
+*SFR* 00000088H.3 DATA     BIT       IE1
+*SFR* 000000E8H.3 DATA     BIT       IE_ADC
+*SFR* 000000E8H   DATA     BYTE      IE_EX
+*SFR* 000000E8H.6 DATA     BIT       IE_GPIO
+*SFR* 000000E8H.5 DATA     BIT       IE_PWMX
+*SFR* 000000E8H.0 DATA     BIT       IE_SPI0
+*SFR* 000000E8H.1 DATA     BIT       IE_TKEY
+*SFR* 000000E8H.4 DATA     BIT       IE_UART1
+*SFR* 000000E8H.2 DATA     BIT       IE_USB
+*SFR* 000000E8H.7 DATA     BIT       IE_WDOG
+      010016FAH   CODE     ---       InitHostSPI0
+      010013FAH   CODE     ---       InitUSB_Device
+*SFR* 000000B0H.2 DATA     BIT       INT0
+*SFR* 000000B0H.3 DATA     BIT       INT1
+*SFR* 000000B8H   DATA     BYTE      IP
+*SFR* 000000E9H   DATA     BYTE      IP_EX
+      020000D7H   XDATA    BYTE      IsHIDDataSent
+      020000D0H   XDATA    BYTE      IsHIDSendExploit
+*SFR* 00000088H.0 DATA     BIT       IT0
+*SFR* 00000088H.2 DATA     BIT       IT1
+*SFR* 00000090H.1 DATA     BIT       Key_ModeSelect
+      00000021H.1 BIT      BIT       lastFSTALL
+      020000E9H   XDATA    ---       LEN
+      020000D8H   XDATA    DWORD     Locate_Addr
+      010015F9H   CODE     ---       main
+      020000DCH   XDATA    BYTE      mASC
+      00000022H   IDATA    ---       MassPara
+      0100185DH   CONST    ---       MAX_LUN
+      01000E84H   CODE     ---       mCH375BulkDownData
+      01001293H   CODE     ---       mCH375BulkOnly
+      01000C74H   CODE     ---       mCH375bulkUpData
+      01001212H   CODE     ---       mCH375UpCsw
+      020000DDH   XDATA    ---       mdCBWTag
+      0100164AH   CODE     ---       mInitSTDIO
+*SFR* 00000090H.6 DATA     BIT       MISO
+      010018BAH   CONST    ---       mode5sense3F
+      010018AEH   CONST    ---       modesense3F
+*SFR* 00000090H.5 DATA     BIT       MOSI
+      020000D4H   XDATA    BYTE      mSenseKey
+      01001806H   CONST    ---       MyCfgDescr
+      010017F4H   CONST    ---       MyDevDescr
+      0100183FH   CONST    ---       MyLangDescr
+      01001843H   CONST    ---       MyManuInfo
+      01001851H   CONST    ---       MyProdInfo
+*SFR* 000000D0H.2 DATA     BIT       OV
+*SFR* 000000D0H.0 DATA     BIT       P
+*SFR* 00000090H   DATA     BYTE      P1
+*SFR* 00000090H.0 DATA     BIT       P1_0
+*SFR* 00000090H.1 DATA     BIT       P1_1
+*SFR* 00000090H.2 DATA     BIT       P1_2
+*SFR* 00000090H.3 DATA     BIT       P1_3
+*SFR* 00000090H.4 DATA     BIT       P1_4
+*SFR* 00000090H.5 DATA     BIT       P1_5
+*SFR* 00000090H.6 DATA     BIT       P1_6
+*SFR* 00000090H.7 DATA     BIT       P1_7
+*SFR* 00000093H   DATA     BYTE      P1_DIR_PU
+*SFR* 00000092H   DATA     BYTE      P1_MOD_OC
+*SFR* 000000A0H   DATA     BYTE      P2
+*SFR* 000000B0H   DATA     BYTE      P3
+*SFR* 000000B0H.0 DATA     BIT       P3_0
+*SFR* 000000B0H.1 DATA     BIT       P3_1
+*SFR* 000000B0H.2 DATA     BIT       P3_2
+*SFR* 000000B0H.3 DATA     BIT       P3_3
+*SFR* 000000B0H.4 DATA     BIT       P3_4
+*SFR* 000000B0H.5 DATA     BIT       P3_5
+*SFR* 000000B0H.6 DATA     BIT       P3_6
+*SFR* 000000B0H.7 DATA     BIT       P3_7
+*SFR* 00000097H   DATA     BYTE      P3_DIR_PU
+*SFR* 00000096H   DATA     BYTE      P3_MOD_OC
+      020000D1H   XDATA    ---       pBuf
+      00000021H.3 BIT      BIT       pBuf_ReSelect
+*SFR* 00000087H   DATA     BYTE      PCON
+*SFR* 000000B8H.7 DATA     BIT       PH_FLAG
+*SFR* 000000C6H   DATA     BYTE      PIN_FUNC
+*SFR* 000000B8H.6 DATA     BIT       PL_FLAG
+*SFR* 000000B8H.4 DATA     BIT       PS
+*SFR* 000000D0H   DATA     BYTE      PSW
+*SFR* 000000B8H.1 DATA     BIT       PT0
+*SFR* 000000B8H.3 DATA     BIT       PT1
+*SFR* 000000B8H.5 DATA     BIT       PT2
+*SFR* 00000090H.5 DATA     BIT       PWM1
+*SFR* 000000B0H.0 DATA     BIT       PWM1_
+*SFR* 000000B0H.4 DATA     BIT       PWM2
+*SFR* 000000B0H.1 DATA     BIT       PWM2_
+*SFR* 0000009EH   DATA     BYTE      PWM_CK_SE
+*SFR* 0000009DH   DATA     BYTE      PWM_CTRL
+*SFR* 0000009CH   DATA     BYTE      PWM_DATA1
+*SFR* 0000009BH   DATA     BYTE      PWM_DATA2
+*SFR* 000000B8H.0 DATA     BIT       PX0
+*SFR* 000000B8H.2 DATA     BIT       PX1
+*SFR* 00000098H.2 DATA     BIT       RB8
+*SFR* 000000CAH   DATA     WORD      RCAP2
+*SFR* 000000CBH   DATA     BYTE      RCAP2H
+*SFR* 000000CAH   DATA     BYTE      RCAP2L
+*SFR* 000000C8H.5 DATA     BIT       RCLK
+      0100169FH   CODE     ---       ReadFlashStatus
+*SFR* 00000098H.4 DATA     BIT       REN
+*SFR* 000000FEH   DATA     BYTE      RESET_KEEP
+*SFR* 00000098H.0 DATA     BIT       RI
+*SFR* 00000084H   DATA     WORD      ROM_ADDR
+*SFR* 00000085H   DATA     BYTE      ROM_ADDR_H
+*SFR* 00000084H   DATA     BYTE      ROM_ADDR_L
+*SFR* 00000086H   DATA     BYTE      ROM_CTRL
+*SFR* 0000008EH   DATA     WORD      ROM_DATA
+*SFR* 0000008FH   DATA     BYTE      ROM_DATA_H
+*SFR* 0000008EH   DATA     BYTE      ROM_DATA_L
+*SFR* 000000D0H.3 DATA     BIT       RS0
+*SFR* 000000D0H.4 DATA     BIT       RS1
+*SFR* 000000B0H.0 DATA     BIT       RXD
+*SFR* 00000090H.6 DATA     BIT       RXD1
+*SFR* 000000B0H.4 DATA     BIT       RXD1_
+*SFR* 00000090H.2 DATA     BIT       RXD_
+*SFR* 000000F8H.3 DATA     BIT       S0_FREE
+*SFR* 000000F8H.7 DATA     BIT       S0_FST_ACT
+*SFR* 000000F8H.4 DATA     BIT       S0_IF_BYTE
+*SFR* 000000F8H.5 DATA     BIT       S0_IF_FIRST
+*SFR* 000000F8H.6 DATA     BIT       S0_IF_OV
+*SFR* 000000F8H.0 DATA     BIT       S0_R_FIFO
+*SFR* 000000F8H.2 DATA     BIT       S0_T_FIFO
+*SFR* 000000A1H   DATA     BYTE      SAFE_MOD
+*SFR* 000000C2H   DATA     BYTE      SBAUD1
+*SFR* 00000099H   DATA     BYTE      SBUF
+*SFR* 000000C1H   DATA     BYTE      SBUF1
+*SFR* 00000090H.7 DATA     BIT       SCK
+*SFR* 00000098H   DATA     BYTE      SCON
+*SFR* 000000C0H   DATA     BYTE      SCON1
+*SFR* 00000090H.4 DATA     BIT       SCS
+*SFR* 00000098H.7 DATA     BIT       SM0
+*SFR* 00000098H.6 DATA     BIT       SM1
+*SFR* 00000098H.5 DATA     BIT       SM2
+*SFR* 00000081H   DATA     BYTE      SP
+*SFR* 000000FBH   DATA     BYTE      SPI0_CK_SE
+*SFR* 000000FAH   DATA     BYTE      SPI0_CTRL
+*SFR* 000000F9H   DATA     BYTE      SPI0_DATA
+*SFR* 000000FCH   DATA     BYTE      SPI0_SETUP
+*SFR* 000000F8H   DATA     BYTE      SPI0_STAT
+*SFR* 00000090H.4 DATA     BIT       SPI_CS
+*SFR* 000000B0H.4 DATA     BIT       T0
+*SFR* 000000B0H.5 DATA     BIT       T1
+*SFR* 00000090H.0 DATA     BIT       T2
+*SFR* 00000090H.4 DATA     BIT       T2_
+*SFR* 000000CEH   DATA     WORD      T2CAP1
+*SFR* 000000CFH   DATA     BYTE      T2CAP1H
+*SFR* 000000CEH   DATA     BYTE      T2CAP1L
+*SFR* 000000C8H   DATA     BYTE      T2CON
+*SFR* 000000CCH   DATA     WORD      T2COUNT
+*SFR* 00000090H.1 DATA     BIT       T2EX
+*SFR* 000000C9H   DATA     BYTE      T2MOD
+*SFR* 00000098H.3 DATA     BIT       TB8
+*SFR* 000000C8H.4 DATA     BIT       TCLK
+*SFR* 00000088H   DATA     BYTE      TCON
+*SFR* 00000088H.5 DATA     BIT       TF0
+*SFR* 00000088H.7 DATA     BIT       TF1
+*SFR* 000000C8H.7 DATA     BIT       TF2
+*SFR* 0000008CH   DATA     BYTE      TH0
+*SFR* 0000008DH   DATA     BYTE      TH1
+*SFR* 000000CDH   DATA     BYTE      TH2
+*SFR* 00000098H.1 DATA     BIT       TI
+*SFR* 00000090H.0 DATA     BIT       TIN0
+*SFR* 00000090H.1 DATA     BIT       TIN1
+*SFR* 00000090H.4 DATA     BIT       TIN2
+*SFR* 00000090H.5 DATA     BIT       TIN3
+*SFR* 00000090H.6 DATA     BIT       TIN4
+*SFR* 00000090H.7 DATA     BIT       TIN5
+*SFR* 000000C3H   DATA     BYTE      TKEY_CTRL
+*SFR* 000000C4H   DATA     WORD      TKEY_DAT
+*SFR* 000000C5H   DATA     BYTE      TKEY_DATH
+*SFR* 000000C4H   DATA     BYTE      TKEY_DATL
+*SFR* 0000008AH   DATA     BYTE      TL0
+*SFR* 0000008BH   DATA     BYTE      TL1
+*SFR* 000000CCH   DATA     BYTE      TL2
+*SFR* 00000089H   DATA     BYTE      TMOD
+*SFR* 00000088H.4 DATA     BIT       TR0
+*SFR* 00000088H.6 DATA     BIT       TR1
+*SFR* 000000C8H.2 DATA     BIT       TR2
+*SFR* 000000B0H.1 DATA     BIT       TXD
+*SFR* 00000090H.7 DATA     BIT       TXD1
+*SFR* 000000B0H.2 DATA     BIT       TXD1_
+*SFR* 00000090H.3 DATA     BIT       TXD_
+*SFR* 000000C0H.2 DATA     BIT       U1RB8
+*SFR* 000000C0H.4 DATA     BIT       U1REN
+*SFR* 000000C0H.0 DATA     BIT       U1RI
+*SFR* 000000C0H.7 DATA     BIT       U1SM0
+*SFR* 000000C0H.5 DATA     BIT       U1SMOD
+*SFR* 000000C0H.3 DATA     BIT       U1TB8
+*SFR* 000000C0H.1 DATA     BIT       U1TI
+*SFR* 000000D8H.7 DATA     BIT       U_IS_NAK
+*SFR* 000000D8H.5 DATA     BIT       U_SIE_FREE
+*SFR* 000000D8H.6 DATA     BIT       U_TOG_OK
+*DEL*:00000000H   CODE     ---       UART1Setup
+*SFR* 00000090H.4 DATA     BIT       UCC1
+*SFR* 00000090H.5 DATA     BIT       UCC2
+*SFR* 000000D1H   DATA     BYTE      UDEV_CTRL
+*SFR* 000000B0H.7 DATA     BIT       UDM
+*SFR* 000000B0H.6 DATA     BIT       UDP
+*SFR* 000000DCH   DATA     BYTE      UEP0_CTRL
+*SFR* 000000ECH   DATA     WORD      UEP0_DMA
+*SFR* 000000EDH   DATA     BYTE      UEP0_DMA_H
+*SFR* 000000ECH   DATA     BYTE      UEP0_DMA_L
+*SFR* 000000DDH   DATA     BYTE      UEP0_T_LEN
+*SFR* 000000D2H   DATA     BYTE      UEP1_CTRL
+*SFR* 000000EEH   DATA     WORD      UEP1_DMA
+*SFR* 000000EFH   DATA     BYTE      UEP1_DMA_H
+*SFR* 000000EEH   DATA     BYTE      UEP1_DMA_L
+*SFR* 000000D3H   DATA     BYTE      UEP1_T_LEN
+*SFR* 000000EBH   DATA     BYTE      UEP2_3_MOD
+*SFR* 000000D4H   DATA     BYTE      UEP2_CTRL
+*SFR* 000000E4H   DATA     WORD      UEP2_DMA
+*SFR* 000000E5H   DATA     BYTE      UEP2_DMA_H
+*SFR* 000000E4H   DATA     BYTE      UEP2_DMA_L
+*SFR* 000000D5H   DATA     BYTE      UEP2_T_LEN
+*SFR* 000000D6H   DATA     BYTE      UEP3_CTRL
+*SFR* 000000E6H   DATA     WORD      UEP3_DMA
+*SFR* 000000E7H   DATA     BYTE      UEP3_DMA_H
+*SFR* 000000E6H   DATA     BYTE      UEP3_DMA_L
+*SFR* 000000D7H   DATA     BYTE      UEP3_T_LEN
+*SFR* 000000EAH   DATA     BYTE      UEP4_1_MOD
+*SFR* 000000DEH   DATA     BYTE      UEP4_CTRL
+*SFR* 000000DFH   DATA     BYTE      UEP4_T_LEN
+      010014B4H   CODE     ---       UFI_GET_EVE_STA_NOT
+      01001104H   CODE     ---       UFI_Hunding
+      0100130DH   CODE     ---       UFI_inquiry
+      01001565H   CODE     ---       UFI_modeSense
+      010015AFH   CODE     ---       UFI_modeSense5
+      01001728H   CODE     ---       UFI_perOrMed
+      01000D80H   CODE     ---       UFI_read10
+      01000003H   CODE     ---       UFI_readCapacity
+      0100145BH   CODE     ---       UFI_readTOC
+      01001384H   CODE     ---       UFI_requestSense
+      010016E8H   CODE     ---       UFI_staStoUnit
+      010016D6H   CODE     ---       UFI_testUnit
+      01001736H   CODE     ---       UFI_verify
+      01000B0EH   CODE     ---       UFI_write
+*SFR* 000000D8H.0 DATA     BIT       UIF_BUS_RST
+*SFR* 000000D8H.0 DATA     BIT       UIF_DETECT
+*SFR* 000000D8H.4 DATA     BIT       UIF_FIFO_OV
+*SFR* 000000D8H.3 DATA     BIT       UIF_HST_SOF
+*SFR* 000000D8H.2 DATA     BIT       UIF_SUSPEND
+*SFR* 000000D8H.1 DATA     BIT       UIF_TRANSFER
+*SFR* 00000091H   DATA     BYTE      USB_C_CTRL
+*SFR* 000000E2H   DATA     BYTE      USB_CTRL
+*SFR* 000000E3H   DATA     BYTE      USB_DEV_AD
+      01000046H   CODE     ---       USB_DeviceInterrupt
+*SFR* 000000E1H   DATA     BYTE      USB_INT_EN
+*SFR* 000000D8H   DATA     BYTE      USB_INT_FG
+*SFR* 000000D9H   DATA     BYTE      USB_INT_ST
+*SFR* 000000DAH   DATA     BYTE      USB_MIS_ST
+*SFR* 000000DBH   DATA     BYTE      USB_RX_LEN
+      020000CFH   XDATA    BYTE      UsbConfig
+      020000D6H   XDATA    BYTE      UsbReady
+*SFR* 000000B0H.2 DATA     BIT       VBUS1
+*SFR* 00000090H.1 DATA     BIT       VBUS2
+      0100175AH   CODE     ---       WaitFlashBusy
+*SFR* 000000A9H   DATA     BYTE      WAKE_CTRL
+*SFR* 000000FFH   DATA     BYTE      WDOG_COUNT
+      0100174FH   CODE     ---       WriteFlashEnable
+      01001744H   CODE     ---       WriteFlashForbidden
+*SFR* 000000A2H   DATA     BYTE      XBUS_AUX
+
+
+
+SYMBOL TABLE OF MODULE:  .\Obj\USBAirborne (DEBUG)
+
+      VALUE       REP       CLASS    TYPE      SYMBOL NAME
+      ====================================================
+      ---         MODULE    ---      ---       DEBUG
+      0100164AH   PUBLIC    CODE     ---       mInitSTDIO
+      01001688H   PUBLIC    CODE     ---       _mDelaymS
+      010016C4H   PUBLIC    CODE     ---       _mDelayuS
+      010016B2H   PUBLIC    CODE     ---       CfgFsys
+      000000D8H.3 SFRSYM    DATA     BIT       UIF_HST_SOF
+      000000B0H.4 SFRSYM    DATA     BIT       RXD1_
+      000000D8H.0 SFRSYM    DATA     BIT       UIF_DETECT
+      00000090H   SFRSYM    DATA     BYTE      P1
+      000000E2H   SFRSYM    DATA     BYTE      USB_CTRL
+      000000B0H.2 SFRSYM    DATA     BIT       TXD1_
+      000000A0H   SFRSYM    DATA     BYTE      P2
+      000000B0H   SFRSYM    DATA     BYTE      P3
+      000000B0H.4 SFRSYM    DATA     BIT       T0
+      000000D0H.6 SFRSYM    DATA     BIT       AC
+      000000FBH   SFRSYM    DATA     BYTE      SPI0_CK_SE
+      000000B0H.5 SFRSYM    DATA     BIT       T1
+      000000B0H.0 SFRSYM    DATA     BIT       PWM1_
+      00000090H.0 SFRSYM    DATA     BIT       CAP1
+      00000090H.0 SFRSYM    DATA     BIT       T2
+      00000086H   SFRSYM    DATA     BYTE      ROM_CTRL
+      000000A8H.6 SFRSYM    DATA     BIT       E_DIS
+      000000A8H.7 SFRSYM    DATA     BIT       EA
+      000000F8H.3 SFRSYM    DATA     BIT       S0_FREE
+      000000B0H.1 SFRSYM    DATA     BIT       PWM2_
+      00000090H.1 SFRSYM    DATA     BIT       CAP2
+      000000F8H.4 SFRSYM    DATA     BIT       S0_IF_BYTE
+      00000090H.1 SFRSYM    DATA     BIT       AIN0
+      00000090H.4 SFRSYM    DATA     BIT       AIN1
+      000000D8H.0 SFRSYM    DATA     BIT       UIF_BUS_RST
+      000000F8H.7 SFRSYM    DATA     BIT       S0_FST_ACT
+      00000090H.5 SFRSYM    DATA     BIT       AIN2
+      0000009DH   SFRSYM    DATA     BYTE      PWM_CTRL
+      000000B0H.2 SFRSYM    DATA     BIT       AIN3
+      000000E8H.0 SFRSYM    DATA     BIT       IE_SPI0
+      000000E8H   SFRSYM    DATA     BYTE      IE_EX
+      000000FEH   SFRSYM    DATA     BYTE      RESET_KEEP
+      000000D8H.7 SFRSYM    DATA     BIT       U_IS_NAK
+      000000CEH   SFRSYM    DATA     WORD      T2CAP1
+      00000090H.4 SFRSYM    DATA     BIT       UCC1
+      00000090H.5 SFRSYM    DATA     BIT       UCC2
+      000000A8H   SFRSYM    DATA     BYTE      IE
+      000000DDH   SFRSYM    DATA     BYTE      UEP0_T_LEN
+      000000E3H   SFRSYM    DATA     BYTE      USB_DEV_AD
+      000000D3H   SFRSYM    DATA     BYTE      UEP1_T_LEN
+      000000FCH   SFRSYM    DATA     BYTE      SPI0_SETUP
+      00000090H.0 SFRSYM    DATA     BIT       P1_0
+      000000D5H   SFRSYM    DATA     BYTE      UEP2_T_LEN
+      000000CCH   SFRSYM    DATA     WORD      T2COUNT
+      00000090H.1 SFRSYM    DATA     BIT       P1_1
+      000000D7H   SFRSYM    DATA     BYTE      UEP3_T_LEN
+      000000A2H   SFRSYM    DATA     BYTE      XBUS_AUX
+      000000B0H.0 SFRSYM    DATA     BIT       P3_0
+      00000090H.2 SFRSYM    DATA     BIT       P1_2
+      0000008FH   SFRSYM    DATA     BYTE      ROM_DATA_H
+      000000DFH   SFRSYM    DATA     BYTE      UEP4_T_LEN
+      000000B0H.1 SFRSYM    DATA     BIT       P3_1
+      00000090H.3 SFRSYM    DATA     BIT       P1_3
+      00000085H   SFRSYM    DATA     BYTE      ROM_ADDR_H
+      000000B8H.7 SFRSYM    DATA     BIT       PH_FLAG
+      000000B0H.2 SFRSYM    DATA     BIT       P3_2
+      00000090H.4 SFRSYM    DATA     BIT       P1_4
+      000000C8H.6 SFRSYM    DATA     BIT       EXF2
+      000000B0H.3 SFRSYM    DATA     BIT       P3_3
+      00000090H.5 SFRSYM    DATA     BIT       P1_5
+      000000B0H.4 SFRSYM    DATA     BIT       P3_4
+      00000090H.6 SFRSYM    DATA     BIT       P1_6
+      0000008EH   SFRSYM    DATA     BYTE      ROM_DATA_L
+      000000E9H   SFRSYM    DATA     BYTE      IP_EX
+      000000B0H.5 SFRSYM    DATA     BIT       P3_5
+      00000090H.7 SFRSYM    DATA     BIT       P1_7
+      00000084H   SFRSYM    DATA     BYTE      ROM_ADDR_L
+      000000B8H.6 SFRSYM    DATA     BIT       PL_FLAG
+      000000A8H.4 SFRSYM    DATA     BIT       ES
+      000000F9H   SFRSYM    DATA     BYTE      SPI0_DATA
+      000000B0H.6 SFRSYM    DATA     BIT       P3_6
+      000000B8H   SFRSYM    DATA     BYTE      IP
+      000000B0H.7 SFRSYM    DATA     BIT       P3_7
+      000000D8H.5 SFRSYM    DATA     BIT       U_SIE_FREE
+      000000D8H.6 SFRSYM    DATA     BIT       U_TOG_OK
+      00000098H.0 SFRSYM    DATA     BIT       RI
+      000000B0H.2 SFRSYM    DATA     BIT       INT0
+      00000090H.0 SFRSYM    DATA     BIT       TIN0
+      000000D0H.7 SFRSYM    DATA     BIT       CY
+      00000098H.1 SFRSYM    DATA     BIT       TI
+      000000B0H.3 SFRSYM    DATA     BIT       INT1
+      00000090H.1 SFRSYM    DATA     BIT       TIN1
+      00000090H.4 SFRSYM    DATA     BIT       TIN2
+      000000FFH   SFRSYM    DATA     BYTE      WDOG_COUNT
+      00000090H.5 SFRSYM    DATA     BIT       TIN3
+      000000C7H   SFRSYM    DATA     BYTE      GPIO_IE
+      000000E8H.6 SFRSYM    DATA     BIT       IE_GPIO
+      000000B9H   SFRSYM    DATA     BYTE      CLOCK_CFG
+      00000090H.6 SFRSYM    DATA     BIT       TIN4
+      00000090H.6 SFRSYM    DATA     BIT       RXD1
+      00000090H.7 SFRSYM    DATA     BIT       TIN5
+      000000E8H.7 SFRSYM    DATA     BIT       IE_WDOG
+      000000C2H   SFRSYM    DATA     BYTE      SBAUD1
+      000000C0H.0 SFRSYM    DATA     BIT       U1RI
+      0000009CH   SFRSYM    DATA     BYTE      PWM_DATA1
+      000000CBH   SFRSYM    DATA     BYTE      RCAP2H
+      00000090H.7 SFRSYM    DATA     BIT       TXD1
+      0000009BH   SFRSYM    DATA     BYTE      PWM_DATA2
+      000000B8H.4 SFRSYM    DATA     BIT       PS
+      00000081H   SFRSYM    DATA     BYTE      SP
+      000000C0H.1 SFRSYM    DATA     BIT       U1TI
+      00000090H.1 SFRSYM    DATA     BIT       T2EX
+      000000D8H   SFRSYM    DATA     BYTE      USB_INT_FG
+      00000091H   SFRSYM    DATA     BYTE      USB_C_CTRL
+      000000D0H.2 SFRSYM    DATA     BIT       OV
+      000000CAH   SFRSYM    DATA     BYTE      RCAP2L
+      00000090H.5 SFRSYM    DATA     BIT       PWM1
+      000000B0H.4 SFRSYM    DATA     BIT       PWM2
+      000000C8H.1 SFRSYM    DATA     BIT       C_T2
+      000000E1H   SFRSYM    DATA     BYTE      USB_INT_EN
+      000000C8H.5 SFRSYM    DATA     BIT       RCLK
+      000000E8H.1 SFRSYM    DATA     BIT       IE_TKEY
+      000000D8H.1 SFRSYM    DATA     BIT       UIF_TRANSFER
+      000000C8H.4 SFRSYM    DATA     BIT       TCLK
+      00000080H.7 SFRSYM    DATA     BIT       CMPO
+      00000099H   SFRSYM    DATA     BYTE      SBUF
+      00000087H   SFRSYM    DATA     BYTE      PCON
+      000000DCH   SFRSYM    DATA     BYTE      UEP0_CTRL
+      000000D2H   SFRSYM    DATA     BYTE      UEP1_CTRL
+      000000D4H   SFRSYM    DATA     BYTE      UEP2_CTRL
+      000000FAH   SFRSYM    DATA     BYTE      SPI0_CTRL
+      00000098H   SFRSYM    DATA     BYTE      SCON
+      000000D6H   SFRSYM    DATA     BYTE      UEP3_CTRL
+      00000089H   SFRSYM    DATA     BYTE      TMOD
+      00000088H   SFRSYM    DATA     BYTE      TCON
+      00000092H   SFRSYM    DATA     BYTE      P1_MOD_OC
+      000000DEH   SFRSYM    DATA     BYTE      UEP4_CTRL
+      000000DBH   SFRSYM    DATA     BYTE      USB_RX_LEN
+      00000096H   SFRSYM    DATA     BYTE      P3_MOD_OC
+      000000E8H.3 SFRSYM    DATA     BIT       IE_ADC
+      00000080H.5 SFRSYM    DATA     BIT       ADC_IF
+      00000080H.4 SFRSYM    DATA     BIT       ADC_START
+      00000090H.5 SFRSYM    DATA     BIT       MOSI
+      00000090H.6 SFRSYM    DATA     BIT       MISO
+      000000C0H.5 SFRSYM    DATA     BIT       U1SMOD
+      000000F8H.0 SFRSYM    DATA     BIT       S0_R_FIFO
+      000000F8H   SFRSYM    DATA     BYTE      SPI0_STAT
+      000000E8H.5 SFRSYM    DATA     BIT       IE_PWMX
+      000000DAH   SFRSYM    DATA     BYTE      USB_MIS_ST
+      000000F8H.2 SFRSYM    DATA     BIT       S0_T_FIFO
+      00000088H.1 SFRSYM    DATA     BIT       IE0
+      000000D9H   SFRSYM    DATA     BYTE      USB_INT_ST
+      00000088H.3 SFRSYM    DATA     BIT       IE1
+      000000A9H   SFRSYM    DATA     BYTE      WAKE_CTRL
+      000000C5H   SFRSYM    DATA     BYTE      TKEY_DATH
+      000000F0H   SFRSYM    DATA     BYTE      B
+      0000009FH   SFRSYM    DATA     BYTE      ADC_DATA
+      000000C8H.0 SFRSYM    DATA     BIT       CP_RL2
+      000000C4H   SFRSYM    DATA     BYTE      TKEY_DATL
+      00000093H   SFRSYM    DATA     BYTE      P1_DIR_PU
+      000000E0H   SFRSYM    DATA     BYTE      ACC
+      00000097H   SFRSYM    DATA     BYTE      P3_DIR_PU
+      000000A8H.1 SFRSYM    DATA     BIT       ET0
+      00000088H.5 SFRSYM    DATA     BIT       TF0
+      000000A8H.3 SFRSYM    DATA     BIT       ET1
+      00000088H.7 SFRSYM    DATA     BIT       TF1
+      000000A8H.5 SFRSYM    DATA     BIT       ET2
+      000000D1H   SFRSYM    DATA     BYTE      UDEV_CTRL
+      000000C8H.7 SFRSYM    DATA     BIT       CAP1F
+      000000C8H.7 SFRSYM    DATA     BIT       TF2
+      00000098H.2 SFRSYM    DATA     BIT       RB8
+      0000008CH   SFRSYM    DATA     BYTE      TH0
+      0000008DH   SFRSYM    DATA     BYTE      TH1
+      00000088H.0 SFRSYM    DATA     BIT       IT0
+      000000A8H.0 SFRSYM    DATA     BIT       EX0
+      000000ECH   SFRSYM    DATA     WORD      UEP0_DMA
+      000000CDH   SFRSYM    DATA     BYTE      TH2
+      00000098H.3 SFRSYM    DATA     BIT       TB8
+      00000088H.2 SFRSYM    DATA     BIT       IT1
+      00000090H.2 SFRSYM    DATA     BIT       RXD_
+      000000A8H.2 SFRSYM    DATA     BIT       EX1
+      000000EEH   SFRSYM    DATA     WORD      UEP1_DMA
+      000000D0H.0 SFRSYM    DATA     BIT       P
+      000000E4H   SFRSYM    DATA     WORD      UEP2_DMA
+      00000080H.6 SFRSYM    DATA     BIT       CMP_IF
+      00000098H.7 SFRSYM    DATA     BIT       SM0
+      0000008AH   SFRSYM    DATA     BYTE      TL0
+      00000090H.3 SFRSYM    DATA     BIT       TXD_
+      000000E6H   SFRSYM    DATA     WORD      UEP3_DMA
+      00000098H.6 SFRSYM    DATA     BIT       SM1
+      0000008BH   SFRSYM    DATA     BYTE      TL1
+      000000CCH   SFRSYM    DATA     BYTE      TL2
+      00000098H.5 SFRSYM    DATA     BIT       SM2
+      000000C0H.2 SFRSYM    DATA     BIT       U1RB8
+      000000B8H.1 SFRSYM    DATA     BIT       PT0
+      000000C3H   SFRSYM    DATA     BYTE      TKEY_CTRL
+      000000C0H.3 SFRSYM    DATA     BIT       U1TB8
+      000000CFH   SFRSYM    DATA     BYTE      T2CAP1H
+      000000B8H.3 SFRSYM    DATA     BIT       PT1
+      000000D0H.3 SFRSYM    DATA     BIT       RS0
+      00000088H.4 SFRSYM    DATA     BIT       TR0
+      000000B8H.5 SFRSYM    DATA     BIT       PT2
+      000000D0H.4 SFRSYM    DATA     BIT       RS1
+      000000C0H.7 SFRSYM    DATA     BIT       U1SM0
+      00000088H.6 SFRSYM    DATA     BIT       TR1
+      000000C8H.2 SFRSYM    DATA     BIT       TR2
+      000000B8H.0 SFRSYM    DATA     BIT       PX0
+      000000CEH   SFRSYM    DATA     BYTE      T2CAP1L
+      000000CAH   SFRSYM    DATA     WORD      RCAP2
+      000000E8H.2 SFRSYM    DATA     BIT       IE_USB
+      000000B8H.2 SFRSYM    DATA     BIT       PX1
+      00000080H.3 SFRSYM    DATA     BIT       CMP_CHAN
+      0000009EH   SFRSYM    DATA     BYTE      PWM_CK_SE
+      00000083H   SFRSYM    DATA     BYTE      DPH
+      000000F8H.5 SFRSYM    DATA     BIT       S0_IF_FIRST
+      000000E8H.4 SFRSYM    DATA     BIT       IE_UART1
+      00000080H   SFRSYM    DATA     BYTE      ADC_CTRL
+      00000082H   SFRSYM    DATA     BYTE      DPL
+      00000090H.7 SFRSYM    DATA     BIT       SCK
+      000000A1H   SFRSYM    DATA     BYTE      SAFE_MOD
+      000000C1H   SFRSYM    DATA     BYTE      SBUF1
+      000000C8H.3 SFRSYM    DATA     BIT       EXEN2
+      000000B1H   SFRSYM    DATA     BYTE      GLOBAL_CFG
+      000000C0H   SFRSYM    DATA     BYTE      SCON1
+      00000098H.4 SFRSYM    DATA     BIT       REN
+      00000090H.4 SFRSYM    DATA     BIT       CAP1_
+      00000090H.4 SFRSYM    DATA     BIT       T2_
+      000000B0H.7 SFRSYM    DATA     BIT       UDM
+      000000C9H   SFRSYM    DATA     BYTE      T2MOD
+      000000C8H   SFRSYM    DATA     BYTE      T2CON
+      000000B0H.6 SFRSYM    DATA     BIT       UDP
+      00000090H.4 SFRSYM    DATA     BIT       SCS
+      000000D8H.2 SFRSYM    DATA     BIT       UIF_SUSPEND
+      0000008EH   SFRSYM    DATA     WORD      ROM_DATA
+      00000084H   SFRSYM    DATA     WORD      ROM_ADDR
+      000000C0H.4 SFRSYM    DATA     BIT       U1REN
+      000000B0H.0 SFRSYM    DATA     BIT       RXD
+      000000D8H.4 SFRSYM    DATA     BIT       UIF_FIFO_OV
+      000000B0H.1 SFRSYM    DATA     BIT       TXD
+      000000EBH   SFRSYM    DATA     BYTE      UEP2_3_MOD
+      000000EAH   SFRSYM    DATA     BYTE      UEP4_1_MOD
+      000000B0H.2 SFRSYM    DATA     BIT       VBUS1
+      00000090H.1 SFRSYM    DATA     BIT       VBUS2
+      00000080H.0 SFRSYM    DATA     BIT       ADC_CHAN0
+      00000080H.1 SFRSYM    DATA     BIT       ADC_CHAN1
+      000000C6H   SFRSYM    DATA     BYTE      PIN_FUNC
+      000000D0H.5 SFRSYM    DATA     BIT       F0
+      000000EDH   SFRSYM    DATA     BYTE      UEP0_DMA_H
+      000000D0H.1 SFRSYM    DATA     BIT       F1
+      000000EFH   SFRSYM    DATA     BYTE      UEP1_DMA_H
+      000000E5H   SFRSYM    DATA     BYTE      UEP2_DMA_H
+      000000C4H   SFRSYM    DATA     WORD      TKEY_DAT
+      000000F8H.6 SFRSYM    DATA     BIT       S0_IF_OV
+      000000E7H   SFRSYM    DATA     BYTE      UEP3_DMA_H
+      0000009AH   SFRSYM    DATA     BYTE      ADC_CFG
+      000000ECH   SFRSYM    DATA     BYTE      UEP0_DMA_L
+      000000D0H   SFRSYM    DATA     BYTE      PSW
+      000000EEH   SFRSYM    DATA     BYTE      UEP1_DMA_L
+      000000E4H   SFRSYM    DATA     BYTE      UEP2_DMA_L
+      000000E6H   SFRSYM    DATA     BYTE      UEP3_DMA_L
+
+      010016B2H   BLOCK     CODE     ---       LVL=0
+      010016B2H   LINE      CODE     ---       #26
+      010016B2H   LINE      CODE     ---       #27
+      010016B2H   LINE      CODE     ---       #34
+      010016B5H   LINE      CODE     ---       #35
+      010016B8H   LINE      CODE     ---       #39
+      010016C0H   LINE      CODE     ---       #53
+      010016C3H   LINE      CODE     ---       #54
+      ---         BLOCKEND  ---      ---       LVL=0
+
+      010016C4H   BLOCK     CODE     ---       LVL=0
+      00000006H   SYMBOL    DATA     WORD      n
+      010016C4H   LINE      CODE     ---       #64
+      010016C4H   LINE      CODE     ---       #65
+      010016C4H   LINE      CODE     ---       #77
+      010016C8H   LINE      CODE     ---       #78
+      010016C8H   LINE      CODE     ---       #79
+      010016CAH   LINE      CODE     ---       #82
+      010016CCH   LINE      CODE     ---       #85
+      010016CEH   LINE      CODE     ---       #100
+      010016D3H   LINE      CODE     ---       #101
+      010016D5H   LINE      CODE     ---       #102
+      ---         BLOCKEND  ---      ---       LVL=0
+
+      01001688H   BLOCK     CODE     ---       LVL=0
+      00000004H   SYMBOL    DATA     WORD      n
+      01001688H   LINE      CODE     ---       #112
+      0100168CH   LINE      CODE     ---       #113
+      0100168CH   LINE      CODE     ---       #114
+      01001690H   LINE      CODE     ---       #115
+      01001690H   LINE      CODE     ---       #120
+      01001697H   LINE      CODE     ---       #122
+      0100169CH   LINE      CODE     ---       #123
+      0100169EH   LINE      CODE     ---       #124
+      ---         BLOCKEND  ---      ---       LVL=0
+
+      0100164AH   BLOCK     CODE     ---       LVL=0
+      0100164AH   LINE      CODE     ---       #135
+      0100164AH   LINE      CODE     ---       #136
+      0100164AH   LINE      CODE     ---       #137
+      0100164DH   LINE      CODE     ---       #140
+      0100164FH   LINE      CODE     ---       #141
+      01001651H   LINE      CODE     ---       #142
+      01001654H   LINE      CODE     ---       #143
+      0100165CH   LINE      CODE     ---       #144
+      0100165FH   LINE      CODE     ---       #146
+      01001662H   LINE      CODE     ---       #147
+      01001665H   LINE      CODE     ---       #148
+      01001667H   LINE      CODE     ---       #150
+      01001669H   LINE      CODE     ---       #151
+      ---         BLOCKEND  ---      ---       LVL=0
+      00000007H   SYMBOL    DATA     BYTE      SendDat
+      00000007H   SYMBOL    DATA     BYTE      SendDat
+      00000007H   SYMBOL    DATA     BYTE      mode
+      00000007H   SYMBOL    DATA     BYTE      tim
+
+      ---         MODULE    ---      ---       MAIN
+      00000062H   PUBLIC    IDATA    ---       buffer
+      020000E9H   PUBLIC    XDATA    ---       LEN
+      020000E1H   PUBLIC    XDATA    ---       HIDData
+      020000DDH   PUBLIC    XDATA    ---       mdCBWTag
+      00000021H.6 PUBLIC    BIT      BIT       FSTALL
+      0200010AH   PUBLIC    XDATA    ---       Ep2Buffer
+      0200004AH   PUBLIC    XDATA    ---       Ep1Buffer
+      020000DCH   PUBLIC    XDATA    BYTE      mASC
+      02000000H   PUBLIC    XDATA    ---       Ep0Buffer
+      020000D8H   PUBLIC    XDATA    DWORD     Locate_Addr
+      020000D7H   PUBLIC    XDATA    BYTE      IsHIDDataSent
+      020000D6H   PUBLIC    XDATA    BYTE      UsbReady
+      00000022H   PUBLIC    IDATA    ---       MassPara
+      00000021H.5 PUBLIC    BIT      BIT       CH375CSW
+      020000D5H   PUBLIC    XDATA    BYTE      BcswStatus
+      020000D4H   PUBLIC    XDATA    BYTE      mSenseKey
+      00000021H.4 PUBLIC    BIT      BIT       CH375BULKDOWN
+      020000D1H   PUBLIC    XDATA    ---       pBuf
+      00000021H.3 PUBLIC    BIT      BIT       pBuf_ReSelect
+      020000D0H   PUBLIC    XDATA    BYTE      IsHIDSendExploit
+      020000CFH   PUBLIC    XDATA    BYTE      UsbConfig
+      00000021H.2 PUBLIC    BIT      BIT       CH375BULKUP
+      00000021H.1 PUBLIC    BIT      BIT       lastFSTALL
+      010018BAH   PUBLIC    CONST    ---       mode5sense3F
+      010018AEH   PUBLIC    CONST    ---       modesense3F
+      010018A6H   PUBLIC    CONST    ---       DBCAPACITY
+      01001882H   PUBLIC    CONST    ---       DBINQUITY_USB_Drive
+      0100185EH   PUBLIC    CONST    ---       DBINQUITY_CD_ROM
+      0100185DH   PUBLIC    CONST    ---       MAX_LUN
+      01001851H   PUBLIC    CONST    ---       MyProdInfo
+      01001843H   PUBLIC    CONST    ---       MyManuInfo
+      0100183FH   PUBLIC    CONST    ---       MyLangDescr
+      01001806H   PUBLIC    CONST    ---       MyCfgDescr
+      010017F4H   PUBLIC    CONST    ---       MyDevDescr
+      010017B5H   PUBLIC    CONST    ---       HIDReportDescriptor
+      010015F9H   PUBLIC    CODE     ---       main
+      01000046H   PUBLIC    CODE     ---       USB_DeviceInterrupt
+      01000E84H   PUBLIC    CODE     ---       mCH375BulkDownData
+      01000C74H   PUBLIC    CODE     ---       mCH375bulkUpData
+      01001212H   PUBLIC    CODE     ---       mCH375UpCsw
+      01001293H   PUBLIC    CODE     ---       mCH375BulkOnly
+      01001104H   PUBLIC    CODE     ---       UFI_Hunding
+      010014B4H   PUBLIC    CODE     ---       UFI_GET_EVE_STA_NOT
+      0100145BH   PUBLIC    CODE     ---       UFI_readTOC
+      010015AFH   PUBLIC    CODE     ---       UFI_modeSense5
+      01001736H   PUBLIC    CODE     ---       UFI_verify
+      010016E8H   PUBLIC    CODE     ---       UFI_staStoUnit
+      01000B0EH   PUBLIC    CODE     ---       UFI_write
+      01001728H   PUBLIC    CODE     ---       UFI_perOrMed
+      010016D6H   PUBLIC    CODE     ---       UFI_testUnit
+      01001384H   PUBLIC    CODE     ---       UFI_requestSense
+      01001565H   PUBLIC    CODE     ---       UFI_modeSense
+      01000D80H   PUBLIC    CODE     ---       UFI_read10
+      0100130DH   PUBLIC    CODE     ---       UFI_inquiry
+      01000003H   PUBLIC    CODE     ---       UFI_readCapacity
+      01000F6FH   PUBLIC    CODE     ---       _BulkThirteen
+      0200000CH   PUBLIC    XDATA    BYTE      ?_BulkWriteFlash?BYTE
+      01000FE9H   PUBLIC    CODE     ---       _BulkWriteFlash
+      0200000CH   PUBLIC    XDATA    BYTE      ?_BulkReadFlash?BYTE
+      0100118EH   PUBLIC    CODE     ---       _BulkReadFlash
+      0100150DH   PUBLIC    CODE     ---       _EraseFlash
+      0100171AH   PUBLIC    CODE     ---       CheckFlashWriteEnable
+      0100174FH   PUBLIC    CODE     ---       WriteFlashEnable
+      01001744H   PUBLIC    CODE     ---       WriteFlashForbidden
+      0100170AH   PUBLIC    CODE     ---       _WriteFlashStatus
+      0100175AH   PUBLIC    CODE     ---       WaitFlashBusy
+      0100169FH   PUBLIC    CODE     ---       ReadFlashStatus
+      010016FAH   PUBLIC    CODE     ---       InitHostSPI0
+      010013FAH   PUBLIC    CODE     ---       InitUSB_Device
+      000000D8H.3 SFRSYM    DATA     BIT       UIF_HST_SOF
+      000000B0H.4 SFRSYM    DATA     BIT       RXD1_
+      000000D8H.0 SFRSYM    DATA     BIT       UIF_DETECT
+      00000090H   SFRSYM    DATA     BYTE      P1
+      000000E2H   SFRSYM    DATA     BYTE      USB_CTRL
+      000000B0H.2 SFRSYM    DATA     BIT       TXD1_
+      000000A0H   SFRSYM    DATA     BYTE      P2
+      000000B0H   SFRSYM    DATA     BYTE      P3
+      000000B0H.4 SFRSYM    DATA     BIT       T0
+      000000D0H.6 SFRSYM    DATA     BIT       AC
+      000000FBH   SFRSYM    DATA     BYTE      SPI0_CK_SE
+      000000B0H.5 SFRSYM    DATA     BIT       T1
+      000000B0H.0 SFRSYM    DATA     BIT       PWM1_
+      00000090H.0 SFRSYM    DATA     BIT       CAP1
+      00000090H.0 SFRSYM    DATA     BIT       T2
+      00000086H   SFRSYM    DATA     BYTE      ROM_CTRL
+      000000A8H.6 SFRSYM    DATA     BIT       E_DIS
+      000000A8H.7 SFRSYM    DATA     BIT       EA
+      000000F8H.3 SFRSYM    DATA     BIT       S0_FREE
+      000000B0H.1 SFRSYM    DATA     BIT       PWM2_
+      00000090H.1 SFRSYM    DATA     BIT       CAP2
+      000000F8H.4 SFRSYM    DATA     BIT       S0_IF_BYTE
+      00000090H.1 SFRSYM    DATA     BIT       AIN0
+      00000090H.4 SFRSYM    DATA     BIT       AIN1
+      000000D8H.0 SFRSYM    DATA     BIT       UIF_BUS_RST
+      000000F8H.7 SFRSYM    DATA     BIT       S0_FST_ACT
+      00000090H.5 SFRSYM    DATA     BIT       AIN2
+      0000009DH   SFRSYM    DATA     BYTE      PWM_CTRL
+      000000B0H.2 SFRSYM    DATA     BIT       AIN3
+      000000E8H.0 SFRSYM    DATA     BIT       IE_SPI0
+      000000E8H   SFRSYM    DATA     BYTE      IE_EX
+      000000FEH   SFRSYM    DATA     BYTE      RESET_KEEP
+      000000D8H.7 SFRSYM    DATA     BIT       U_IS_NAK
+      000000CEH   SFRSYM    DATA     WORD      T2CAP1
+      00000090H.4 SFRSYM    DATA     BIT       UCC1
+      00000090H.5 SFRSYM    DATA     BIT       UCC2
+      000000A8H   SFRSYM    DATA     BYTE      IE
+      000000DDH   SFRSYM    DATA     BYTE      UEP0_T_LEN
+      000000E3H   SFRSYM    DATA     BYTE      USB_DEV_AD
+      000000D3H   SFRSYM    DATA     BYTE      UEP1_T_LEN
+      000000FCH   SFRSYM    DATA     BYTE      SPI0_SETUP
+      00000090H.0 SFRSYM    DATA     BIT       P1_0
+      000000D5H   SFRSYM    DATA     BYTE      UEP2_T_LEN
+      000000CCH   SFRSYM    DATA     WORD      T2COUNT
+      00000090H.1 SFRSYM    DATA     BIT       P1_1
+      000000D7H   SFRSYM    DATA     BYTE      UEP3_T_LEN
+      000000A2H   SFRSYM    DATA     BYTE      XBUS_AUX
+      000000B0H.0 SFRSYM    DATA     BIT       P3_0
+      00000090H.2 SFRSYM    DATA     BIT       P1_2
+      0000008FH   SFRSYM    DATA     BYTE      ROM_DATA_H
+      000000DFH   SFRSYM    DATA     BYTE      UEP4_T_LEN
+      000000B0H.1 SFRSYM    DATA     BIT       P3_1
+      00000090H.3 SFRSYM    DATA     BIT       P1_3
+      00000085H   SFRSYM    DATA     BYTE      ROM_ADDR_H
+      000000B8H.7 SFRSYM    DATA     BIT       PH_FLAG
+      000000B0H.2 SFRSYM    DATA     BIT       P3_2
+      00000090H.4 SFRSYM    DATA     BIT       P1_4
+      000000C8H.6 SFRSYM    DATA     BIT       EXF2
+      000000B0H.3 SFRSYM    DATA     BIT       P3_3
+      00000090H.5 SFRSYM    DATA     BIT       P1_5
+      000000B0H.4 SFRSYM    DATA     BIT       P3_4
+      00000090H.6 SFRSYM    DATA     BIT       P1_6
+      0000008EH   SFRSYM    DATA     BYTE      ROM_DATA_L
+      000000E9H   SFRSYM    DATA     BYTE      IP_EX
+      000000B0H.5 SFRSYM    DATA     BIT       P3_5
+      00000090H.7 SFRSYM    DATA     BIT       P1_7
+      00000084H   SFRSYM    DATA     BYTE      ROM_ADDR_L
+      000000B8H.6 SFRSYM    DATA     BIT       PL_FLAG
+      000000A8H.4 SFRSYM    DATA     BIT       ES
+      000000F9H   SFRSYM    DATA     BYTE      SPI0_DATA
+      000000B0H.6 SFRSYM    DATA     BIT       P3_6
+      000000B8H   SFRSYM    DATA     BYTE      IP
+      000000B0H.7 SFRSYM    DATA     BIT       P3_7
+      000000D8H.5 SFRSYM    DATA     BIT       U_SIE_FREE
+      000000D8H.6 SFRSYM    DATA     BIT       U_TOG_OK
+      00000098H.0 SFRSYM    DATA     BIT       RI
+      000000B0H.2 SFRSYM    DATA     BIT       INT0
+      00000090H.0 SFRSYM    DATA     BIT       TIN0
+      000000D0H.7 SFRSYM    DATA     BIT       CY
+      00000098H.1 SFRSYM    DATA     BIT       TI
+      000000B0H.3 SFRSYM    DATA     BIT       INT1
+      00000090H.1 SFRSYM    DATA     BIT       TIN1
+      00000090H.4 SFRSYM    DATA     BIT       TIN2
+      000000FFH   SFRSYM    DATA     BYTE      WDOG_COUNT
+      00000090H.5 SFRSYM    DATA     BIT       TIN3
+      000000C7H   SFRSYM    DATA     BYTE      GPIO_IE
+      000000E8H.6 SFRSYM    DATA     BIT       IE_GPIO
+      000000B9H   SFRSYM    DATA     BYTE      CLOCK_CFG
+      00000090H.6 SFRSYM    DATA     BIT       TIN4
+      00000090H.6 SFRSYM    DATA     BIT       RXD1
+      00000090H.7 SFRSYM    DATA     BIT       TIN5
+      000000E8H.7 SFRSYM    DATA     BIT       IE_WDOG
+      000000C2H   SFRSYM    DATA     BYTE      SBAUD1
+      000000C0H.0 SFRSYM    DATA     BIT       U1RI
+      0000009CH   SFRSYM    DATA     BYTE      PWM_DATA1
+      000000CBH   SFRSYM    DATA     BYTE      RCAP2H
+      00000090H.7 SFRSYM    DATA     BIT       TXD1
+      0000009BH   SFRSYM    DATA     BYTE      PWM_DATA2
+      000000B8H.4 SFRSYM    DATA     BIT       PS
+      00000081H   SFRSYM    DATA     BYTE      SP
+      000000C0H.1 SFRSYM    DATA     BIT       U1TI
+      00000090H.1 SFRSYM    DATA     BIT       T2EX
+      000000D8H   SFRSYM    DATA     BYTE      USB_INT_FG
+      00000091H   SFRSYM    DATA     BYTE      USB_C_CTRL
+      000000D0H.2 SFRSYM    DATA     BIT       OV
+      000000CAH   SFRSYM    DATA     BYTE      RCAP2L
+      00000090H.5 SFRSYM    DATA     BIT       PWM1
+      000000B0H.4 SFRSYM    DATA     BIT       PWM2
+      000000C8H.1 SFRSYM    DATA     BIT       C_T2
+      000000E1H   SFRSYM    DATA     BYTE      USB_INT_EN
+      000000C8H.5 SFRSYM    DATA     BIT       RCLK
+      000000E8H.1 SFRSYM    DATA     BIT       IE_TKEY
+      000000D8H.1 SFRSYM    DATA     BIT       UIF_TRANSFER
+      000000C8H.4 SFRSYM    DATA     BIT       TCLK
+      00000080H.7 SFRSYM    DATA     BIT       CMPO
+      00000099H   SFRSYM    DATA     BYTE      SBUF
+      00000087H   SFRSYM    DATA     BYTE      PCON
+      000000DCH   SFRSYM    DATA     BYTE      UEP0_CTRL
+      000000D2H   SFRSYM    DATA     BYTE      UEP1_CTRL
+      000000D4H   SFRSYM    DATA     BYTE      UEP2_CTRL
+      000000FAH   SFRSYM    DATA     BYTE      SPI0_CTRL
+      00000098H   SFRSYM    DATA     BYTE      SCON
+      000000D6H   SFRSYM    DATA     BYTE      UEP3_CTRL
+      00000089H   SFRSYM    DATA     BYTE      TMOD
+      00000088H   SFRSYM    DATA     BYTE      TCON
+      00000092H   SFRSYM    DATA     BYTE      P1_MOD_OC
+      000000DEH   SFRSYM    DATA     BYTE      UEP4_CTRL
+      000000DBH   SFRSYM    DATA     BYTE      USB_RX_LEN
+      00000096H   SFRSYM    DATA     BYTE      P3_MOD_OC
+      000000E8H.3 SFRSYM    DATA     BIT       IE_ADC
+      00000080H.5 SFRSYM    DATA     BIT       ADC_IF
+      00000080H.4 SFRSYM    DATA     BIT       ADC_START
+      00000090H.5 SFRSYM    DATA     BIT       MOSI
+      00000090H.6 SFRSYM    DATA     BIT       MISO
+      000000C0H.5 SFRSYM    DATA     BIT       U1SMOD
+      000000F8H.0 SFRSYM    DATA     BIT       S0_R_FIFO
+      000000F8H   SFRSYM    DATA     BYTE      SPI0_STAT
+      000000E8H.5 SFRSYM    DATA     BIT       IE_PWMX
+      000000DAH   SFRSYM    DATA     BYTE      USB_MIS_ST
+      000000F8H.2 SFRSYM    DATA     BIT       S0_T_FIFO
+      00000088H.1 SFRSYM    DATA     BIT       IE0
+      000000D9H   SFRSYM    DATA     BYTE      USB_INT_ST
+      00000088H.3 SFRSYM    DATA     BIT       IE1
+      000000A9H   SFRSYM    DATA     BYTE      WAKE_CTRL
+      000000C5H   SFRSYM    DATA     BYTE      TKEY_DATH
+      000000F0H   SFRSYM    DATA     BYTE      B
+      0000009FH   SFRSYM    DATA     BYTE      ADC_DATA
+      000000C8H.0 SFRSYM    DATA     BIT       CP_RL2
+      000000C4H   SFRSYM    DATA     BYTE      TKEY_DATL
+      00000093H   SFRSYM    DATA     BYTE      P1_DIR_PU
+      000000E0H   SFRSYM    DATA     BYTE      ACC
+      00000097H   SFRSYM    DATA     BYTE      P3_DIR_PU
+      000000A8H.1 SFRSYM    DATA     BIT       ET0
+      00000088H.5 SFRSYM    DATA     BIT       TF0
+      000000A8H.3 SFRSYM    DATA     BIT       ET1
+      00000088H.7 SFRSYM    DATA     BIT       TF1
+      000000A8H.5 SFRSYM    DATA     BIT       ET2
+      000000D1H   SFRSYM    DATA     BYTE      UDEV_CTRL
+      000000C8H.7 SFRSYM    DATA     BIT       CAP1F
+      000000C8H.7 SFRSYM    DATA     BIT       TF2
+      00000098H.2 SFRSYM    DATA     BIT       RB8
+      0000008CH   SFRSYM    DATA     BYTE      TH0
+      0000008DH   SFRSYM    DATA     BYTE      TH1
+      00000088H.0 SFRSYM    DATA     BIT       IT0
+      000000A8H.0 SFRSYM    DATA     BIT       EX0
+      000000ECH   SFRSYM    DATA     WORD      UEP0_DMA
+      000000CDH   SFRSYM    DATA     BYTE      TH2
+      00000098H.3 SFRSYM    DATA     BIT       TB8
+      00000088H.2 SFRSYM    DATA     BIT       IT1
+      00000090H.2 SFRSYM    DATA     BIT       RXD_
+      000000A8H.2 SFRSYM    DATA     BIT       EX1
+      000000EEH   SFRSYM    DATA     WORD      UEP1_DMA
+      000000D0H.0 SFRSYM    DATA     BIT       P
+      000000E4H   SFRSYM    DATA     WORD      UEP2_DMA
+      00000080H.6 SFRSYM    DATA     BIT       CMP_IF
+      00000098H.7 SFRSYM    DATA     BIT       SM0
+      0000008AH   SFRSYM    DATA     BYTE      TL0
+      00000090H.3 SFRSYM    DATA     BIT       TXD_
+      000000E6H   SFRSYM    DATA     WORD      UEP3_DMA
+      00000098H.6 SFRSYM    DATA     BIT       SM1
+      0000008BH   SFRSYM    DATA     BYTE      TL1
+      000000CCH   SFRSYM    DATA     BYTE      TL2
+      00000098H.5 SFRSYM    DATA     BIT       SM2
+      000000C0H.2 SFRSYM    DATA     BIT       U1RB8
+      000000B8H.1 SFRSYM    DATA     BIT       PT0
+      000000C3H   SFRSYM    DATA     BYTE      TKEY_CTRL
+      000000C0H.3 SFRSYM    DATA     BIT       U1TB8
+      000000CFH   SFRSYM    DATA     BYTE      T2CAP1H
+      000000B8H.3 SFRSYM    DATA     BIT       PT1
+      000000D0H.3 SFRSYM    DATA     BIT       RS0
+      00000088H.4 SFRSYM    DATA     BIT       TR0
+      000000B8H.5 SFRSYM    DATA     BIT       PT2
+      000000D0H.4 SFRSYM    DATA     BIT       RS1
+      000000C0H.7 SFRSYM    DATA     BIT       U1SM0
+      00000088H.6 SFRSYM    DATA     BIT       TR1
+      000000C8H.2 SFRSYM    DATA     BIT       TR2
+      000000B8H.0 SFRSYM    DATA     BIT       PX0
+      000000CEH   SFRSYM    DATA     BYTE      T2CAP1L
+      000000CAH   SFRSYM    DATA     WORD      RCAP2
+      000000E8H.2 SFRSYM    DATA     BIT       IE_USB
+      000000B8H.2 SFRSYM    DATA     BIT       PX1
+      00000080H.3 SFRSYM    DATA     BIT       CMP_CHAN
+      0000009EH   SFRSYM    DATA     BYTE      PWM_CK_SE
+      00000083H   SFRSYM    DATA     BYTE      DPH
+      000000F8H.5 SFRSYM    DATA     BIT       S0_IF_FIRST
+      000000E8H.4 SFRSYM    DATA     BIT       IE_UART1
+      00000080H   SFRSYM    DATA     BYTE      ADC_CTRL
+      00000082H   SFRSYM    DATA     BYTE      DPL
+      00000090H.7 SFRSYM    DATA     BIT       SCK
+      000000A1H   SFRSYM    DATA     BYTE      SAFE_MOD
+      000000C1H   SFRSYM    DATA     BYTE      SBUF1
+      00000090H.4 SFRSYM    DATA     BIT       SPI_CS
+      000000C8H.3 SFRSYM    DATA     BIT       EXEN2
+      000000B1H   SFRSYM    DATA     BYTE      GLOBAL_CFG
+      000000C0H   SFRSYM    DATA     BYTE      SCON1
+      00000098H.4 SFRSYM    DATA     BIT       REN
+      00000090H.4 SFRSYM    DATA     BIT       CAP1_
+      00000090H.4 SFRSYM    DATA     BIT       T2_
+      000000B0H.7 SFRSYM    DATA     BIT       UDM
+      000000C9H   SFRSYM    DATA     BYTE      T2MOD
+      000000C8H   SFRSYM    DATA     BYTE      T2CON
+      000000B0H.6 SFRSYM    DATA     BIT       UDP
+      00000090H.4 SFRSYM    DATA     BIT       SCS
+      000000D8H.2 SFRSYM    DATA     BIT       UIF_SUSPEND
+      0000008EH   SFRSYM    DATA     WORD      ROM_DATA
+      00000084H   SFRSYM    DATA     WORD      ROM_ADDR
+      000000C0H.4 SFRSYM    DATA     BIT       U1REN
+      000000B0H.0 SFRSYM    DATA     BIT       RXD
+      000000D8H.4 SFRSYM    DATA     BIT       UIF_FIFO_OV
+      000000B0H.1 SFRSYM    DATA     BIT       TXD
+      000000EBH   SFRSYM    DATA     BYTE      UEP2_3_MOD
+      000000EAH   SFRSYM    DATA     BYTE      UEP4_1_MOD
+      000000B0H.2 SFRSYM    DATA     BIT       VBUS1
+      00000090H.1 SFRSYM    DATA     BIT       VBUS2
+      00000080H.0 SFRSYM    DATA     BIT       ADC_CHAN0
+      00000080H.1 SFRSYM    DATA     BIT       ADC_CHAN1
+      000000C6H   SFRSYM    DATA     BYTE      PIN_FUNC
+      000000D0H.5 SFRSYM    DATA     BIT       F0
+      00000090H.1 SFRSYM    DATA     BIT       Key_ModeSelect
+      000000EDH   SFRSYM    DATA     BYTE      UEP0_DMA_H
+      000000D0H.1 SFRSYM    DATA     BIT       F1
+      000000EFH   SFRSYM    DATA     BYTE      UEP1_DMA_H
+      000000E5H   SFRSYM    DATA     BYTE      UEP2_DMA_H
+      000000C4H   SFRSYM    DATA     WORD      TKEY_DAT
+      000000F8H.6 SFRSYM    DATA     BIT       S0_IF_OV
+      000000E7H   SFRSYM    DATA     BYTE      UEP3_DMA_H
+      0000009AH   SFRSYM    DATA     BYTE      ADC_CFG
+      000000ECH   SFRSYM    DATA     BYTE      UEP0_DMA_L
+      000000D0H   SFRSYM    DATA     BYTE      PSW
+      000000EEH   SFRSYM    DATA     BYTE      UEP1_DMA_L
+      000000E4H   SFRSYM    DATA     BYTE      UEP2_DMA_L
+      000000E6H   SFRSYM    DATA     BYTE      UEP3_DMA_L
+      010018CAH   SYMBOL    CONST    ---       _?ix1000
+      010018DEH   SYMBOL    CONST    ---       _?ix1001
+
+      010013FAH   BLOCK     CODE     ---       LVL=0
+      010013FAH   LINE      CODE     ---       #249
+      010013FAH   LINE      CODE     ---       #250
+      010013FAH   LINE      CODE     ---       #251
+      010013FDH   LINE      CODE     ---       #252
+      01001400H   LINE      CODE     ---       #253
+      01001403H   LINE      CODE     ---       #254
+      01001405H   LINE      CODE     ---       #255
+      01001408H   LINE      CODE     ---       #256
+      0100140BH   LINE      CODE     ---       #257
+      0100140EH   LINE      CODE     ---       #258
+      01001411H   LINE      CODE     ---       #260
+      0100141DH   LINE      CODE     ---       #261
+      01001420H   LINE      CODE     ---       #262
+      01001423H   LINE      CODE     ---       #263
+      0100142FH   LINE      CODE     ---       #264
+      01001432H   LINE      CODE     ---       #265
+      01001434H   LINE      CODE     ---       #266
+      01001436H   LINE      CODE     ---       #267
+      01001442H   LINE      CODE     ---       #268
+      01001445H   LINE      CODE     ---       #269
+      01001448H   LINE      CODE     ---       #270
+      0100144AH   LINE      CODE     ---       #273
+      0100144DH   LINE      CODE     ---       #274
+      01001450H   LINE      CODE     ---       #275
+      01001453H   LINE      CODE     ---       #276
+      01001456H   LINE      CODE     ---       #277
+      01001458H   LINE      CODE     ---       #278
+      0100145AH   LINE      CODE     ---       #279
+      ---         BLOCKEND  ---      ---       LVL=0
+
+      010016FAH   BLOCK     CODE     ---       LVL=0
+      010016FAH   LINE      CODE     ---       #293
+      010016FAH   LINE      CODE     ---       #294
+      010016FAH   LINE      CODE     ---       #295
+      010016FDH   LINE      CODE     ---       #296
+      01001700H   LINE      CODE     ---       #297
+      01001703H   LINE      CODE     ---       #298
+      01001706H   LINE      CODE     ---       #299
+      01001709H   LINE      CODE     ---       #300
+      ---         BLOCKEND  ---      ---       LVL=0
+
+      0100169FH   BLOCK     CODE     ---       LVL=0
+      0100169FH   BLOCK     CODE     NEAR LAB  LVL=1
+      00000007H   SYMBOL    DATA     BYTE      FlashStatus
+      ---         BLOCKEND  ---      ---       LVL=1
+      0100169FH   LINE      CODE     ---       #309
+      0100169FH   LINE      CODE     ---       #310
+      0100169FH   LINE      CODE     ---       #313
+      010016A1H   LINE      CODE     ---       #314
+      010016A7H   LINE      CODE     ---       #315
+      010016AFH   LINE      CODE     ---       #316
+      010016B1H   LINE      CODE     ---       #318
+      010016B1H   LINE      CODE     ---       #319
+      ---         BLOCKEND  ---      ---       LVL=0
+
+      0100175AH   BLOCK     CODE     ---       LVL=0
+      0100175AH   LINE      CODE     ---       #328
+      0100175AH   LINE      CODE     ---       #329
+      0100175AH   LINE      CODE     ---       #330
+      01001761H   LINE      CODE     ---       #331
+      ---         BLOCKEND  ---      ---       LVL=0
+
+      0100170AH   BLOCK     CODE     ---       LVL=0
+      00000007H   SYMBOL    DATA     BYTE      status
+      0100170AH   LINE      CODE     ---       #340
+      0100170AH   LINE      CODE     ---       #341
+      0100170AH   LINE      CODE     ---       #342
+      0100170CH   LINE      CODE     ---       #343
+      01001712H   LINE      CODE     ---       #344
+      01001717H   LINE      CODE     ---       #345
+      01001719H   LINE      CODE     ---       #346
+      ---         BLOCKEND  ---      ---       LVL=0
+
+      01001744H   BLOCK     CODE     ---       LVL=0
+      01001744H   LINE      CODE     ---       #355
+      01001744H   LINE      CODE     ---       #356
+      01001744H   LINE      CODE     ---       #357
+      01001746H   LINE      CODE     ---       #358
+      0100174CH   LINE      CODE     ---       #359
+      0100174EH   LINE      CODE     ---       #360
+      ---         BLOCKEND  ---      ---       LVL=0
+
+      0100174FH   BLOCK     CODE     ---       LVL=0
+      0100174FH   LINE      CODE     ---       #369
+      0100174FH   LINE      CODE     ---       #370
+      0100174FH   LINE      CODE     ---       #371
+      01001751H   LINE      CODE     ---       #372
+      01001757H   LINE      CODE     ---       #373
+      01001759H   LINE      CODE     ---       #374
+      ---         BLOCKEND  ---      ---       LVL=0
+
+      0100171AH   BLOCK     CODE     ---       LVL=0
+      0100171AH   BLOCK     CODE     NEAR LAB  LVL=1
+      00000007H   SYMBOL    DATA     BYTE      WRENStatus
+      ---         BLOCKEND  ---      ---       LVL=1
+      0100171AH   LINE      CODE     ---       #383
+      0100171AH   LINE      CODE     ---       #384
+      0100171AH   LINE      CODE     ---       #387
+      0100171DH   LINE      CODE     ---       #388
+      01001724H   LINE      CODE     ---       #389
+      01001724H   LINE      CODE     ---       #390
+      01001727H   LINE      CODE     ---       #391
+      01001727H   LINE      CODE     ---       #392
+      ---         BLOCKEND  ---      ---       LVL=0
+
+      0100150DH   BLOCK     CODE     ---       LVL=0
+      0200000DH   SYMBOL    XDATA    DWORD     Dst_Addr
+      0100150DH   LINE      CODE     ---       #401
+      01001513H   LINE      CODE     ---       #402
+      01001513H   LINE      CODE     ---       #403
+      01001516H   LINE      CODE     ---       #404
+      01001518H   LINE      CODE     ---       #405
+      0100151EH   LINE      CODE     ---       #406
+      01001536H   LINE      CODE     ---       #407
+      0100154DH   LINE      CODE     ---       #408
+      01001560H   LINE      CODE     ---       #409
+      01001562H   LINE      CODE     ---       #410
+      ---         BLOCKEND  ---      ---       LVL=0
+      00000003H   SYMBOL    DATA     BYTE      dat
+
+      0100118EH   BLOCK     CODE     ---       LVL=0
+      0200000CH   SYMBOL    XDATA    DWORD     StarAddr
+      02000010H   SYMBOL    XDATA    WORD      Len
+      02000012H   SYMBOL    XDATA    ---       RcvBuffer
+      01001194H   BLOCK     CODE     NEAR LAB  LVL=1
+      00000006H   SYMBOL    DATA     WORD      i
+      ---         BLOCKEND  ---      ---       LVL=1
+      0100118EH   LINE      CODE     ---       #465
+      01001194H   LINE      CODE     ---       #466
+      01001194H   LINE      CODE     ---       #469
+      01001196H   LINE      CODE     ---       #470
+      0100119CH   LINE      CODE     ---       #471
+      010011B4H   LINE      CODE     ---       #472
+      010011CBH   LINE      CODE     ---       #473
+      010011D8H   LINE      CODE     ---       #474
+      010011DEH   LINE      CODE     ---       #475
+      010011EEH   LINE      CODE     ---       #476
+      010011EEH   LINE      CODE     ---       #477
+      01001208H   LINE      CODE     ---       #478
+      0100120FH   LINE      CODE     ---       #479
+      01001211H   LINE      CODE     ---       #480
+      ---         BLOCKEND  ---      ---       LVL=0
+
+      01000FE9H   BLOCK     CODE     ---       LVL=0
+      0200000CH   SYMBOL    XDATA    DWORD     StarAddr
+      02000010H   SYMBOL    XDATA    WORD      Len
+      02000012H   SYMBOL    XDATA    ---       SendBuffer
+      01000FEFH   BLOCK     CODE     NEAR LAB  LVL=1
+      00000006H   SYMBOL    DATA     WORD      i
+      ---         BLOCKEND  ---      ---       LVL=1
+      01000FE9H   LINE      CODE     ---       #491
+      01000FEFH   LINE      CODE     ---       #492
+      01000FEFH   LINE      CODE     ---       #495
+      01000FF2H   LINE      CODE     ---       #496
+      01000FF7H   LINE      CODE     ---       #497
+      01000FFAH   LINE      CODE     ---       #499
+      01000FFCH   LINE      CODE     ---       #500
+      01001002H   LINE      CODE     ---       #501
+      0100101AH   LINE      CODE     ---       #502
+      01001031H   LINE      CODE     ---       #503
+      01001042H   LINE      CODE     ---       #504
+      01001052H   LINE      CODE     ---       #505
+      01001052H   LINE      CODE     ---       #506
+      01001069H   LINE      CODE     ---       #507
+      01001070H   LINE      CODE     ---       #508
+      01001072H   LINE      CODE     ---       #509
+      01001075H   LINE      CODE     ---       #510
+      ---         BLOCKEND  ---      ---       LVL=0
+      00000007H   SYMBOL    DATA     BYTE      FunctionKey
+      00000005H   SYMBOL    DATA     BYTE      Key
+
+      01000F59H   BLOCK     CODE     VOID      LVL=0
+      ---         BLOCKEND  ---      ---       LVL=0
+
+      01000F6FH   BLOCK     CODE     ---       LVL=0
+      00000007H   SYMBOL    DATA     BYTE      Case
+      01000F6FH   LINE      CODE     ---       #696
+      01000F6FH   LINE      CODE     ---       #697
+      01000F6FH   LINE      CODE     ---       #698
+      01000FACH   LINE      CODE     ---       #699
+      01000FACH   LINE      CODE     ---       #700
+      01000FACH   LINE      CODE     ---       #701
+      01000FACH   LINE      CODE     ---       #702
+      01000FACH   LINE      CODE     ---       #703
+      01000FACH   LINE      CODE     ---       #704
+      01000FAEH   LINE      CODE     ---       #705
+      01000FAEH   LINE      CODE     ---       #706
+      01000FB3H   LINE      CODE     ---       #707
+      01000FB4H   LINE      CODE     ---       #708
+      01000FB4H   LINE      CODE     ---       #709
+      01000FB4H   LINE      CODE     ---       #710
+      01000FB4H   LINE      CODE     ---       #711
+      01000FB4H   LINE      CODE     ---       #713
+      01000FB4H   LINE      CODE     ---       #714
+      01000FB6H   LINE      CODE     ---       #715
+      01000FB6H   LINE      CODE     ---       #716
+      01000FB6H   LINE      CODE     ---       #717
+      01000FB6H   LINE      CODE     ---       #718
+      01000FB6H   LINE      CODE     ---       #720
+      01000FB6H   LINE      CODE     ---       #721
+      01000FB8H   LINE      CODE     ---       #722
+      01000FB8H   LINE      CODE     ---       #723
+      01000FB8H   LINE      CODE     ---       #724
+      01000FBBH   LINE      CODE     ---       #725
+      01000FBDH   LINE      CODE     ---       #727
+      01000FBDH   LINE      CODE     ---       #728
+      01000FBFH   LINE      CODE     ---       #729
+      01000FBFH   LINE      CODE     ---       #730
+      01000FBFH   LINE      CODE     ---       #731
+      01000FC2H   LINE      CODE     ---       #732
+      01000FC2H   LINE      CODE     ---       #734
+      01000FC2H   LINE      CODE     ---       #735
+      01000FC4H   LINE      CODE     ---       #736
+      01000FC4H   LINE      CODE     ---       #737
+      01000FC4H   LINE      CODE     ---       #738
+      01000FC7H   LINE      CODE     ---       #739
+      01000FC9H   LINE      CODE     ---       #741
+      01000FCCH   LINE      CODE     ---       #743
+      01000FCCH   LINE      CODE     ---       #744
+      01000FCEH   LINE      CODE     ---       #745
+      01000FCEH   LINE      CODE     ---       #746
+      01000FD1H   LINE      CODE     ---       #747
+      01000FD3H   LINE      CODE     ---       #748
+      01000FD6H   LINE      CODE     ---       #750
+      01000FDCH   LINE      CODE     ---       #751
+      01000FDDH   LINE      CODE     ---       #752
+      01000FE0H   LINE      CODE     ---       #754
+      01000FE2H   LINE      CODE     ---       #756
+      01000FE8H   LINE      CODE     ---       #757
+      01000FE8H   LINE      CODE     ---       #758
+      01000FE8H   LINE      CODE     ---       #759
+      01000FE8H   LINE      CODE     ---       #760
+      01000FE8H   LINE      CODE     ---       #761
+      ---         BLOCKEND  ---      ---       LVL=0
+
+      01000003H   BLOCK     CODE     ---       LVL=0
+      01000003H   LINE      CODE     ---       #764
+      01000003H   LINE      CODE     ---       #765
+      01000003H   LINE      CODE     ---       #766
+      01000011H   LINE      CODE     ---       #767
+      0100002BH   LINE      CODE     ---       #768
+      01000035H   LINE      CODE     ---       #769
+      0100003AH   LINE      CODE     ---       #770
+      0100003EH   LINE      CODE     ---       #771
+      01000042H   LINE      CODE     ---       #772
+      ---         BLOCKEND  ---      ---       LVL=0
+
+      0100130DH   BLOCK     CODE     ---       LVL=0
+      0100130DH   LINE      CODE     ---       #775
+      0100130DH   LINE      CODE     ---       #776
+      0100130DH   LINE      CODE     ---       #777
+      01001310H   LINE      CODE     ---       #778
+      01001310H   LINE      CODE     ---       #779
+      0100131EH   LINE      CODE     ---       #780
+      01001338H   LINE      CODE     ---       #781
+      01001342H   LINE      CODE     ---       #782
+      01001342H   LINE      CODE     ---       #783
+      01001342H   LINE      CODE     ---       #784
+      01001342H   LINE      CODE     ---       #785
+      01001344H   LINE      CODE     ---       #787
+      01001344H   LINE      CODE     ---       #788
+      01001352H   LINE      CODE     ---       #789
+      0100136CH   LINE      CODE     ---       #790
+      01001376H   LINE      CODE     ---       #791
+      0100137BH   LINE      CODE     ---       #792
+      0100137FH   LINE      CODE     ---       #793
+      01001383H   LINE      CODE     ---       #794
+      01001383H   LINE      CODE     ---       #795
+      ---         BLOCKEND  ---      ---       LVL=0
+
+      01000D80H   BLOCK     CODE     ---       LVL=0
+      01000D80H   LINE      CODE     ---       #798
+      01000D80H   LINE      CODE     ---       #799
+      01000D80H   LINE      CODE     ---       #800
+      01000DC1H   LINE      CODE     ---       #801
+      01000E57H   LINE      CODE     ---       #802
+      01000E74H   LINE      CODE     ---       #803
+      01000E79H   LINE      CODE     ---       #804
+      01000E7DH   LINE      CODE     ---       #805
+      01000E81H   LINE      CODE     ---       #806
+      01000E83H   LINE      CODE     ---       #807
+      ---         BLOCKEND  ---      ---       LVL=0
+
+      01001565H   BLOCK     CODE     ---       LVL=0
+      01001565H   LINE      CODE     ---       #810
+      01001565H   LINE      CODE     ---       #811
+      01001565H   LINE      CODE     ---       #812
+      0100156CH   LINE      CODE     ---       #813
+      0100156CH   LINE      CODE     ---       #814
+      0100158FH   LINE      CODE     ---       #815
+      0100159DH   LINE      CODE     ---       #816
+      010015A2H   LINE      CODE     ---       #817
+      010015A6H   LINE      CODE     ---       #818
+      010015AAH   LINE      CODE     ---       #819
+      010015ABH   LINE      CODE     ---       #821
+      010015ABH   LINE      CODE     ---       #822
+      010015ABH   LINE      CODE     ---       #823
+      010015ABH   LINE      CODE     ---       #824
+      010015ABH   LINE      CODE     ---       #825
+      010015ABH   LINE      CODE     ---       #826
+      010015AEH   LINE      CODE     ---       #827
+      010015AEH   LINE      CODE     ---       #828
+      ---         BLOCKEND  ---      ---       LVL=0
+
+      01001384H   BLOCK     CODE     ---       LVL=0
+      01001384H   LINE      CODE     ---       #831
+      01001384H   LINE      CODE     ---       #832
+      01001384H   LINE      CODE     ---       #833
+      0100138AH   LINE      CODE     ---       #834
+      0100138AH   LINE      CODE     ---       #835
+      0100138EH   LINE      CODE     ---       #836
+      01001390H   LINE      CODE     ---       #837
+      01001394H   LINE      CODE     ---       #838
+      01001397H   LINE      CODE     ---       #839
+      0100139DH   LINE      CODE     ---       #840
+      010013A0H   LINE      CODE     ---       #841
+      010013A2H   LINE      CODE     ---       #842
+      010013A4H   LINE      CODE     ---       #843
+      010013A6H   LINE      CODE     ---       #844
+      010013A9H   LINE      CODE     ---       #845
+      010013ABH   LINE      CODE     ---       #846
+      010013ADH   LINE      CODE     ---       #847
+      010013AFH   LINE      CODE     ---       #848
+      010013B1H   LINE      CODE     ---       #849
+      010013B7H   LINE      CODE     ---       #850
+      010013B8H   LINE      CODE     ---       #851
+      010013B8H   LINE      CODE     ---       #852
+      010013B8H   LINE      CODE     ---       #853
+      010013B8H   LINE      CODE     ---       #854
+      010013B8H   LINE      CODE     ---       #855
+      010013B8H   LINE      CODE     ---       #856
+      010013B8H   LINE      CODE     ---       #857
+      010013BAH   LINE      CODE     ---       #859
+      010013BAH   LINE      CODE     ---       #860
+      010013BEH   LINE      CODE     ---       #861
+      010013C0H   LINE      CODE     ---       #862
+      010013C4H   LINE      CODE     ---       #863
+      010013C7H   LINE      CODE     ---       #864
+      010013C9H   LINE      CODE     ---       #865
+      010013CBH   LINE      CODE     ---       #866
+      010013CDH   LINE      CODE     ---       #867
+      010013CFH   LINE      CODE     ---       #868
+      010013D1H   LINE      CODE     ---       #869
+      010013D4H   LINE      CODE     ---       #870
+      010013D6H   LINE      CODE     ---       #871
+      010013D8H   LINE      CODE     ---       #872
+      010013DAH   LINE      CODE     ---       #873
+      010013DCH   LINE      CODE     ---       #874
+      010013DEH   LINE      CODE     ---       #875
+      010013E0H   LINE      CODE     ---       #876
+      010013E2H   LINE      CODE     ---       #877
+      010013E4H   LINE      CODE     ---       #878
+      010013E6H   LINE      CODE     ---       #879
+      010013E8H   LINE      CODE     ---       #880
+      010013F4H   LINE      CODE     ---       #881
+      010013F9H   LINE      CODE     ---       #882
+      010013F9H   LINE      CODE     ---       #883
+      ---         BLOCKEND  ---      ---       LVL=0
+
+      010016D6H   BLOCK     CODE     ---       LVL=0
+      010016D6H   LINE      CODE     ---       #886
+      010016D6H   LINE      CODE     ---       #887
+      010016D6H   LINE      CODE     ---       #888
+      010016D8H   LINE      CODE     ---       #889
+      010016DAH   LINE      CODE     ---       #890
+      010016DFH   LINE      CODE     ---       #891
+      010016E3H   LINE      CODE     ---       #892
+      010016E7H   LINE      CODE     ---       #893
+      ---         BLOCKEND  ---      ---       LVL=0
+
+      01001728H   BLOCK     CODE     ---       LVL=0
+      01001728H   LINE      CODE     ---       #896
+      01001728H   LINE      CODE     ---       #897
+      01001728H   LINE      CODE     ---       #898
+      0100172DH   LINE      CODE     ---       #899
+      01001731H   LINE      CODE     ---       #900
+      01001735H   LINE      CODE     ---       #901
+      ---         BLOCKEND  ---      ---       LVL=0
+
+      01000B0EH   BLOCK     CODE     ---       LVL=0
+      01000B0EH   BLOCK     CODE     NEAR LAB  LVL=1
+      0200000BH   SYMBOL    XDATA    BYTE      i
+      0200000CH   SYMBOL    XDATA    BYTE      num
+      ---         BLOCKEND  ---      ---       LVL=1
+      01000B0EH   LINE      CODE     ---       #904
+      01000B0EH   LINE      CODE     ---       #905
+      01000B0EH   LINE      CODE     ---       #908
+      01000B4FH   LINE      CODE     ---       #909
+      01000BE5H   LINE      CODE     ---       #910
+      01000C02H   LINE      CODE     ---       #911
+      01000C1EH   LINE      CODE     ---       #912
+      01000C1EH   LINE      CODE     ---       #913
+      01000C25H   LINE      CODE     ---       #914
+      01000C38H   LINE      CODE     ---       #915
+      01000C66H   LINE      CODE     ---       #916
+      01000C66H   LINE      CODE     ---       #917
+      01000C6BH   LINE      CODE     ---       #918
+      01000C6FH   LINE      CODE     ---       #919
+      01000C73H   LINE      CODE     ---       #920
+      ---         BLOCKEND  ---      ---       LVL=0
+
+      010016E8H   BLOCK     CODE     ---       LVL=0
+      010016E8H   LINE      CODE     ---       #923
+      010016E8H   LINE      CODE     ---       #924
+      010016E8H   LINE      CODE     ---       #925
+      010016EAH   LINE      CODE     ---       #926
+      010016ECH   LINE      CODE     ---       #927
+      010016F1H   LINE      CODE     ---       #928
+      010016F5H   LINE      CODE     ---       #929
+      010016F9H   LINE      CODE     ---       #930
+      ---         BLOCKEND  ---      ---       LVL=0
+
+      01001736H   BLOCK     CODE     ---       LVL=0
+      01001736H   LINE      CODE     ---       #933
+      01001736H   LINE      CODE     ---       #934
+      01001736H   LINE      CODE     ---       #935
+      0100173BH   LINE      CODE     ---       #936
+      0100173FH   LINE      CODE     ---       #937
+      01001743H   LINE      CODE     ---       #940
+      ---         BLOCKEND  ---      ---       LVL=0
+
+      010015AFH   BLOCK     CODE     ---       LVL=0
+      010015AFH   LINE      CODE     ---       #942
+      010015AFH   LINE      CODE     ---       #943
+      010015AFH   LINE      CODE     ---       #944
+      010015B6H   LINE      CODE     ---       #945
+      010015B6H   LINE      CODE     ---       #946
+      010015CFH   LINE      CODE     ---       #947
+      010015D9H   LINE      CODE     ---       #948
+      010015E7H   LINE      CODE     ---       #949
+      010015ECH   LINE      CODE     ---       #950
+      010015F0H   LINE      CODE     ---       #951
+      010015F4H   LINE      CODE     ---       #952
+      010015F5H   LINE      CODE     ---       #954
+      010015F5H   LINE      CODE     ---       #955
+      010015F5H   LINE      CODE     ---       #956
+      010015F5H   LINE      CODE     ---       #957
+      010015F5H   LINE      CODE     ---       #958
+      010015F5H   LINE      CODE     ---       #959
+      010015F8H   LINE      CODE     ---       #960
+      010015F8H   LINE      CODE     ---       #961
+      ---         BLOCKEND  ---      ---       LVL=0
+
+      0100145BH   BLOCK     CODE     ---       LVL=0
+      0100145BH   BLOCK     CODE     NEAR LAB  LVL=1
+      0200000BH   SYMBOL    XDATA    ---       TOC
+      ---         BLOCKEND  ---      ---       LVL=1
+      0100145BH   LINE      CODE     ---       #963
+      0100145BH   LINE      CODE     ---       #964
+      0100145BH   LINE      CODE     ---       #965
+      01001474H   LINE      CODE     ---       #969
+      01001482H   LINE      CODE     ---       #970
+      0100149CH   LINE      CODE     ---       #971
+      010014A6H   LINE      CODE     ---       #972
+      010014ABH   LINE      CODE     ---       #973
+      010014AFH   LINE      CODE     ---       #974
+      010014B3H   LINE      CODE     ---       #975
+      ---         BLOCKEND  ---      ---       LVL=0
+
+      010014B4H   BLOCK     CODE     ---       LVL=0
+      010014B4H   BLOCK     CODE     NEAR LAB  LVL=1
+      0200000BH   SYMBOL    XDATA    ---       TOC
+      ---         BLOCKEND  ---      ---       LVL=1
+      010014B4H   LINE      CODE     ---       #977
+      010014B4H   LINE      CODE     ---       #978
+      010014B4H   LINE      CODE     ---       #979
+      010014CDH   LINE      CODE     ---       #989
+      010014DBH   LINE      CODE     ---       #990
+      010014F5H   LINE      CODE     ---       #991
+      010014FFH   LINE      CODE     ---       #992
+      01001504H   LINE      CODE     ---       #993
+      01001508H   LINE      CODE     ---       #994
+      0100150CH   LINE      CODE     ---       #995
+      ---         BLOCKEND  ---      ---       LVL=0
+
+      01001104H   BLOCK     CODE     ---       LVL=0
+      01001104H   LINE      CODE     ---       #998
+      01001104H   LINE      CODE     ---       #999
+      01001104H   LINE      CODE     ---       #1000
+      01001138H   LINE      CODE     ---       #1001
+      01001138H   LINE      CODE     ---       #1002
+      01001138H   LINE      CODE     ---       #1003
+      0100113BH   LINE      CODE     ---       #1004
+      0100113BH   LINE      CODE     ---       #1005
+      0100113BH   LINE      CODE     ---       #1006
+      0100113EH   LINE      CODE     ---       #1007
+      0100113EH   LINE      CODE     ---       #1008
+      0100113EH   LINE      CODE     ---       #1009
+      01001141H   LINE      CODE     ---       #1010
+      01001141H   LINE      CODE     ---       #1011
+      01001141H   LINE      CODE     ---       #1012
+      01001144H   LINE      CODE     ---       #1013
+      01001144H   LINE      CODE     ---       #1014
+      01001144H   LINE      CODE     ---       #1015
+      01001147H   LINE      CODE     ---       #1016
+      01001147H   LINE      CODE     ---       #1017
+      01001147H   LINE      CODE     ---       #1018
+      0100114AH   LINE      CODE     ---       #1019
+      0100114AH   LINE      CODE     ---       #1020
+      0100114AH   LINE      CODE     ---       #1021
+      0100114DH   LINE      CODE     ---       #1022
+      0100114DH   LINE      CODE     ---       #1023
+      0100114DH   LINE      CODE     ---       #1027
+      01001152H   LINE      CODE     ---       #1028
+      01001156H   LINE      CODE     ---       #1029
+      0100115AH   LINE      CODE     ---       #1030
+      0100115BH   LINE      CODE     ---       #1034
+      0100115BH   LINE      CODE     ---       #1035
+      0100115EH   LINE      CODE     ---       #1036
+      0100115EH   LINE      CODE     ---       #1037
+      0100115EH   LINE      CODE     ---       #1038
+      01001161H   LINE      CODE     ---       #1039
+      01001161H   LINE      CODE     ---       #1050
+      01001161H   LINE      CODE     ---       #1051
+      01001164H   LINE      CODE     ---       #1052
+      0100116AH   LINE      CODE     ---       #1053
+      0100116BH   LINE      CODE     ---       #1054
+      0100116BH   LINE      CODE     ---       #1055
+      0100116EH   LINE      CODE     ---       #1056
+      0100116EH   LINE      CODE     ---       #1057
+      0100116EH   LINE      CODE     ---       #1058
+      01001171H   LINE      CODE     ---       #1059
+      01001171H   LINE      CODE     ---       #1060
+      01001171H   LINE      CODE     ---       #1061
+      01001174H   LINE      CODE     ---       #1062
+      01001174H   LINE      CODE     ---       #1063
+      01001174H   LINE      CODE     ---       #1064
+      0100117AH   LINE      CODE     ---       #1065
+      01001180H   LINE      CODE     ---       #1066
+      01001186H   LINE      CODE     ---       #1067
+      01001188H   LINE      CODE     ---       #1068
+      0100118DH   LINE      CODE     ---       #1069
+      0100118DH   LINE      CODE     ---       #1070
+      0100118DH   LINE      CODE     ---       #1071
+      ---         BLOCKEND  ---      ---       LVL=0
+
+      01001293H   BLOCK     CODE     ---       LVL=0
+      01001293H   LINE      CODE     ---       #1073
+      01001293H   LINE      CODE     ---       #1074
+      01001293H   LINE      CODE     ---       #1075
+      0100129AH   LINE      CODE     ---       #1076
+      0100129AH   LINE      CODE     ---       #1077
+      010012A0H   LINE      CODE     ---       #1078
+      010012A0H   LINE      CODE     ---       #1079
+      010012A6H   LINE      CODE     ---       #1080
+      010012A6H   LINE      CODE     ---       #1081
+      010012ACH   LINE      CODE     ---       #1082
+      010012ACH   LINE      CODE     ---       #1084
+      010012B3H   LINE      CODE     ---       #1085
+      010012B9H   LINE      CODE     ---       #1086
+      010012BFH   LINE      CODE     ---       #1087
+      010012C5H   LINE      CODE     ---       #1088
+      010012CCH   LINE      CODE     ---       #1089
+      010012D0H   LINE      CODE     ---       #1090
+      010012D4H   LINE      CODE     ---       #1091
+      010012D8H   LINE      CODE     ---       #1093
+      010012ECH   LINE      CODE     ---       #1094
+      010012ECH   LINE      CODE     ---       #1095
+      010012F6H   LINE      CODE     ---       #1096
+      01001300H   LINE      CODE     ---       #1097
+      01001300H   LINE      CODE     ---       #1098
+      01001302H   LINE      CODE     ---       #1099
+      01001305H   LINE      CODE     ---       #1100
+      01001305H   LINE      CODE     ---       #1105
+      01001305H   LINE      CODE     ---       #1106
+      01001307H   LINE      CODE     ---       #1108
+      01001307H   LINE      CODE     ---       #1109
+      01001309H   LINE      CODE     ---       #1111
+      0100130CH   LINE      CODE     ---       #1112
+      ---         BLOCKEND  ---      ---       LVL=0
+
+      01001212H   BLOCK     CODE     ---       LVL=0
+      01001212H   BLOCK     CODE     NEAR LAB  LVL=1
+      00000007H   SYMBOL    DATA     BYTE      i
+      ---         BLOCKEND  ---      ---       LVL=1
+      01001212H   LINE      CODE     ---       #1115
+      01001212H   LINE      CODE     ---       #1116
+      01001212H   LINE      CODE     ---       #1119
+      0100121FH   LINE      CODE     ---       #1120
+      01001221H   LINE      CODE     ---       #1121
+      01001223H   LINE      CODE     ---       #1122
+      01001226H   LINE      CODE     ---       #1123
+      01001229H   LINE      CODE     ---       #1124
+      0100122CH   LINE      CODE     ---       #1125
+      0100122FH   LINE      CODE     ---       #1126
+      01001235H   LINE      CODE     ---       #1127
+      01001239H   LINE      CODE     ---       #1128
+      0100123DH   LINE      CODE     ---       #1129
+      01001241H   LINE      CODE     ---       #1130
+      01001244H   LINE      CODE     ---       #1131
+      01001246H   LINE      CODE     ---       #1132
+      0100124CH   LINE      CODE     ---       #1133
+      01001252H   LINE      CODE     ---       #1134
+      01001258H   LINE      CODE     ---       #1135
+      01001264H   LINE      CODE     ---       #1136
+      01001264H   LINE      CODE     ---       #1137
+      0100127FH   LINE      CODE     ---       #1138
+      01001289H   LINE      CODE     ---       #1139
+      0100128CH   LINE      CODE     ---       #1140
+      0100128FH   LINE      CODE     ---       #1141
+      01001292H   LINE      CODE     ---       #1142
+      ---         BLOCKEND  ---      ---       LVL=0
+
+      01000C74H   BLOCK     CODE     ---       LVL=0
+      01000C74H   BLOCK     CODE     NEAR LAB  LVL=1
+      0200000BH   SYMBOL    XDATA    BYTE      len
+      00000007H   SYMBOL    DATA     BYTE      i
+      ---         BLOCKEND  ---      ---       LVL=1
+      01000C74H   LINE      CODE     ---       #1145
+      01000C74H   LINE      CODE     ---       #1146
+      01000C74H   LINE      CODE     ---       #1149
+      01000C8EH   LINE      CODE     ---       #1150
+      01000C8EH   LINE      CODE     ---       #1151
+      01000C94H   LINE      CODE     ---       #1152
+      01000CB6H   LINE      CODE     ---       #1153
+      01000CB8H   LINE      CODE     ---       #1155
+      01000CB8H   LINE      CODE     ---       #1156
+      01000CC3H   LINE      CODE     ---       #1157
+      01000CCDH   LINE      CODE     ---       #1158
+      01000CCFH   LINE      CODE     ---       #1159
+      01000CCFH   LINE      CODE     ---       #1160
+      01000CD2H   LINE      CODE     ---       #1161
+      01000CD2H   LINE      CODE     ---       #1162
+      01000CFCH   LINE      CODE     ---       #1163
+      01000D25H   LINE      CODE     ---       #1164
+      01000D3EH   LINE      CODE     ---       #1165
+      01000D40H   LINE      CODE     ---       #1166
+      01000D42H   LINE      CODE     ---       #1168
+      01000D42H   LINE      CODE     ---       #1169
+      01000D4EH   LINE      CODE     ---       #1170
+      01000D4EH   LINE      CODE     ---       #1171
+      01000D69H   LINE      CODE     ---       #1172
+      01000D73H   LINE      CODE     ---       #1173
+      01000D76H   LINE      CODE     ---       #1174
+      01000D76H   LINE      CODE     ---       #1175
+      01000D7CH   LINE      CODE     ---       #1176
+      01000D7FH   LINE      CODE     ---       #1177
+      ---         BLOCKEND  ---      ---       LVL=0
+
+      01000E84H   BLOCK     CODE     ---       LVL=0
+      01000E84H   BLOCK     CODE     NEAR LAB  LVL=1
+      0200000BH   SYMBOL    XDATA    BYTE      len
+      00000007H   SYMBOL    DATA     BYTE      i
+      ---         BLOCKEND  ---      ---       LVL=1
+      01000E84H   LINE      CODE     ---       #1181
+      01000E84H   LINE      CODE     ---       #1182
+      01000E84H   LINE      CODE     ---       #1185
+      01000E8AH   LINE      CODE     ---       #1186
+      01000E94H   LINE      CODE     ---       #1187
+      01000EA9H   LINE      CODE     ---       #1188
+      01000ECDH   LINE      CODE     ---       #1189
+      01000EF6H   LINE      CODE     ---       #1190
+      01000F3AH   LINE      CODE     ---       #1191
+      01000F53H   LINE      CODE     ---       #1192
+      01000F53H   LINE      CODE     ---       #1193
+      01000F55H   LINE      CODE     ---       #1194
+      01000F58H   LINE      CODE     ---       #1195
+      01000F58H   LINE      CODE     ---       #1196
+      ---         BLOCKEND  ---      ---       LVL=0
+
+      01000046H   BLOCK     CODE     ---       LVL=0
+      01000053H   BLOCK     CODE     NEAR LAB  LVL=1
+      0200000AH   SYMBOL    XDATA    BYTE      len
+      0000000FH   SYMBOL    DATA     BYTE      i
+      020000CAH   SYMBOL    XDATA    BYTE      SetupReqCode
+      020000CBH   SYMBOL    XDATA    BYTE      SetupLen
+      020000CCH   SYMBOL    XDATA    ---       pDescr
+      ---         BLOCKEND  ---      ---       LVL=1
+      01000046H   LINE      CODE     ---       #1202
+      01000053H   LINE      CODE     ---       #1208
+      01000059H   LINE      CODE     ---       #1209
+      01000059H   LINE      CODE     ---       #1210
+      0100007EH   LINE      CODE     ---       #1211
+      0100007EH   LINE      CODE     ---       #1212
+      0100007EH   LINE      CODE     ---       #1213
+      0100007EH   LINE      CODE     ---       #1214
+      01000083H   LINE      CODE     ---       #1215
+      01000088H   LINE      CODE     ---       #1217
+      01000090H   LINE      CODE     ---       #1218
+      01000093H   LINE      CODE     ---       #1219
+      01000093H   LINE      CODE     ---       #1220
+      01000093H   LINE      CODE     ---       #1221
+      01000093H   LINE      CODE     ---       #1222
+      01000099H   LINE      CODE     ---       #1223
+      01000099H   LINE      CODE     ---       #1224
+      010000A2H   LINE      CODE     ---       #1226
+      010000A2H   LINE      CODE     ---       #1227
+      010000A8H   LINE      CODE     ---       #1228
+      010000AEH   LINE      CODE     ---       #1229
+      010000B7H   LINE      CODE     ---       #1230
+      010000CCH   LINE      CODE     ---       #1231
+      010000CFH   LINE      CODE     ---       #1232
+      010000D5H   LINE      CODE     ---       #1233
+      010000D5H   LINE      CODE     ---       #1234
+      010000DEH   LINE      CODE     ---       #1235
+      010000E7H   LINE      CODE     ---       #1237
+      010000E7H   LINE      CODE     ---       #1238
+      010000E7H   LINE      CODE     ---       #1239
+      010000E7H   LINE      CODE     ---       #1240
+      010000EAH   LINE      CODE     ---       #1241
+      010000EAH   LINE      CODE     ---       #1242
+      010000EAH   LINE      CODE     ---       #1243
+      010000EAH   LINE      CODE     ---       #1244
+      010000EDH   LINE      CODE     ---       #1245
+      010000F5H   LINE      CODE     ---       #1246
+      010000FBH   LINE      CODE     ---       #1247
+      010000FEH   LINE      CODE     ---       #1248
+      010000FEH   LINE      CODE     ---       #1249
+      010000FEH   LINE      CODE     ---       #1250
+      010000FEH   LINE      CODE     ---       #1251
+      01000104H   LINE      CODE     ---       #1252
+      0100010CH   LINE      CODE     ---       #1253
+      0100010CH   LINE      CODE     ---       #1254
+      01000114H   LINE      CODE     ---       #1255
+      01000127H   LINE      CODE     ---       #1256
+      01000127H   LINE      CODE     ---       #1257
+      0100012DH   LINE      CODE     ---       #1258
+      0100012DH   LINE      CODE     ---       #1259
+      01000132H   LINE      CODE     ---       #1260
+      0100013DH   LINE      CODE     ---       #1261
+      0100013DH   LINE      CODE     ---       #1262
+      01000143H   LINE      CODE     ---       #1263
+      0100014AH   LINE      CODE     ---       #1264
+      0100014AH   LINE      CODE     ---       #1265
+      01000158H   LINE      CODE     ---       #1266
+      0100015EH   LINE      CODE     ---       #1267
+      01000167H   LINE      CODE     ---       #1268
+      01000167H   LINE      CODE     ---       #1269
+      0100016FH   LINE      CODE     ---       #1270
+      0100016FH   LINE      CODE     ---       #1271
+      01000189H   LINE      CODE     ---       #1272
+      010001A5H   LINE      CODE     ---       #1273
+      010001B6H   LINE      CODE     ---       #1274
+      010001C1H   LINE      CODE     ---       #1275
+      010001C4H   LINE      CODE     ---       #1276
+      010001C4H   LINE      CODE     ---       #1277
+      010001C7H   LINE      CODE     ---       #1279
+      010001C7H   LINE      CODE     ---       #1280
+      010001CFH   LINE      CODE     ---       #1281
+      010001FBH   LINE      CODE     ---       #1282
+      010001FBH   LINE      CODE     ---       #1283
+      010001FBH   LINE      CODE     ---       #1284
+      01000214H   LINE      CODE     ---       #1285
+      01000214H   LINE      CODE     ---       #1286
+      01000214H   LINE      CODE     ---       #1287
+      01000222H   LINE      CODE     ---       #1288
+      01000228H   LINE      CODE     ---       #1289
+      0100022BH   LINE      CODE     ---       #1290
+      0100022BH   LINE      CODE     ---       #1291
+      01000239H   LINE      CODE     ---       #1292
+      0100023FH   LINE      CODE     ---       #1293
+      01000241H   LINE      CODE     ---       #1294
+      01000241H   LINE      CODE     ---       #1295
+      0100024FH   LINE      CODE     ---       #1296
+      0100024FH   LINE      CODE     ---       #1297
+      0100024FH   LINE      CODE     ---       #1298
+      0100025DH   LINE      CODE     ---       #1299
+      01000263H   LINE      CODE     ---       #1300
+      01000265H   LINE      CODE     ---       #1301
+      01000265H   LINE      CODE     ---       #1302
+      01000273H   LINE      CODE     ---       #1303
+      01000279H   LINE      CODE     ---       #1304
+      0100027BH   LINE      CODE     ---       #1305
+      0100027BH   LINE      CODE     ---       #1306
+      01000289H   LINE      CODE     ---       #1307
+      0100028FH   LINE      CODE     ---       #1308
+      01000291H   LINE      CODE     ---       #1309
+      01000291H   LINE      CODE     ---       #1312
+      01000291H   LINE      CODE     ---       #1313
+      01000291H   LINE      CODE     ---       #1314
+      01000291H   LINE      CODE     ---       #1315
+      01000297H   LINE      CODE     ---       #1316
+      01000297H   LINE      CODE     ---       #1317
+      01000297H   LINE      CODE     ---       #1318
+      010002A5H   LINE      CODE     ---       #1319
+      010002ABH   LINE      CODE     ---       #1320
+      010002ADH   LINE      CODE     ---       #1321
+      010002ADH   LINE      CODE     ---       #1322
+      010002ADH   LINE      CODE     ---       #1323
+      010002AFH   LINE      CODE     ---       #1324
+      010002AFH   LINE      CODE     ---       #1325
+      010002AFH   LINE      CODE     ---       #1326
+      010002AFH   LINE      CODE     ---       #1327
+      010002B5H   LINE      CODE     ---       #1328
+      010002B5H   LINE      CODE     ---       #1329
+      010002B5H   LINE      CODE     ---       #1330
+      010002C2H   LINE      CODE     ---       #1331
+      010002C2H   LINE      CODE     ---       #1332
+      010002C4H   LINE      CODE     ---       #1333
+      010002C4H   LINE      CODE     ---       #1334
+      010002DEH   LINE      CODE     ---       #1335
+      010002FAH   LINE      CODE     ---       #1336
+      0100030BH   LINE      CODE     ---       #1337
+      01000316H   LINE      CODE     ---       #1338
+      01000319H   LINE      CODE     ---       #1339
+      01000319H   LINE      CODE     ---       #1340
+      01000321H   LINE      CODE     ---       #1341
+      01000324H   LINE      CODE     ---       #1342
+      01000324H   LINE      CODE     ---       #1343
+      0100032CH   LINE      CODE     ---       #1344
+      0100033CH   LINE      CODE     ---       #1345
+      0100033CH   LINE      CODE     ---       #1346
+      0100033FH   LINE      CODE     ---       #1347
+      0100033FH   LINE      CODE     ---       #1348
+      01000341H   LINE      CODE     ---       #1349
+      01000341H   LINE      CODE     ---       #1350
+      01000349H   LINE      CODE     ---       #1351
+      01000352H   LINE      CODE     ---       #1352
+      01000355H   LINE      CODE     ---       #1353
+      01000355H   LINE      CODE     ---       #1354
+      0100035FH   LINE      CODE     ---       #1355
+      0100035FH   LINE      CODE     ---       #1356
+      01000370H   LINE      CODE     ---       #1357
+      01000370H   LINE      CODE     ---       #1358
+      01000370H   LINE      CODE     ---       #1359
+      01000378H   LINE      CODE     ---       #1360
+      0100037AH   LINE      CODE     ---       #1361
+      0100037AH   LINE      CODE     ---       #1362
+      0100037DH   LINE      CODE     ---       #1363
+      0100037FH   LINE      CODE     ---       #1364
+      0100037FH   LINE      CODE     ---       #1365
+      01000387H   LINE      CODE     ---       #1366
+      0100038DH   LINE      CODE     ---       #1367
+      0100038DH   LINE      CODE     ---       #1368
+      0100038DH   LINE      CODE     ---       #1369
+      0100038FH   LINE      CODE     ---       #1370
+      0100038FH   LINE      CODE     ---       #1371
+      01000392H   LINE      CODE     ---       #1372
+      01000398H   LINE      CODE     ---       #1373
+      0100039CH   LINE      CODE     ---       #1374
+      0100039EH   LINE      CODE     ---       #1375
+      010003A0H   LINE      CODE     ---       #1376
+      010003A0H   LINE      CODE     ---       #1379
+      010003A0H   LINE      CODE     ---       #1380
+      010003A0H   LINE      CODE     ---       #1382
+      010003A0H   LINE      CODE     ---       #1383
+      010003A0H   LINE      CODE     ---       #1384
+      010003A0H   LINE      CODE     ---       #1385
+      010003A2H   LINE      CODE     ---       #1386
+      010003A2H   LINE      CODE     ---       #1387
+      010003A7H   LINE      CODE     ---       #1388
+      010003B4H   LINE      CODE     ---       #1389
+      010003B4H   LINE      CODE     ---       #1390
+      010003BAH   LINE      CODE     ---       #1391
+      010003BAH   LINE      CODE     ---       #1392
+      010003BCH   LINE      CODE     ---       #1393
+      010003BCH   LINE      CODE     ---       #1394
+      010003C1H   LINE      CODE     ---       #1395
+      010003C3H   LINE      CODE     ---       #1396
+      010003D4H   LINE      CODE     ---       #1397
+      010003D4H   LINE      CODE     ---       #1398
+      010003D7H   LINE      CODE     ---       #1399
+      010003D9H   LINE      CODE     ---       #1401
+      010003D9H   LINE      CODE     ---       #1402
+      010003DBH   LINE      CODE     ---       #1403
+      010003DBH   LINE      CODE     ---       #1404
+      010003DDH   LINE      CODE     ---       #1405
+      010003DDH   LINE      CODE     ---       #1406
+      010003DDH   LINE      CODE     ---       #1407
+      010003DFH   LINE      CODE     ---       #1408
+      010003DFH   LINE      CODE     ---       #1409
+      010003DFH   LINE      CODE     ---       #1410
+      010003DFH   LINE      CODE     ---       #1412
+      010003DFH   LINE      CODE     ---       #1413
+      010003E5H   LINE      CODE     ---       #1414
+      010003E5H   LINE      CODE     ---       #1416
+      010003EFH   LINE      CODE     ---       #1417
+      010003EFH   LINE      CODE     ---       #1418
+      010003F5H   LINE      CODE     ---       #1419
+      010003F8H   LINE      CODE     ---       #1420
+      010003FBH   LINE      CODE     ---       #1421
+      01000406H   LINE      CODE     ---       #1422
+      01000406H   LINE      CODE     ---       #1423
+      0100040CH   LINE      CODE     ---       #1424
+      0100040CH   LINE      CODE     ---       #1425
+      0100040EH   LINE      CODE     ---       #1427
+      0100040EH   LINE      CODE     ---       #1428
+      01000411H   LINE      CODE     ---       #1429
+      01000414H   LINE      CODE     ---       #1430
+      01000414H   LINE      CODE     ---       #1431
+      01000417H   LINE      CODE     ---       #1432
+      01000417H   LINE      CODE     ---       #1433
+      01000417H   LINE      CODE     ---       #1434
+      01000417H   LINE      CODE     ---       #1435
+      01000422H   LINE      CODE     ---       #1436
+      01000422H   LINE      CODE     ---       #1437
+      01000422H   LINE      CODE     ---       #1438
+      0100043CH   LINE      CODE     ---       #1439
+      01000458H   LINE      CODE     ---       #1440
+      01000469H   LINE      CODE     ---       #1441
+      01000474H   LINE      CODE     ---       #1442
+      0100047AH   LINE      CODE     ---       #1443
+      0100047DH   LINE      CODE     ---       #1444
+      0100047FH   LINE      CODE     ---       #1445
+      0100047FH   LINE      CODE     ---       #1446
+      0100048BH   LINE      CODE     ---       #1447
+      0100048BH   LINE      CODE     ---       #1448
+      0100048DH   LINE      CODE     ---       #1449
+      0100048DH   LINE      CODE     ---       #1450
+      01000490H   LINE      CODE     ---       #1451
+      01000493H   LINE      CODE     ---       #1452
+      01000495H   LINE      CODE     ---       #1453
+      01000495H   LINE      CODE     ---       #1454
+      01000495H   LINE      CODE     ---       #1455
+      01000495H   LINE      CODE     ---       #1456
+      01000495H   LINE      CODE     ---       #1457
+      01000495H   LINE      CODE     ---       #1458
+      01000498H   LINE      CODE     ---       #1459
+      0100049BH   LINE      CODE     ---       #1460
+      0100049BH   LINE      CODE     ---       #1461
+      0100049BH   LINE      CODE     ---       #1462
+      0100049BH   LINE      CODE     ---       #1463
+      0100049BH   LINE      CODE     ---       #1464
+      0100049BH   LINE      CODE     ---       #1465
+      0100049DH   LINE      CODE     ---       #1466
+      0100049FH   LINE      CODE     ---       #1467
+      010004A2H   LINE      CODE     ---       #1468
+      010004A2H   LINE      CODE     ---       #1469
+      010004ABH   LINE      CODE     ---       #1470
+      010004AEH   LINE      CODE     ---       #1471
+      010004B1H   LINE      CODE     ---       #1472
+      010004B4H   LINE      CODE     ---       #1473
+      010004B7H   LINE      CODE     ---       #1474
+      010004B9H   LINE      CODE     ---       #1475
+      010004BBH   LINE      CODE     ---       #1476
+      010004BDH   LINE      CODE     ---       #1477
+      010004C2H   LINE      CODE     ---       #1478
+      010004C4H   LINE      CODE     ---       #1479
+      010004C7H   LINE      CODE     ---       #1480
+      010004C7H   LINE      CODE     ---       #1481
+      010004C9H   LINE      CODE     ---       #1482
+      010004D0H   LINE      CODE     ---       #1483
+      010004D0H   LINE      CODE     ---       #1484
+      010004D4H   LINE      CODE     ---       #1485
+      010004D6H   LINE      CODE     ---       #1487
+      010004D6H   LINE      CODE     ---       #1488
+      010004DDH   LINE      CODE     ---       #1489
+      010004DDH   LINE      CODE     ---       #1490
+      010004DFH   LINE      CODE     ---       #1492
+      010004DFH   LINE      CODE     ---       #1494
+      010004E2H   LINE      CODE     ---       #1495
+      010004E2H   LINE      CODE     ---       #1496
+      ---         BLOCKEND  ---      ---       LVL=0
+
+      010015F9H   BLOCK     CODE     ---       LVL=0
+      010015F9H   LINE      CODE     ---       #1499
+      010015F9H   LINE      CODE     ---       #1500
+      010015F9H   LINE      CODE     ---       #1501
+      010015FCH   LINE      CODE     ---       #1502
+      01001603H   LINE      CODE     ---       #1503
+      01001606H   LINE      CODE     ---       #1505
+      01001609H   LINE      CODE     ---       #1506
+      0100160CH   LINE      CODE     ---       #1507
+      01001611H   LINE      CODE     ---       #1509
+      01001614H   LINE      CODE     ---       #1510
+      0100161AH   LINE      CODE     ---       #1518
+      0100161AH   LINE      CODE     ---       #1519
+      0100161AH   LINE      CODE     ---       #1525
+      01001621H   LINE      CODE     ---       #1526
+      ---         BLOCKEND  ---      ---       LVL=0
+
+      ---         MODULE    ---      ---       ?C_STARTUP
+      01000000H   PUBLIC    CODE     ---       ?C_STARTUP
+
+      ---         MODULE    ---      ---       ?C?COPY
+      01000922H   PUBLIC    CODE     ---       ?C?COPY
+
+      ---         MODULE    ---      ---       ?C?CLDPTR
+      01000948H   PUBLIC    CODE     ---       ?C?CLDPTR
+
+      ---         MODULE    ---      ---       ?C?CLDOPTR
+      01000961H   PUBLIC    CODE     ---       ?C?CLDOPTR
+
+      ---         MODULE    ---      ---       ?C?CSTOPTR
+      0100098EH   PUBLIC    CODE     ---       ?C?CSTOPTR
+
+      ---         MODULE    ---      ---       ?C?IILDX
+      010009B0H   PUBLIC    CODE     ---       ?C?IILDX
+
+      ---         MODULE    ---      ---       ?C?LMUL
+      010009C6H   PUBLIC    CODE     ---       ?C?LMUL
+
+      ---         MODULE    ---      ---       ?C?ULCMP
+      01000A15H   PUBLIC    CODE     ---       ?C?ULCMP
+
+      ---         MODULE    ---      ---       ?C?ULSHR
+      01000A26H   PUBLIC    CODE     ---       ?C?ULSHR
+
+      ---         MODULE    ---      ---       ?C?LSHL
+      01000A39H   PUBLIC    CODE     ---       ?C?LSHL
+
+      ---         MODULE    ---      ---       ?C?LSTXDATA
+      01000A4CH   PUBLIC    CODE     ---       ?C?LSTXDATA
+
+      ---         MODULE    ---      ---       ?C?LSTKXDATA
+      01000A58H   PUBLIC    CODE     ---       ?C?LSTKXDATA
+
+      ---         MODULE    ---      ---       ?C?CCASE
+      01000A89H   PUBLIC    CODE     ---       ?C?CCASE
+
+      ---         MODULE    ---      ---       ?C?LIMUL
+      01000AAFH   PUBLIC    CODE     ---       ?C?LIMUL
+
+      ---         MODULE    ---      ---       PRINTF
+      0200000BH   PUBLIC    XDATA    ---       ?_PRINTF517?BYTE
+      0200000BH   PUBLIC    XDATA    ---       ?_PRINTF?BYTE
+      0200000BH   PUBLIC    XDATA    ---       ?_SPRINTF517?BYTE
+      0200000BH   PUBLIC    XDATA    ---       ?_SPRINTF?BYTE
+      01000558H   PUBLIC    CODE     ---       _PRINTF
+      01000558H   PUBLIC    CODE     ---       _PRINTF517
+      01000552H   PUBLIC    CODE     ---       _SPRINTF
+      01000552H   PUBLIC    CODE     ---       _SPRINTF517
+
+      ---         MODULE    ---      ---       ?C_INIT
+      010010BFH   PUBLIC    CODE     ---       ?C_START
+
+      ---         MODULE    ---      ---       ?C?CSTPTR
+      01000ADCH   PUBLIC    CODE     ---       ?C?CSTPTR
+
+      ---         MODULE    ---      ---       ?C?PLDIXDATA
+      01000AEEH   PUBLIC    CODE     ---       ?C?PLDIXDATA
+
+      ---         MODULE    ---      ---       ?C?PSTXDATA
+      01000B05H   PUBLIC    CODE     ---       ?C?PSTXDATA
+
+      ---         MODULE    ---      ---       PUTCHAR
+      01001623H   PUBLIC    CODE     ---       _PUTCHAR
+
+
+
+INTER-MODULE CROSS-REFERENCE LISTING
+
+
+NAME . . . . . . . . . CLASS    MODULE NAMES
+============================================
+
+?_BulkReadFlash?BYTE . XDATA    MAIN  
+?_BulkWriteFlash?BYTE. XDATA    MAIN  
+?_ByteWriteFlash?BYTE. XDATA    MAIN  
+?_PRINTF517?BYTE . . . XDATA    PRINTF  
+?_PRINTF?BYTE. . . . . XDATA    PRINTF  MAIN  
+?_SPRINTF517?BYTE. . . XDATA    PRINTF  
+?_SPRINTF?BYTE . . . . XDATA    PRINTF  
+?C?CCASE . . . . . . . CODE     ?C?CCASE  MAIN  PRINTF  
+?C?CLDOPTR . . . . . . CODE     ?C?CLDOPTR  MAIN  PRINTF  
+?C?CLDPTR. . . . . . . CODE     ?C?CLDPTR  MAIN  PRINTF  
+?C?CODESEG . . . . . . NUMBER   ** LX51 GENERATED **  
+?C?COPY. . . . . . . . CODE     ?C?COPY  MAIN  
+?C?CSTOPTR . . . . . . CODE     ?C?CSTOPTR  MAIN  
+?C?CSTPTR. . . . . . . CODE     ?C?CSTPTR  PRINTF  
+?C?IILDX . . . . . . . CODE     ?C?IILDX  MAIN  
+?C?LIMUL . . . . . . . CODE     ?C?LIMUL  MAIN  
+?C?LMUL. . . . . . . . CODE     ?C?LMUL  MAIN  
+?C?LSHL. . . . . . . . CODE     ?C?LSHL  MAIN  
+?C?LSTKXDATA . . . . . CODE     ?C?LSTKXDATA  MAIN  
+?C?LSTXDATA. . . . . . CODE     ?C?LSTXDATA  MAIN  
+?C?PLDIXDATA . . . . . CODE     ?C?PLDIXDATA  PRINTF  
+?C?PSTXDATA. . . . . . CODE     ?C?PSTXDATA  PRINTF  
+?C?ULCMP . . . . . . . CODE     ?C?ULCMP  MAIN  
+?C?ULSHR . . . . . . . CODE     ?C?ULSHR  MAIN  
+?C?XDATASEG. . . . . . NUMBER   ** LX51 GENERATED **  
+?C_START . . . . . . . CODE     ?C_INIT  ?C_STARTUP  
+?C_STARTUP . . . . . . CODE     ?C_STARTUP  MAIN  
+_BulkReadFlash . . . . CODE     MAIN  
+_BulkThirteen. . . . . CODE     MAIN  
+_BulkWriteFlash. . . . CODE     MAIN  
+_ByteReadFlash . . . . CODE     MAIN  
+_ByteWriteFlash. . . . CODE     MAIN  
+_CH554UART0SendByte. . CODE     DEBUG  
+_CH554UART1SendByte. . CODE     DEBUG  
+_CH554WDTFeed. . . . . CODE     DEBUG  
+_CH554WDTModeSelect. . CODE     DEBUG  
+_EraseFlash. . . . . . CODE     MAIN  
+_mDelaymS. . . . . . . CODE     DEBUG  MAIN  
+_mDelayuS. . . . . . . CODE     DEBUG  
+_PRINTF. . . . . . . . CODE     PRINTF  MAIN  
+_PRINTF517 . . . . . . CODE     PRINTF  
+_PUTCHAR . . . . . . . CODE     PUTCHAR  PRINTF  
+_SendKey . . . . . . . CODE     MAIN  
+_SendString. . . . . . CODE     MAIN  
+_SPRINTF . . . . . . . CODE     PRINTF  
+_SPRINTF517. . . . . . CODE     PRINTF  
+_WriteFlashStatus. . . CODE     MAIN  
+AC . . . . . . . . . . DATA     DEBUG  
+ACC. . . . . . . . . . DATA     DEBUG  
+ADC_CFG. . . . . . . . DATA     DEBUG  
+ADC_CHAN0. . . . . . . DATA     DEBUG  
+ADC_CHAN1. . . . . . . DATA     DEBUG  
+ADC_CTRL . . . . . . . DATA     DEBUG  
+ADC_DATA . . . . . . . DATA     DEBUG  
+ADC_IF . . . . . . . . DATA     DEBUG  
+ADC_START. . . . . . . DATA     DEBUG  
+AIN0 . . . . . . . . . DATA     DEBUG  
+AIN1 . . . . . . . . . DATA     DEBUG  
+AIN2 . . . . . . . . . DATA     DEBUG  
+AIN3 . . . . . . . . . DATA     DEBUG  
+B. . . . . . . . . . . DATA     DEBUG  
+BcswStatus . . . . . . XDATA    MAIN  
+buffer . . . . . . . . IDATA    MAIN  
+C_T2 . . . . . . . . . DATA     DEBUG  
+CAP1 . . . . . . . . . DATA     DEBUG  
+CAP1_. . . . . . . . . DATA     DEBUG  
+CAP1F. . . . . . . . . DATA     DEBUG  
+CAP2 . . . . . . . . . DATA     DEBUG  
+CfgFsys. . . . . . . . CODE     DEBUG  MAIN  
+CH375BULKDOWN. . . . . BIT      MAIN  
+CH375BULKUP. . . . . . BIT      MAIN  
+CH375CSW . . . . . . . BIT      MAIN  
+CH554SoftReset . . . . CODE     DEBUG  
+CH554UART0Alter. . . . CODE     DEBUG  
+CH554UART0RcvByte. . . CODE     DEBUG  
+CH554UART1RcvByte. . . CODE     DEBUG  
+CH554USBDevWakeup. . . CODE     DEBUG  
+CheckFlashWriteEnable. CODE     MAIN  
+CLOCK_CFG. . . . . . . DATA     DEBUG  
+CMP_CHAN . . . . . . . DATA     DEBUG  
+CMP_IF . . . . . . . . DATA     DEBUG  
+CMPO . . . . . . . . . DATA     DEBUG  
+CP_RL2 . . . . . . . . DATA     DEBUG  
+CY . . . . . . . . . . DATA     DEBUG  
+DBCAPACITY . . . . . . CONST    MAIN  
+DBINQUITY_CD_ROM . . . CONST    MAIN  
+DBINQUITY_USB_Drive. . CONST    MAIN  
+DPH. . . . . . . . . . DATA     DEBUG  
+DPL. . . . . . . . . . DATA     DEBUG  
+E_DIS. . . . . . . . . DATA     DEBUG  
+EA . . . . . . . . . . DATA     DEBUG  
+Ep0Buffer. . . . . . . XDATA    MAIN  
+Ep1Buffer. . . . . . . XDATA    MAIN  
+Ep2Buffer. . . . . . . XDATA    MAIN  
+ES . . . . . . . . . . DATA     DEBUG  
+ET0. . . . . . . . . . DATA     DEBUG  
+ET1. . . . . . . . . . DATA     DEBUG  
+ET2. . . . . . . . . . DATA     DEBUG  
+EX0. . . . . . . . . . DATA     DEBUG  
+EX1. . . . . . . . . . DATA     DEBUG  
+EXEN2. . . . . . . . . DATA     DEBUG  
+EXF2 . . . . . . . . . DATA     DEBUG  
+F0 . . . . . . . . . . DATA     DEBUG  
+F1 . . . . . . . . . . DATA     DEBUG  
+FSTALL . . . . . . . . BIT      MAIN  
+GLOBAL_CFG . . . . . . DATA     DEBUG  
+GPIO_IE. . . . . . . . DATA     DEBUG  
+HIDData. . . . . . . . XDATA    MAIN  
+HIDReportDescriptor. . CONST    MAIN  
+HIDSendData. . . . . . CODE     MAIN  
+HIDSendExploit . . . . CODE     MAIN  
+IE . . . . . . . . . . DATA     DEBUG  
+IE0. . . . . . . . . . DATA     DEBUG  
+IE1. . . . . . . . . . DATA     DEBUG  
+IE_ADC . . . . . . . . DATA     DEBUG  
+IE_EX. . . . . . . . . DATA     DEBUG  
+IE_GPIO. . . . . . . . DATA     DEBUG  
+IE_PWMX. . . . . . . . DATA     DEBUG  
+IE_SPI0. . . . . . . . DATA     DEBUG  
+IE_TKEY. . . . . . . . DATA     DEBUG  
+IE_UART1 . . . . . . . DATA     DEBUG  
+IE_USB . . . . . . . . DATA     DEBUG  
+IE_WDOG. . . . . . . . DATA     DEBUG  
+InitHostSPI0 . . . . . CODE     MAIN  
+InitUSB_Device . . . . CODE     MAIN  
+INT0 . . . . . . . . . DATA     DEBUG  
+INT1 . . . . . . . . . DATA     DEBUG  
+IP . . . . . . . . . . DATA     DEBUG  
+IP_EX. . . . . . . . . DATA     DEBUG  
+IsHIDDataSent. . . . . XDATA    MAIN  
+IsHIDSendExploit . . . XDATA    MAIN  
+IT0. . . . . . . . . . DATA     DEBUG  
+IT1. . . . . . . . . . DATA     DEBUG  
+Key_ModeSelect . . . . DATA     MAIN  
+lastFSTALL . . . . . . BIT      MAIN  
+LEN. . . . . . . . . . XDATA    MAIN  
+Locate_Addr. . . . . . XDATA    MAIN  
+main . . . . . . . . . CODE     MAIN  ?C_INIT  
+mASC . . . . . . . . . XDATA    MAIN  
+MassPara . . . . . . . IDATA    MAIN  
+MAX_LUN. . . . . . . . CONST    MAIN  
+mCH375BulkDownData . . CODE     MAIN  
+mCH375BulkOnly . . . . CODE     MAIN  
+mCH375bulkUpData . . . CODE     MAIN  
+mCH375UpCsw. . . . . . CODE     MAIN  
+mdCBWTag . . . . . . . XDATA    MAIN  
+mInitSTDIO . . . . . . CODE     DEBUG  MAIN  
+MISO . . . . . . . . . DATA     DEBUG  
+mode5sense3F . . . . . CONST    MAIN  
+modesense3F. . . . . . CONST    MAIN  
+MOSI . . . . . . . . . DATA     DEBUG  
+mSenseKey. . . . . . . XDATA    MAIN  
+MyCfgDescr . . . . . . CONST    MAIN  
+MyDevDescr . . . . . . CONST    MAIN  
+MyLangDescr. . . . . . CONST    MAIN  
+MyManuInfo . . . . . . CONST    MAIN  
+MyProdInfo . . . . . . CONST    MAIN  
+OV . . . . . . . . . . DATA     DEBUG  
+P. . . . . . . . . . . DATA     DEBUG  
+P1 . . . . . . . . . . DATA     DEBUG  
+P1_0 . . . . . . . . . DATA     DEBUG  
+P1_1 . . . . . . . . . DATA     DEBUG  
+P1_2 . . . . . . . . . DATA     DEBUG  
+P1_3 . . . . . . . . . DATA     DEBUG  
+P1_4 . . . . . . . . . DATA     DEBUG  
+P1_5 . . . . . . . . . DATA     DEBUG  
+P1_6 . . . . . . . . . DATA     DEBUG  
+P1_7 . . . . . . . . . DATA     DEBUG  
+P1_DIR_PU. . . . . . . DATA     DEBUG  
+P1_MOD_OC. . . . . . . DATA     DEBUG  
+P2 . . . . . . . . . . DATA     DEBUG  
+P3 . . . . . . . . . . DATA     DEBUG  
+P3_0 . . . . . . . . . DATA     DEBUG  
+P3_1 . . . . . . . . . DATA     DEBUG  
+P3_2 . . . . . . . . . DATA     DEBUG  
+P3_3 . . . . . . . . . DATA     DEBUG  
+P3_4 . . . . . . . . . DATA     DEBUG  
+P3_5 . . . . . . . . . DATA     DEBUG  
+P3_6 . . . . . . . . . DATA     DEBUG  
+P3_7 . . . . . . . . . DATA     DEBUG  
+P3_DIR_PU. . . . . . . DATA     DEBUG  
+P3_MOD_OC. . . . . . . DATA     DEBUG  
+pBuf . . . . . . . . . XDATA    MAIN  
+pBuf_ReSelect. . . . . BIT      MAIN  
+PCON . . . . . . . . . DATA     DEBUG  
+PH_FLAG. . . . . . . . DATA     DEBUG  
+PIN_FUNC . . . . . . . DATA     DEBUG  
+PL_FLAG. . . . . . . . DATA     DEBUG  
+PS . . . . . . . . . . DATA     DEBUG  
+PSW. . . . . . . . . . DATA     DEBUG  
+PT0. . . . . . . . . . DATA     DEBUG  
+PT1. . . . . . . . . . DATA     DEBUG  
+PT2. . . . . . . . . . DATA     DEBUG  
+PWM1 . . . . . . . . . DATA     DEBUG  
+PWM1_. . . . . . . . . DATA     DEBUG  
+PWM2 . . . . . . . . . DATA     DEBUG  
+PWM2_. . . . . . . . . DATA     DEBUG  
+PWM_CK_SE. . . . . . . DATA     DEBUG  
+PWM_CTRL . . . . . . . DATA     DEBUG  
+PWM_DATA1. . . . . . . DATA     DEBUG  
+PWM_DATA2. . . . . . . DATA     DEBUG  
+PX0. . . . . . . . . . DATA     DEBUG  
+PX1. . . . . . . . . . DATA     DEBUG  
+RB8. . . . . . . . . . DATA     DEBUG  
+RCAP2. . . . . . . . . DATA     DEBUG  
+RCAP2H . . . . . . . . DATA     DEBUG  
+RCAP2L . . . . . . . . DATA     DEBUG  
+RCLK . . . . . . . . . DATA     DEBUG  
+ReadFlashStatus. . . . CODE     MAIN  
+REN. . . . . . . . . . DATA     DEBUG  
+RESET_KEEP . . . . . . DATA     DEBUG  
+RI . . . . . . . . . . DATA     DEBUG  
+ROM_ADDR . . . . . . . DATA     DEBUG  
+ROM_ADDR_H . . . . . . DATA     DEBUG  
+ROM_ADDR_L . . . . . . DATA     DEBUG  
+ROM_CTRL . . . . . . . DATA     DEBUG  
+ROM_DATA . . . . . . . DATA     DEBUG  
+ROM_DATA_H . . . . . . DATA     DEBUG  
+ROM_DATA_L . . . . . . DATA     DEBUG  
+RS0. . . . . . . . . . DATA     DEBUG  
+RS1. . . . . . . . . . DATA     DEBUG  
+RXD. . . . . . . . . . DATA     DEBUG  
+RXD1 . . . . . . . . . DATA     DEBUG  
+RXD1_. . . . . . . . . DATA     DEBUG  
+RXD_ . . . . . . . . . DATA     DEBUG  
+S0_FREE. . . . . . . . DATA     DEBUG  
+S0_FST_ACT . . . . . . DATA     DEBUG  
+S0_IF_BYTE . . . . . . DATA     DEBUG  
+S0_IF_FIRST. . . . . . DATA     DEBUG  
+S0_IF_OV . . . . . . . DATA     DEBUG  
+S0_R_FIFO. . . . . . . DATA     DEBUG  
+S0_T_FIFO. . . . . . . DATA     DEBUG  
+SAFE_MOD . . . . . . . DATA     DEBUG  
+SBAUD1 . . . . . . . . DATA     DEBUG  
+SBUF . . . . . . . . . DATA     DEBUG  
+SBUF1. . . . . . . . . DATA     DEBUG  
+SCK. . . . . . . . . . DATA     DEBUG  
+SCON . . . . . . . . . DATA     DEBUG  
+SCON1. . . . . . . . . DATA     DEBUG  
+SCS. . . . . . . . . . DATA     DEBUG  
+SM0. . . . . . . . . . DATA     DEBUG  
+SM1. . . . . . . . . . DATA     DEBUG  
+SM2. . . . . . . . . . DATA     DEBUG  
+SP . . . . . . . . . . DATA     DEBUG  
+SPI0_CK_SE . . . . . . DATA     DEBUG  
+SPI0_CTRL. . . . . . . DATA     DEBUG  
+SPI0_DATA. . . . . . . DATA     DEBUG  
+SPI0_SETUP . . . . . . DATA     DEBUG  
+SPI0_STAT. . . . . . . DATA     DEBUG  
+SPI_CS . . . . . . . . DATA     MAIN  
+T0 . . . . . . . . . . DATA     DEBUG  
+T1 . . . . . . . . . . DATA     DEBUG  
+T2 . . . . . . . . . . DATA     DEBUG  
+T2_. . . . . . . . . . DATA     DEBUG  
+T2CAP1 . . . . . . . . DATA     DEBUG  
+T2CAP1H. . . . . . . . DATA     DEBUG  
+T2CAP1L. . . . . . . . DATA     DEBUG  
+T2CON. . . . . . . . . DATA     DEBUG  
+T2COUNT. . . . . . . . DATA     DEBUG  
+T2EX . . . . . . . . . DATA     DEBUG  
+T2MOD. . . . . . . . . DATA     DEBUG  
+TB8. . . . . . . . . . DATA     DEBUG  
+TCLK . . . . . . . . . DATA     DEBUG  
+TCON . . . . . . . . . DATA     DEBUG  
+TF0. . . . . . . . . . DATA     DEBUG  
+TF1. . . . . . . . . . DATA     DEBUG  
+TF2. . . . . . . . . . DATA     DEBUG  
+TH0. . . . . . . . . . DATA     DEBUG  
+TH1. . . . . . . . . . DATA     DEBUG  
+TH2. . . . . . . . . . DATA     DEBUG  
+TI . . . . . . . . . . DATA     DEBUG  
+TIN0 . . . . . . . . . DATA     DEBUG  
+TIN1 . . . . . . . . . DATA     DEBUG  
+TIN2 . . . . . . . . . DATA     DEBUG  
+TIN3 . . . . . . . . . DATA     DEBUG  
+TIN4 . . . . . . . . . DATA     DEBUG  
+TIN5 . . . . . . . . . DATA     DEBUG  
+TKEY_CTRL. . . . . . . DATA     DEBUG  
+TKEY_DAT . . . . . . . DATA     DEBUG  
+TKEY_DATH. . . . . . . DATA     DEBUG  
+TKEY_DATL. . . . . . . DATA     DEBUG  
+TL0. . . . . . . . . . DATA     DEBUG  
+TL1. . . . . . . . . . DATA     DEBUG  
+TL2. . . . . . . . . . DATA     DEBUG  
+TMOD . . . . . . . . . DATA     DEBUG  
+TR0. . . . . . . . . . DATA     DEBUG  
+TR1. . . . . . . . . . DATA     DEBUG  
+TR2. . . . . . . . . . DATA     DEBUG  
+TXD. . . . . . . . . . DATA     DEBUG  
+TXD1 . . . . . . . . . DATA     DEBUG  
+TXD1_. . . . . . . . . DATA     DEBUG  
+TXD_ . . . . . . . . . DATA     DEBUG  
+U1RB8. . . . . . . . . DATA     DEBUG  
+U1REN. . . . . . . . . DATA     DEBUG  
+U1RI . . . . . . . . . DATA     DEBUG  
+U1SM0. . . . . . . . . DATA     DEBUG  
+U1SMOD . . . . . . . . DATA     DEBUG  
+U1TB8. . . . . . . . . DATA     DEBUG  
+U1TI . . . . . . . . . DATA     DEBUG  
+U_IS_NAK . . . . . . . DATA     DEBUG  
+U_SIE_FREE . . . . . . DATA     DEBUG  
+U_TOG_OK . . . . . . . DATA     DEBUG  
+UART1Setup . . . . . . CODE     DEBUG  
+UCC1 . . . . . . . . . DATA     DEBUG  
+UCC2 . . . . . . . . . DATA     DEBUG  
+UDEV_CTRL. . . . . . . DATA     DEBUG  
+UDM. . . . . . . . . . DATA     DEBUG  
+UDP. . . . . . . . . . DATA     DEBUG  
+UEP0_CTRL. . . . . . . DATA     DEBUG  
+UEP0_DMA . . . . . . . DATA     DEBUG  
+UEP0_DMA_H . . . . . . DATA     DEBUG  
+UEP0_DMA_L . . . . . . DATA     DEBUG  
+UEP0_T_LEN . . . . . . DATA     DEBUG  
+UEP1_CTRL. . . . . . . DATA     DEBUG  
+UEP1_DMA . . . . . . . DATA     DEBUG  
+UEP1_DMA_H . . . . . . DATA     DEBUG  
+UEP1_DMA_L . . . . . . DATA     DEBUG  
+UEP1_T_LEN . . . . . . DATA     DEBUG  
+UEP2_3_MOD . . . . . . DATA     DEBUG  
+UEP2_CTRL. . . . . . . DATA     DEBUG  
+UEP2_DMA . . . . . . . DATA     DEBUG  
+UEP2_DMA_H . . . . . . DATA     DEBUG  
+UEP2_DMA_L . . . . . . DATA     DEBUG  
+UEP2_T_LEN . . . . . . DATA     DEBUG  
+UEP3_CTRL. . . . . . . DATA     DEBUG  
+UEP3_DMA . . . . . . . DATA     DEBUG  
+UEP3_DMA_H . . . . . . DATA     DEBUG  
+UEP3_DMA_L . . . . . . DATA     DEBUG  
+UEP3_T_LEN . . . . . . DATA     DEBUG  
+UEP4_1_MOD . . . . . . DATA     DEBUG  
+UEP4_CTRL. . . . . . . DATA     DEBUG  
+UEP4_T_LEN . . . . . . DATA     DEBUG  
+UFI_GET_EVE_STA_NOT. . CODE     MAIN  
+UFI_Hunding. . . . . . CODE     MAIN  
+UFI_inquiry. . . . . . CODE     MAIN  
+UFI_modeSense. . . . . CODE     MAIN  
+UFI_modeSense5 . . . . CODE     MAIN  
+UFI_perOrMed . . . . . CODE     MAIN  
+UFI_read10 . . . . . . CODE     MAIN  
+UFI_readCapacity . . . CODE     MAIN  
+UFI_readTOC. . . . . . CODE     MAIN  
+UFI_requestSense . . . CODE     MAIN  
+UFI_staStoUnit . . . . CODE     MAIN  
+UFI_testUnit . . . . . CODE     MAIN  
+UFI_verify . . . . . . CODE     MAIN  
+UFI_write. . . . . . . CODE     MAIN  
+UIF_BUS_RST. . . . . . DATA     DEBUG  
+UIF_DETECT . . . . . . DATA     DEBUG  
+UIF_FIFO_OV. . . . . . DATA     DEBUG  
+UIF_HST_SOF. . . . . . DATA     DEBUG  
+UIF_SUSPEND. . . . . . DATA     DEBUG  
+UIF_TRANSFER . . . . . DATA     DEBUG  
+USB_C_CTRL . . . . . . DATA     DEBUG  
+USB_CTRL . . . . . . . DATA     DEBUG  
+USB_DEV_AD . . . . . . DATA     DEBUG  
+USB_DeviceInterrupt. . CODE     MAIN  
+USB_INT_EN . . . . . . DATA     DEBUG  
+USB_INT_FG . . . . . . DATA     DEBUG  
+USB_INT_ST . . . . . . DATA     DEBUG  
+USB_MIS_ST . . . . . . DATA     DEBUG  
+USB_RX_LEN . . . . . . DATA     DEBUG  
+UsbConfig. . . . . . . XDATA    MAIN  
+UsbReady . . . . . . . XDATA    MAIN  
+VBUS1. . . . . . . . . DATA     DEBUG  
+VBUS2. . . . . . . . . DATA     DEBUG  
+WaitFlashBusy. . . . . CODE     MAIN  
+WAKE_CTRL. . . . . . . DATA     DEBUG  
+WDOG_COUNT . . . . . . DATA     DEBUG  
+WriteFlashEnable . . . CODE     MAIN  
+WriteFlashForbidden. . CODE     MAIN  
+XBUS_AUX . . . . . . . DATA     DEBUG  
+
+Program Size: data=151.7 xdata=342 const=388 code=5986
+LX51 RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)
