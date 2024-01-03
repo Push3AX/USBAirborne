@@ -1,0 +1,11 @@
+".\Obj\Main.obj",
+".\Obj\DEBUG.obj",
+".\Obj\flash.obj",
+".\Obj\USB.obj" 
+TO ".\Obj\USBAirborne" 
+
+PRINT(".\Obj\USBAirborne.map") PAGEWIDTH (132) 
+PAGELENGTH (5000) 
+IXREF 
+WARNINGLEVEL (0) 
+REMOVEUNUSED 

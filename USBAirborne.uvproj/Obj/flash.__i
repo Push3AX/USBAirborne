@@ -1,0 +1,1 @@
+"lib\flash.c" LARGE OMF2 OPTIMIZE (8,SPEED) BROWSE INCDIR(..\) DEBUG CODE PRINT(.\Obj\flash.lst) PAGEWIDTH (132) PAGELENGTH (5000) TABS (2) PREPRINT(.\Obj\flash.i) OBJECT(.\Obj\flash.obj)

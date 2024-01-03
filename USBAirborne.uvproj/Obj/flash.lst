@@ -1,0 +1,3090 @@
+C51 COMPILER V9.60.0.0   FLASH                                                                         01/03/2024 01:43:49 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE FLASH
+OBJECT MODULE PLACED IN .\Obj\flash.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE lib\flash.c LARGE OMF2 OPTIMIZE(8,SPEED) BROWSE INCDIR(..\) DEBUG CODE PRINT(.\Obj\flas
+                    -h.lst) PAGEWIDTH(132) PAGELENGTH(5000) TABS(2) PREPRINT(.\Obj\flash.i) OBJECT(.\Obj\flash.obj)
+
+line level    source
+
+   1          #include "CH554.H"
+   2          #include "DEBUG.H"
+   3          #include "USB.h"
+   4          #include "keyValue.h"
+   5          #include "flash.h"
+   6          #include "fat.h"
+   7          #include <stdio.h>
+   8          #include <string.h>
+   9          
+  10          #pragma  NOAREGS
+  11          
+  12          sbit SPI_CS = P1 ^ 4; //SPI FLASH 片选引脚，视PCB布线修改
+  13          
+  14          #define SPI_Tx( d )    { SPI0_DATA = d; while(S0_FREE == 0); }
+  15          #define SPI_Rx( d )    { SPI0_DATA = 0xFF; while(S0_FREE == 0); d = SPI0_DATA; }
+  16            
+  17          BOOL CheckFilesystem() {
+  18   1          UINT8 i;
+  19   1          UINT32 ReadFlashAddr = 0x41000;
+  20   1        
+  21   1      
+  22   1          for(i=0;i<16;i++){
+  23   2              if(ByteReadFlash(ReadFlashAddr+i) != ADDR_0x41000[i]) return 0;
+  24   2          }
+  25   1          
+  26   1          for(i=0;i<16;i++){
+  27   2              if(ByteReadFlash(i) != ADDR_0x00[i]) return 0;
+  28   2          }
+  29   1          return 1;
+  30   1      }
+  31          
+  32          void WriteDataToFlash(UINT32 StartAddr, UINT8C* Data, UINT16 DataLen) {
+  33   1          UINT32 BlockSize = 4096;
+  34   1          UINT32 EndAddr = StartAddr + BlockSize;
+  35   1          UINT32 CurrentAddr = StartAddr;
+  36   1          UINT16 BytesToWrite;
+  37   1      
+  38   1          // 擦除块
+  39   1          EraseFlash(StartAddr);
+  40   1      
+  41   1          // 写入数据
+  42   1          while (CurrentAddr < StartAddr + DataLen) {
+  43   2              // 计算剩余要写入的字节数
+  44   2              if (DataLen - (CurrentAddr - StartAddr) < 64) {
+  45   3                  BytesToWrite = DataLen - (CurrentAddr - StartAddr);
+  46   3              } else {
+  47   3                  BytesToWrite = 64;
+  48   3              }
+  49   2              BulkWriteFlash(CurrentAddr, BytesToWrite, Data + (CurrentAddr - StartAddr));
+  50   2              CurrentAddr += BytesToWrite;
+  51   2          }
+  52   1      
+  53   1          // 填充剩余部分为0x00
+  54   1          while (CurrentAddr < EndAddr) {
+  55   2              BytesToWrite = (EndAddr - CurrentAddr < 64) ? (EndAddr - CurrentAddr) : 64;
+  56   2              BulkWriteFlash(CurrentAddr, BytesToWrite, ZERO);
+  57   2              CurrentAddr += BytesToWrite;
+  58   2          }
+  59   1      }
+  60          
+  61          void FormatFlash() {
+  62   1        UINT32 i; 
+  63   1        for (i=0;i<0x80000;i+=DISK_SEC_LEN)
+  64   1        {
+  65   2          EraseFlash(i);
+  66   2        }
+  67   1        for (i=0;i<0x80000;i+=128)
+  68   1        {
+  69   2          BulkWriteFlash(i,128,ZERO);
+  70   2        }
+  71   1        WriteDataToFlash(0x00, ADDR_0x00, sizeof(ADDR_0x00));
+  72   1        WriteDataToFlash(0x1000, ADDR_0x1000_0x21000, sizeof(ADDR_0x1000_0x21000));
+  73   1        WriteDataToFlash(0x21000, ADDR_0x1000_0x21000, sizeof(ADDR_0x1000_0x21000));
+  74   1        WriteDataToFlash(0x41000, ADDR_0x41000, sizeof(ADDR_0x41000));
+  75   1        WriteDataToFlash(0x45000, ADDR_0x45000, sizeof(ADDR_0x45000));
+  76   1        WriteDataToFlash(0x55000, ADDR_0x55000, sizeof(ADDR_0x55000));
+  77   1        WriteDataToFlash(0x5C000, ADDR_0x5C000, sizeof(ADDR_0x5C000));
+  78   1        WriteDataToFlash(0x65000, ADDR_0x65000, sizeof(ADDR_0x65000));
+  79   1      }
+  80          
+  81          
+  82          /*******************************************************************************
+  83          * Function Name  : ExecBadUSBPayload( void )
+  84          * Description    : 从SPI Flash芯片中读取配置文件，解析和执行BadUSB Payload
+  85                             别看了，没人能看懂。我自己都不知道是怎么写出来的。
+  86          *******************************************************************************/
+  87          void ExecBadUSBPayload() {
+  88   1          //UINT8 DebugOutput[16];
+  89   1        
+  90   1          UINT8 FATDirEntry[128];
+  91   1          UINT32 ReadFlashAddr = 0x41000;  // Flash中的起始地址
+  92   1          UINT16 foundINF = 0;
+  93   1        
+  94   1          UINT16 blockLen = 65535;    // SPI Flash每次最多读4K
+  95   1          UINT8 dat = 0;
+  96   1          UINT16 foundBadUSB = 0;
+  97   1          UINT16 MaxRound = 32;       // 最多读32个4K
+  98   1          UINT16 i = 0;
+  99   1        
+ 100   1          UINT8 *patterns[] = {
+ 101   1              "[BadUSB]",
+ 102   1              "[Enter]",
+ 103   1              "[Shift]",
+ 104   1              "[Capslock]",
+ 105   1              "[Win]",
+ 106   1              "[Win+R]",
+ 107   1              "[Alt+F4]",
+ 108   1              "[Win+D]",
+ 109   1              "[Win+L]",
+ 110   1              "[Win+E]",
+ 111   1              "[Ctrl+Alt+Del]",
+ 112   1              "[Delay]",
+ 113   1              "[Format]"
+ 114   1          };
+ 115   1          UINT16 patternIndex[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+ 116   1          UINT16 patternIndexFlag = 0;
+ 117   1          UINT16 patternFound[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+ 118   1          UINT16 patternCount = 13;
+ 119   1        
+ 120   1          while (MaxRound-- && !foundINF) {
+ 121   2            BulkReadFlash(ReadFlashAddr, 128, FATDirEntry);
+ 122   2      
+ 123   2            // 遍历读取的数据，每个目录项32字节
+ 124   2            for (i = 0; i < 128; i += 32) {
+ 125   3                // 检查是否为AUTORUN.INF文件
+ 126   3                if (FATDirEntry[i] == 'A' && FATDirEntry[i + 1] == 'U' && FATDirEntry[i + 2] == 'T' &&
+ 127   3                    FATDirEntry[i + 3] == 'O' && FATDirEntry[i + 4] == 'R' && FATDirEntry[i + 5] == 'U' &&
+ 128   3                    FATDirEntry[i + 6] == 'N' && FATDirEntry[i + 8] == 'I' && FATDirEntry[i + 9] == 'N' &&
+ 129   3                    FATDirEntry[i + 10] == 'F') 
+ 130   3                {
+ 131   4                    // 提取起始簇号
+ 132   4                    ReadFlashAddr =(UINT32) ((FATDirEntry[i + 26] + (FATDirEntry[i + 27] << 8))+2)*64*1024;
+ 133   4                    foundINF=1;
+ 134   4                    //sprintf(DebugOutput,"addr:%ld\n",ReadFlashAddr);
+ 135   4                    //SendString(DebugOutput,strlen(DebugOutput));
+ 136   4                    break;
+ 137   4                }
+ 138   3            }
+ 139   2            ReadFlashAddr += 128;
+ 140   2          }
+ 141   1      
+ 142   1      
+ 143   1          MaxRound = 32;
+ 144   1          if(!foundINF) ReadFlashAddr=0x60000;
+ 145   1          while (MaxRound--) {
+ 146   2              SPI_CS = 0;
+ 147   2              SPI_Tx(0x0b);  // fast read command
+ 148   2              SPI_Tx(((ReadFlashAddr & 0xFFFFFF) >> 16));  // send 3 address bytes
+ 149   2              SPI_Tx(((ReadFlashAddr & 0xFFFF) >> 8));
+ 150   2              SPI_Tx(ReadFlashAddr & 0xFF);
+ 151   2              SPI_Tx(0xFF);
+ 152   2      
+ 153   2              while (blockLen--) {
+ 154   3                  SPI_Rx(dat);
+ 155   3      
+ 156   3                  // Check for patterns
+ 157   3                  for (i = 0; i < patternCount; i++) {
+ 158   4                      if (dat == patterns[i][patternIndex[i]]) {
+ 159   5                          patternIndex[i]++;
+ 160   5                          if (patterns[i][patternIndex[i]] == '\0') {
+ 161   6                              patternFound[i] = 1;
+ 162   6                              patternIndex[i] = 0;
+ 163   6                              //SPI_Rx(dat);
+ 164   6      
+ 165   6                              if (i == 0) {  // [BadUSB] pattern found
+ 166   7                                if (!foundBadUSB)
+ 167   7                                {
+ 168   8                                  foundBadUSB = 1;
+ 169   8                                } else {
+ 170   8                                  SPI_CS = 1;
+ 171   8                                  return;
+ 172   8                                }
+ 173   7                              }
+ 174   6                          }
+ 175   5                      } else {
+ 176   5                          patternIndex[i] = 0;
+ 177   5                      }
+ 178   4                  }
+ 179   3                  
+ 180   3                  // Send character if [BadUSB] found and this character is not in pattern
+ 181   3                  patternIndexFlag = 0;
+ 182   3                  for (i = 0; i < patternCount; i++) patternIndexFlag+=patternIndex[i];
+ 183   3                  for (i = 0; i < patternCount; i++) patternIndexFlag+=patternFound[i];
+ 184   3                  if (foundBadUSB && patternIndexFlag == 0 && dat != '\n' && dat != '\r' && dat != '\0') {
+ 185   4                      SendChar(dat);
+ 186   4                  }
+ 187   3      
+ 188   3                  // Send key or perform action if special patterns found
+ 189   3                  for (i = 0; i < patternCount; i++) {
+ 190   4                      if (patternFound[i]) {
+ 191   5                          switch (i) {
+ 192   6                              case 1: SendChar('\n'); break;  // [Enter] pattern found
+ 193   6                              case 2: SendKey(KB_LeftShift, KB_NULL); break;  // [Shift]
+ 194   6                              case 3: SendKey(KB_NULL, KB_CAPS_LOCK); break;  // [Capslock]
+ 195   6                              case 4: SendKey(KB_LeftGUI, KB_NULL); break;  // [Win]
+ 196   6                              case 5: SendKey(KB_LeftGUI, KB_R); break;  // [Win+R]
+ 197   6                              case 6: SendKey(KB_LeftALT, KB_F4); break;  // [Alt+F4]
+ 198   6                              case 7: SendKey(KB_LeftGUI, KB_D); break;  // [Win+D]
+ 199   6                              case 8: SendKey(KB_LeftGUI, KB_L); break;  // [Win+L]
+ 200   6                              case 9: SendKey(KB_LeftGUI, KB_E); break;  // [Win+E]
+ 201   6                              case 10: SendKey(KB_RightControl, KB_LeftALT); SendKey(KB_DEL, KB_NULL); break;  // [Ctrl+Alt+
+             -Del]
+ 202   6                              case 11: mDelaymS(500); break;  // [Delay]
+ 203   6                              case 12: WriteDataToFlash(0x00, ZERO, sizeof(ZERO));CH554SoftReset(); break;  // [Format]
+ 204   6                          }
+ 205   5                          patternIndex[i] = 0;
+ 206   5                          patternFound[i] = 0;  // Reset flag
+ 207   5                      }
+ 208   4                  }
+ 209   3              }
+ 210   2      
+ 211   2              ReadFlashAddr += 65535;
+ 212   2              SPI_Tx(0xFF);
+ 213   2              SPI_CS = 1;
+ 214   2          }
+ 215   1          return;
+ 216   1      }
+ 217          
+ 218          
+ 219          /*******************************************************************************
+ 220          * Function Name  : InitFlash( void )
+ 221          * Description    : Flash闪存初始化
+ 222          * Input          : None
+ 223          * Output         : None
+ 224          * Return         : None
+ 225          *******************************************************************************/
+ 226          void InitFlash(void)
+ 227          {
+ 228   1          mInitSTDIO();
+ 229   1          InitHostSPI0();
+ 230   1          WriteFlashEnable();                             // FLASH写使能
+ 231   1          WriteFlashStatus(0x00);                         // 设置芯片为无保护
+ 232   1      }
+ 233          
+ 234          /*******************************************************************************
+ 235          * Function Name  : InitHostSPI0( void )
+ 236          * Description    : SPI0主机模式初始化
+ 237          * Input          : None
+ 238          * Output         : None
+ 239          * Return         : None
+ 240          *******************************************************************************/
+ 241          void InitHostSPI0(void)
+ 242          {
+ 243   1          SPI0_SETUP &= ~(bS0_MODE_SLV | bS0_BIT_ORDER);              // Master模式, 高位在前
+ 244   1          SPI0_CTRL = bS0_SCK_OE | bS0_MOSI_OE;                       // 模式0
+ 245   1          SPI0_CK_SE = 0x02;                                          // 2分频
+ 246   1          P1_MOD_OC |= (bMOSI | bMISO | bSCK | bSCS);
+ 247   1          P1_DIR_PU |= (bMOSI | bMISO | bSCK | bSCS);
+ 248   1      }
+ 249          
+ 250          /*******************************************************************************
+ 251          * Function Name  : ReadFlashStatus
+ 252          * Description    : 用来读取状态寄存器,并返回状态寄存器的值
+ 253          * Input          : None
+ 254          * Output         : None
+ 255          * Return         : ExFlashRegStatus
+ 256          *******************************************************************************/
+ 257          UINT8 ReadFlashStatus(void)
+ 258          {
+ 259   1          UINT8 FlashStatus;
+ 260   1      
+ 261   1          SPI_CS = 0;
+ 262   1          SPI_Tx(0x05);                                       // Read Status Register
+ 263   1          SPI_Rx(FlashStatus);                                // 读取状态寄存器
+ 264   1          SPI_CS = 1;
+ 265   1      
+ 266   1          return FlashStatus;
+ 267   1      }
+ 268          
+ 269          /*******************************************************************************
+ 270          * Function Name  : WaitFlashBusy
+ 271          * Description    : 等待芯片空闲(在执行Byte-Program, Sector-Erase, Block-Erase, Chip-Erase操作后)
+ 272          * Input          : None
+ 273          * Output         : None
+ 274          * Return         : None
+ 275          *******************************************************************************/
+ 276          void WaitFlashBusy(void)
+ 277          {
+ 278   1          while((ReadFlashStatus()) & 0x01 == 0x01);          // 等待直到Flash空闲
+ 279   1      }
+ 280          
+ 281          /*******************************************************************************
+ 282          * Function Name  : WriteFlashStatus
+ 283          * Description    : 往状态寄存器里写一个字节
+ 284          * Input          : status -写入的数据
+ 285          * Output         : None
+ 286          * Return         : None
+ 287          *******************************************************************************/
+ 288          void WriteFlashStatus(UINT8 status)
+ 289          {
+ 290   1          SPI_CS = 0;
+ 291   1          SPI_Tx(0x01);                                       // Write Status Register
+ 292   1          SPI_Tx(status);                                     // 改变寄存器里BPx或者BPL(只有2,3,4,5,7位可以改�
+             -��)
+ 293   1          SPI_CS = 1;
+ 294   1      }
+ 295          
+ 296          /*******************************************************************************
+ 297          * Function Name  : WriteFlashForbidden
+ 298          * Description    : 写禁止
+ 299          * Input          : None
+ 300          * Output         : None
+ 301          * Return         : None
+ 302          *******************************************************************************/
+ 303          void WriteFlashForbidden(void)
+ 304          {
+ 305   1          SPI_CS = 0;
+ 306   1          SPI_Tx(0x04);
+ 307   1          SPI_CS = 1;
+ 308   1      }
+ 309          
+ 310          /*******************************************************************************
+ 311          * Function Name  : WriteFlashEnable
+ 312          * Description    : 写使能, 同样可以用于使能写状态寄存器
+ 313          * Input          : None
+ 314          * Output         : None
+ 315          * Return         : None
+ 316          *******************************************************************************/
+ 317          void WriteFlashEnable(void)
+ 318          {
+ 319   1          SPI_CS = 0;
+ 320   1          SPI_Tx(0x06);                                       // Write Enable
+ 321   1          SPI_CS = 1;
+ 322   1      }
+ 323          
+ 324          /*******************************************************************************
+ 325          * Function Name  : CheckFlashWriteEnable
+ 326          * Description    : 检查擦写操作前WEL位是否为1
+ 327          * Input          : None
+ 328          * Output         : None
+ 329          * Return         : None
+ 330          *******************************************************************************/
+ 331          void CheckFlashWriteEnable(void)
+ 332          {
+ 333   1          UINT8 WRENStatus;
+ 334   1          
+ 335   1          WRENStatus = ReadFlashStatus();                     // 读取状态register
+ 336   1          if((WRENStatus & 0x02) != 0x02)                     // 检查WEL位置位
+ 337   1          {
+ 338   2              WriteFlashEnable();                             // 如果未置1进行相应处理,如对其进行写使能操
+             -作
+ 339   2          }
+ 340   1      }
+ 341          
+ 342          /*******************************************************************************
+ 343          * Function Name  : EraseFlash
+ 344          * Description    : 擦除4K Flash  擦除一个扇区
+ 345          * Input          : Dst_Addr 0-1 ffff ffff ,清除任意地址所在的扇区。
+ 346          * Output         : None
+ 347          * Return         : None
+ 348          *******************************************************************************/
+ 349          void EraseFlash(UINT32 Dst_Addr)
+ 350          {
+ 351   1          CheckFlashWriteEnable();
+ 352   1          SPI_CS = 0;
+ 353   1          SPI_Tx(0x20);                                       // 扇区擦除命令
+ 354   1          SPI_Tx(((Dst_Addr & 0xFFFFFF) >> 16));              // send 3 address bytes
+ 355   1          SPI_Tx(((Dst_Addr & 0xFFFF) >> 8));
+ 356   1          SPI_Tx(Dst_Addr & 0xFF);
+ 357   1          SPI_CS = 1;
+ 358   1          WaitFlashBusy();
+ 359   1      }
+ 360          
+ 361          /*******************************************************************************
+ 362          * Function Name  : ByteReadFlash
+ 363          * Description    : 读取一个地址内一个字节的数据.返回读取的数据
+ 364          * Input          : UINT32 StarAddr -Destination Address 000000H - 1FFFFFH
+ 365          * Output         : None
+ 366          * Return         : byte -读取的数据
+ 367          *******************************************************************************/
+ 368          UINT8 ByteReadFlash(UINT32 StarAddr)
+ 369          {
+ 370   1          UINT8 dat = 0;
+ 371   1      
+ 372   1          SPI_CS = 0;
+ 373   1          SPI_Tx(0x03);                                       // read command
+ 374   1          SPI_Tx(((StarAddr & 0xFFFFFF) >> 16));              // send 3 address bytes
+ 375   1          SPI_Tx(((StarAddr & 0xFFFF) >> 8));
+ 376   1          SPI_Tx(StarAddr & 0xFF);
+ 377   1          SPI_Rx(dat);
+ 378   1          SPI_CS = 1;
+ 379   1      
+ 380   1          return dat;                                         // return one byte read
+ 381   1      }
+ 382          
+ 383          /*******************************************************************************
+ 384          * Function Name  : ByteWriteFlash
+ 385          * Description    : 写数据
+ 386          * Input          : StarAddr  -Destination Address 000000H - 1FFFFFH
+ 387          *                  dat -要写入的数据
+ 388          * Output         : None
+ 389          * Return         : None
+ 390          *******************************************************************************/
+ 391          void ByteWriteFlash(UINT32 StarAddr, UINT8 dat)
+ 392          {
+ 393   1          WriteFlashEnable();
+ 394   1          SPI_CS = 0;
+ 395   1          SPI_Tx(0x02);                                       // Page Program
+ 396   1          SPI_Tx(((StarAddr & 0xFFFFFF) >> 16));              // 发送3字节地址
+ 397   1          SPI_Tx(((StarAddr & 0xFFFF) >> 8));
+ 398   1          SPI_Tx(StarAddr & 0xFF);
+ 399   1          SPI_Tx(dat);                                        // 发送要写的数据
+ 400   1          SPI_CS = 1;
+ 401   1          WaitFlashBusy();
+ 402   1      }
+ 403          
+ 404          /*******************************************************************************
+ 405          * Function Name  : BulkReadFlash
+ 406          * Description    : 读取起始地址(StarAddr)内多个字节(Len)的数据.存入缓冲区RcvBuffer中
+ 407          * Input          : StarAddr -Destination Address 000000H - 1FFFFFH
+ 408                             Len 读取数据长度
+ 409                             RcvBuffer 接收缓冲区起始地址
+ 410          * Output         : None
+ 411          * Return         : None
+ 412          *******************************************************************************/
+ 413          void BulkReadFlash(UINT32 StarAddr, UINT16 Len, PUINT8 RcvBuffer)
+ 414          {
+ 415   1          UINT16 i;
+ 416   1      
+ 417   1          SPI_CS = 0;
+ 418   1          SPI_Tx(0x0b);                                       // fast read command
+ 419   1          SPI_Tx(((StarAddr & 0xFFFFFF) >> 16));              // send 3 address bytes
+ 420   1          SPI_Tx(((StarAddr & 0xFFFF) >> 8));
+ 421   1          SPI_Tx(StarAddr & 0xFF);
+ 422   1          SPI_Tx(0x00);
+ 423   1          for(i = 0; i < Len; i++)
+ 424   1          {
+ 425   2              SPI_Rx(RcvBuffer[i]);                           // 接收数据
+ 426   2          }
+ 427   1          SPI_CS = 1;
+ 428   1      }
+ 429          
+ 430          /*******************************************************************************
+ 431          * Function Name  : BulkWriteFlash
+ 432          * Description    : 将数据写入外部Flash
+ 433          * Input          : StarAddr  -Destination Address 000000H - 1FFFFFH
+ 434                             Len 发送数据长度
+ 435          *                  SendBuffer -发送数据缓冲区
+ 436          * Output         : None
+ 437          * Return         : None
+ 438          *******************************************************************************/
+ 439          void BulkWriteFlash(UINT32 StarAddr, UINT16 Len, PUINT8 SendBuffer)
+ 440          {
+ 441   1          UINT16 i;
+ 442   1      
+ 443   1          WaitFlashBusy();                                // 等待Flash忙结束
+ 444   1          WriteFlashStatus(0x00);                         // 设置芯片为无保护
+ 445   1          WriteFlashEnable();                             // 写使能
+ 446   1      
+ 447   1          SPI_CS = 0;
+ 448   1          SPI_Tx(0x02);                                   // Page Program
+ 449   1          SPI_Tx(((StarAddr & 0xFFFFFF) >> 16));          // 发送3字节地址
+ 450   1          SPI_Tx(((StarAddr & 0xFFFF) >> 8));
+ 451   1          SPI_Tx(StarAddr & 0xFF);
+ 452   1          for(i = 0; i < Len; i++)
+ 453   1          {
+ 454   2              SPI_Tx(SendBuffer[i]);
+ 455   2          }
+ 456   1          SPI_CS = 1;
+ 457   1          WriteFlashForbidden();                          // 写禁止
+ 458   1          WaitFlashBusy();                                // 等待Flash忙结束
+ 459   1      }
+C51 COMPILER V9.60.0.0   FLASH                                                                         01/03/2024 01:43:49 PAGE 2   
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+             ; FUNCTION CheckFilesystem (BEGIN)
+                                           ; SOURCE LINE # 17
+                                           ; SOURCE LINE # 19
+0000 900000      R     MOV     DPTR,#ReadFlashAddr
+0003 120000      E     LCALL   ?C?LSTKXDATA
+0006 00                DB      00H
+0007 04                DB      04H
+0008 10                DB      010H
+0009 00                DB      00H
+                                           ; SOURCE LINE # 22
+000A E4                CLR     A
+000B 900000      R     MOV     DPTR,#i
+000E F0                MOVX    @DPTR,A
+000F         ?C0001:
+000F 900000      R     MOV     DPTR,#i
+0012 E0                MOVX    A,@DPTR
+0013 FF                MOV     R7,A
+0014 C3                CLR     C
+0015 9410              SUBB    A,#010H
+0017 7480              MOV     A,#080H
+0019 9480              SUBB    A,#080H
+001B 5032              JNC     ?C0002
+                                           ; SOURCE LINE # 23
+001D E4                CLR     A
+001E FC                MOV     R4,A
+001F FD                MOV     R5,A
+0020 FE                MOV     R6,A
+0021 A3                INC     DPTR
+0022 E0                MOVX    A,@DPTR
+0023 F8                MOV     R0,A
+0024 A3                INC     DPTR
+0025 E0                MOVX    A,@DPTR
+0026 F9                MOV     R1,A
+0027 A3                INC     DPTR
+0028 E0                MOVX    A,@DPTR
+0029 FA                MOV     R2,A
+002A A3                INC     DPTR
+002B E0                MOVX    A,@DPTR
+002C 2F                ADD     A,R7
+002D FF                MOV     R7,A
+002E EE                MOV     A,R6
+002F 3A                ADDC    A,R2
+0030 FE                MOV     R6,A
+0031 ED                MOV     A,R5
+0032 39                ADDC    A,R1
+0033 FD                MOV     R5,A
+0034 EC                MOV     A,R4
+0035 38                ADDC    A,R0
+0036 FC                MOV     R4,A
+0037 120000      R     LCALL   _ByteReadFlash
+003A 900000      R     MOV     DPTR,#i
+003D E0                MOVX    A,@DPTR
+003E 900000      R     MOV     DPTR,#ADDR_0x41000
+0041 93                MOVC    A,@A+DPTR
+0042 6F                XRL     A,R7
+0043 6002              JZ      ?C0003
+0045 C3                CLR     C
+0046 22                RET     
+                                           ; SOURCE LINE # 24
+0047         ?C0003:
+0047 900000      R     MOV     DPTR,#i
+004A E0                MOVX    A,@DPTR
+004B 04                INC     A
+004C F0                MOVX    @DPTR,A
+004D 80C0              SJMP    ?C0001
+004F         ?C0002:
+                                           ; SOURCE LINE # 26
+004F E4                CLR     A
+0050 900000      R     MOV     DPTR,#i
+0053 F0                MOVX    @DPTR,A
+0054         ?C0006:
+0054 900000      R     MOV     DPTR,#i
+0057 E0                MOVX    A,@DPTR
+0058 FF                MOV     R7,A
+0059 C3                CLR     C
+005A 9410              SUBB    A,#010H
+005C 7480              MOV     A,#080H
+005E 9480              SUBB    A,#080H
+0060 501C              JNC     ?C0007
+                                           ; SOURCE LINE # 27
+0062 E4                CLR     A
+0063 FC                MOV     R4,A
+0064 FD                MOV     R5,A
+0065 FE                MOV     R6,A
+0066 120000      R     LCALL   _ByteReadFlash
+0069 900000      R     MOV     DPTR,#i
+006C E0                MOVX    A,@DPTR
+006D 900000      R     MOV     DPTR,#ADDR_0x00
+0070 93                MOVC    A,@A+DPTR
+0071 6F                XRL     A,R7
+0072 6002              JZ      ?C0008
+0074 C3                CLR     C
+0075 22                RET     
+                                           ; SOURCE LINE # 28
+0076         ?C0008:
+0076 900000      R     MOV     DPTR,#i
+0079 E0                MOVX    A,@DPTR
+007A 04                INC     A
+007B F0                MOVX    @DPTR,A
+007C 80D6              SJMP    ?C0006
+007E         ?C0007:
+                                           ; SOURCE LINE # 29
+007E D3                SETB    C
+                                           ; SOURCE LINE # 30
+007F         ?C0005:
+007F 22                RET     
+             ; FUNCTION CheckFilesystem (END)
+
+             ; FUNCTION L?0190 (BEGIN)
+0000 7F00              MOV     R7,#00H
+0002 7E10              MOV     R6,#010H
+0004 7C00              MOV     R4,#00H
+             ; FUNCTION _WriteDataToFlash (BEGIN)
+                                           ; SOURCE LINE # 32
+0006 900000      R     MOV     DPTR,#StartAddr
+0009 120000      E     LCALL   ?C?LSTXDATA
+                                           ; SOURCE LINE # 33
+;---- Variable 'BlockSize' assigned to Register 'R4/R5/R6/R7' ----
+000C 7F00              MOV     R7,#00H
+000E 7E10              MOV     R6,#010H
+0010 7D00              MOV     R5,#00H
+0012 7C00              MOV     R4,#00H
+                                           ; SOURCE LINE # 34
+0014 900000      R     MOV     DPTR,#StartAddr
+0017 E0                MOVX    A,@DPTR
+0018 F8                MOV     R0,A
+0019 A3                INC     DPTR
+001A E0                MOVX    A,@DPTR
+001B F9                MOV     R1,A
+001C A3                INC     DPTR
+001D E0                MOVX    A,@DPTR
+001E FA                MOV     R2,A
+001F A3                INC     DPTR
+0020 E0                MOVX    A,@DPTR
+0021 2F                ADD     A,R7
+0022 FF                MOV     R7,A
+0023 EA                MOV     A,R2
+0024 3E                ADDC    A,R6
+0025 FE                MOV     R6,A
+0026 ED                MOV     A,R5
+0027 39                ADDC    A,R1
+0028 FD                MOV     R5,A
+0029 EC                MOV     A,R4
+002A 38                ADDC    A,R0
+002B FC                MOV     R4,A
+002C 900000      R     MOV     DPTR,#EndAddr
+002F 120000      E     LCALL   ?C?LSTXDATA
+                                           ; SOURCE LINE # 35
+0032 900000      R     MOV     DPTR,#StartAddr
+0035 E0                MOVX    A,@DPTR
+0036 FC                MOV     R4,A
+0037 A3                INC     DPTR
+0038 E0                MOVX    A,@DPTR
+0039 FD                MOV     R5,A
+003A A3                INC     DPTR
+003B E0                MOVX    A,@DPTR
+003C FE                MOV     R6,A
+003D A3                INC     DPTR
+003E E0                MOVX    A,@DPTR
+003F FF                MOV     R7,A
+0040 900000      R     MOV     DPTR,#CurrentAddr
+0043 120000      E     LCALL   ?C?LSTXDATA
+                                           ; SOURCE LINE # 39
+0046 900000      R     MOV     DPTR,#StartAddr
+0049 120000      R     LCALL   L?0192
+004C         ?C0010:
+                                           ; SOURCE LINE # 42
+004C 900000      R     MOV     DPTR,#DataLen
+004F E0                MOVX    A,@DPTR
+0050 FE                MOV     R6,A
+0051 A3                INC     DPTR
+0052 E0                MOVX    A,@DPTR
+0053 FF                MOV     R7,A
+0054 E4                CLR     A
+0055 FC                MOV     R4,A
+0056 FD                MOV     R5,A
+0057 900000      R     MOV     DPTR,#StartAddr
+005A E0                MOVX    A,@DPTR
+005B F8                MOV     R0,A
+005C A3                INC     DPTR
+005D E0                MOVX    A,@DPTR
+005E F9                MOV     R1,A
+005F A3                INC     DPTR
+0060 E0                MOVX    A,@DPTR
+0061 FA                MOV     R2,A
+0062 A3                INC     DPTR
+0063 E0                MOVX    A,@DPTR
+0064 2F                ADD     A,R7
+0065 FF                MOV     R7,A
+0066 EA                MOV     A,R2
+0067 3E                ADDC    A,R6
+0068 FE                MOV     R6,A
+0069 ED                MOV     A,R5
+006A 39                ADDC    A,R1
+006B FD                MOV     R5,A
+006C EC                MOV     A,R4
+006D 38                ADDC    A,R0
+006E FC                MOV     R4,A
+006F 900000      R     MOV     DPTR,#CurrentAddr
+0072 E0                MOVX    A,@DPTR
+0073 F8                MOV     R0,A
+0074 A3                INC     DPTR
+0075 E0                MOVX    A,@DPTR
+0076 F9                MOV     R1,A
+0077 A3                INC     DPTR
+0078 E0                MOVX    A,@DPTR
+0079 FA                MOV     R2,A
+007A A3                INC     DPTR
+007B E0                MOVX    A,@DPTR
+007C FB                MOV     R3,A
+007D C3                CLR     C
+007E 120000      E     LCALL   ?C?ULCMP
+0081 4003              JC      $ + 5H
+0083 020000      R     LJMP    ?C0014
+                                           ; SOURCE LINE # 44
+0086 900000      R     MOV     DPTR,#StartAddr
+0089 E0                MOVX    A,@DPTR
+008A F8                MOV     R0,A
+008B A3                INC     DPTR
+008C E0                MOVX    A,@DPTR
+008D F9                MOV     R1,A
+008E A3                INC     DPTR
+008F E0                MOVX    A,@DPTR
+0090 FA                MOV     R2,A
+0091 A3                INC     DPTR
+0092 E0                MOVX    A,@DPTR
+0093 FB                MOV     R3,A
+0094 900000      R     MOV     DPTR,#CurrentAddr
+0097 E0                MOVX    A,@DPTR
+0098 FC                MOV     R4,A
+0099 A3                INC     DPTR
+009A E0                MOVX    A,@DPTR
+009B FD                MOV     R5,A
+009C A3                INC     DPTR
+009D E0                MOVX    A,@DPTR
+009E FE                MOV     R6,A
+009F A3                INC     DPTR
+00A0 E0                MOVX    A,@DPTR
+00A1 C3                CLR     C
+00A2 9B                SUBB    A,R3
+00A3 FB                MOV     R3,A
+00A4 EE                MOV     A,R6
+00A5 9A                SUBB    A,R2
+00A6 FA                MOV     R2,A
+00A7 ED                MOV     A,R5
+00A8 99                SUBB    A,R1
+00A9 F9                MOV     R1,A
+00AA EC                MOV     A,R4
+00AB 98                SUBB    A,R0
+00AC F8                MOV     R0,A
+00AD 900000      R     MOV     DPTR,#DataLen
+00B0 E0                MOVX    A,@DPTR
+00B1 FE                MOV     R6,A
+00B2 A3                INC     DPTR
+00B3 E0                MOVX    A,@DPTR
+00B4 FF                MOV     R7,A
+00B5 C3                CLR     C
+00B6 EF                MOV     A,R7
+00B7 9B                SUBB    A,R3
+00B8 FF                MOV     R7,A
+00B9 EE                MOV     A,R6
+00BA 9A                SUBB    A,R2
+00BB FE                MOV     R6,A
+00BC E4                CLR     A
+00BD 99                SUBB    A,R1
+00BE FD                MOV     R5,A
+00BF E4                CLR     A
+00C0 98                SUBB    A,R0
+00C1 FC                MOV     R4,A
+00C2 E4                CLR     A
+00C3 7B40              MOV     R3,#040H
+00C5 FA                MOV     R2,A
+00C6 F9                MOV     R1,A
+00C7 F8                MOV     R0,A
+00C8 D3                SETB    C
+00C9 120000      E     LCALL   ?C?ULCMP
+00CC 4033              JC      ?C0012
+                                           ; SOURCE LINE # 45
+00CE 900000      R     MOV     DPTR,#StartAddr
+00D1 A3                INC     DPTR
+00D2 A3                INC     DPTR
+00D3 E0                MOVX    A,@DPTR
+00D4 FE                MOV     R6,A
+00D5 A3                INC     DPTR
+00D6 E0                MOVX    A,@DPTR
+00D7 FF                MOV     R7,A
+00D8 CB                XCH     A,R3
+00D9 EF                MOV     A,R7
+00DA CB                XCH     A,R3
+00DB CA                XCH     A,R2
+00DC EE                MOV     A,R6
+00DD CA                XCH     A,R2
+00DE 900000      R     MOV     DPTR,#CurrentAddr
+00E1 A3                INC     DPTR
+00E2 A3                INC     DPTR
+00E3 E0                MOVX    A,@DPTR
+00E4 FE                MOV     R6,A
+00E5 A3                INC     DPTR
+00E6 E0                MOVX    A,@DPTR
+00E7 9B                SUBB    A,R3
+00E8 FF                MOV     R7,A
+00E9 EE                MOV     A,R6
+00EA 9A                SUBB    A,R2
+00EB FE                MOV     R6,A
+00EC C3                CLR     C
+00ED 900000      R     MOV     DPTR,#DataLen+01H
+00F0 E0                MOVX    A,@DPTR
+00F1 9F                SUBB    A,R7
+00F2 FF                MOV     R7,A
+00F3 900000      R     MOV     DPTR,#DataLen
+00F6 E0                MOVX    A,@DPTR
+00F7 9E                SUBB    A,R6
+00F8 900000      R     MOV     DPTR,#BytesToWrite
+00FB F0                MOVX    @DPTR,A
+00FC A3                INC     DPTR
+00FD EF                MOV     A,R7
+00FE F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 46
+00FF 8009              SJMP    ?C0013
+0101         ?C0012:
+                                           ; SOURCE LINE # 47
+0101 900000      R     MOV     DPTR,#BytesToWrite
+0104 E4                CLR     A
+0105 F0                MOVX    @DPTR,A
+0106 A3                INC     DPTR
+0107 7440              MOV     A,#040H
+0109 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 48
+010A         ?C0013:
+                                           ; SOURCE LINE # 49
+010A 900000      R     MOV     DPTR,#BytesToWrite
+010D E0                MOVX    A,@DPTR
+010E FF                MOV     R7,A
+010F A3                INC     DPTR
+0110 E0                MOVX    A,@DPTR
+0111 900000      R     MOV     DPTR,#?_BulkWriteFlash?BYTE+04H
+0114 CF                XCH     A,R7
+0115 F0                MOVX    @DPTR,A
+0116 A3                INC     DPTR
+0117 EF                MOV     A,R7
+0118 F0                MOVX    @DPTR,A
+0119 900000      R     MOV     DPTR,#StartAddr
+011C A3                INC     DPTR
+011D A3                INC     DPTR
+011E E0                MOVX    A,@DPTR
+011F FE                MOV     R6,A
+0120 A3                INC     DPTR
+0121 E0                MOVX    A,@DPTR
+0122 FF                MOV     R7,A
+0123 CB                XCH     A,R3
+0124 EF                MOV     A,R7
+0125 CB                XCH     A,R3
+0126 CA                XCH     A,R2
+0127 EE                MOV     A,R6
+0128 CA                XCH     A,R2
+0129 900000      R     MOV     DPTR,#CurrentAddr
+012C A3                INC     DPTR
+012D A3                INC     DPTR
+012E E0                MOVX    A,@DPTR
+012F FE                MOV     R6,A
+0130 A3                INC     DPTR
+0131 E0                MOVX    A,@DPTR
+0132 C3                CLR     C
+0133 9B                SUBB    A,R3
+0134 FF                MOV     R7,A
+0135 EE                MOV     A,R6
+0136 9A                SUBB    A,R2
+0137 FE                MOV     R6,A
+0138 900000      R     MOV     DPTR,#Data+01H
+013B E0                MOVX    A,@DPTR
+013C 2F                ADD     A,R7
+013D FF                MOV     R7,A
+013E 900000      R     MOV     DPTR,#Data
+0141 E0                MOVX    A,@DPTR
+0142 3E                ADDC    A,R6
+0143 FE                MOV     R6,A
+0144 CA                XCH     A,R2
+0145 EE                MOV     A,R6
+0146 CA                XCH     A,R2
+0147 C9                XCH     A,R1
+0148 EF                MOV     A,R7
+0149 C9                XCH     A,R1
+014A 900000      R     MOV     DPTR,#?_BulkWriteFlash?BYTE+06H
+014D 74FF              MOV     A,#0FFH
+014F F0                MOVX    @DPTR,A
+0150 A3                INC     DPTR
+0151 EA                MOV     A,R2
+0152 F0                MOVX    @DPTR,A
+0153 A3                INC     DPTR
+0154 E9                MOV     A,R1
+0155 F0                MOVX    @DPTR,A
+0156 900000      R     MOV     DPTR,#CurrentAddr
+0159 E0                MOVX    A,@DPTR
+015A FC                MOV     R4,A
+015B A3                INC     DPTR
+015C E0                MOVX    A,@DPTR
+015D FD                MOV     R5,A
+015E A3                INC     DPTR
+015F E0                MOVX    A,@DPTR
+0160 FE                MOV     R6,A
+0161 A3                INC     DPTR
+0162 E0                MOVX    A,@DPTR
+0163 FF                MOV     R7,A
+0164 120000      R     LCALL   _BulkWriteFlash
+                                           ; SOURCE LINE # 50
+0167 900000      R     MOV     DPTR,#CurrentAddr
+016A E0                MOVX    A,@DPTR
+016B F8                MOV     R0,A
+016C A3                INC     DPTR
+016D E0                MOVX    A,@DPTR
+016E F9                MOV     R1,A
+016F A3                INC     DPTR
+0170 E0                MOVX    A,@DPTR
+0171 FA                MOV     R2,A
+0172 A3                INC     DPTR
+0173 E0                MOVX    A,@DPTR
+0174 FB                MOV     R3,A
+0175 A3                INC     DPTR
+0176 E0                MOVX    A,@DPTR
+0177 FE                MOV     R6,A
+0178 A3                INC     DPTR
+0179 E0                MOVX    A,@DPTR
+017A FF                MOV     R7,A
+017B E4                CLR     A
+017C FC                MOV     R4,A
+017D FD                MOV     R5,A
+017E EB                MOV     A,R3
+017F 2F                ADD     A,R7
+0180 FF                MOV     R7,A
+0181 EA                MOV     A,R2
+0182 3E                ADDC    A,R6
+0183 FE                MOV     R6,A
+0184 ED                MOV     A,R5
+0185 39                ADDC    A,R1
+0186 FD                MOV     R5,A
+0187 EC                MOV     A,R4
+0188 38                ADDC    A,R0
+0189 FC                MOV     R4,A
+018A 900000      R     MOV     DPTR,#CurrentAddr
+018D 120000      E     LCALL   ?C?LSTXDATA
+                                           ; SOURCE LINE # 51
+0190 020000      R     LJMP    ?C0010
+0193         ?C0014:
+                                           ; SOURCE LINE # 54
+0193 900000      R     MOV     DPTR,#EndAddr
+0196 E0                MOVX    A,@DPTR
+0197 FC                MOV     R4,A
+0198 A3                INC     DPTR
+0199 E0                MOVX    A,@DPTR
+019A FD                MOV     R5,A
+019B A3                INC     DPTR
+019C E0                MOVX    A,@DPTR
+019D FE                MOV     R6,A
+019E A3                INC     DPTR
+019F E0                MOVX    A,@DPTR
+01A0 FF                MOV     R7,A
+01A1 A3                INC     DPTR
+01A2 E0                MOVX    A,@DPTR
+01A3 F8                MOV     R0,A
+01A4 A3                INC     DPTR
+01A5 E0                MOVX    A,@DPTR
+01A6 F9                MOV     R1,A
+01A7 A3                INC     DPTR
+01A8 E0                MOVX    A,@DPTR
+01A9 FA                MOV     R2,A
+01AA A3                INC     DPTR
+01AB E0                MOVX    A,@DPTR
+01AC FB                MOV     R3,A
+01AD C3                CLR     C
+01AE 120000      E     LCALL   ?C?ULCMP
+01B1 4003              JC      $ + 5H
+01B3 020000      R     LJMP    ?C0018
+                                           ; SOURCE LINE # 55
+01B6 900000      R     MOV     DPTR,#CurrentAddr
+01B9 E0                MOVX    A,@DPTR
+01BA F8                MOV     R0,A
+01BB 900000      R     MOV     DPTR,#EndAddr
+01BE E0                MOVX    A,@DPTR
+01BF FC                MOV     R4,A
+01C0 A3                INC     DPTR
+01C1 E0                MOVX    A,@DPTR
+01C2 FD                MOV     R5,A
+01C3 A3                INC     DPTR
+01C4 E0                MOVX    A,@DPTR
+01C5 FE                MOV     R6,A
+01C6 A3                INC     DPTR
+01C7 E0                MOVX    A,@DPTR
+01C8 C3                CLR     C
+01C9 9B                SUBB    A,R3
+01CA FF                MOV     R7,A
+01CB EE                MOV     A,R6
+01CC 9A                SUBB    A,R2
+01CD FE                MOV     R6,A
+01CE ED                MOV     A,R5
+01CF 99                SUBB    A,R1
+01D0 FD                MOV     R5,A
+01D1 EC                MOV     A,R4
+01D2 98                SUBB    A,R0
+01D3 FC                MOV     R4,A
+01D4 E4                CLR     A
+01D5 7B40              MOV     R3,#040H
+01D7 FA                MOV     R2,A
+01D8 F9                MOV     R1,A
+01D9 F8                MOV     R0,A
+01DA D3                SETB    C
+01DB 120000      E     LCALL   ?C?ULCMP
+01DE 4026              JC      ?C0016
+01E0 900000      R     MOV     DPTR,#CurrentAddr
+01E3 E0                MOVX    A,@DPTR
+01E4 F8                MOV     R0,A
+01E5 A3                INC     DPTR
+01E6 E0                MOVX    A,@DPTR
+01E7 F9                MOV     R1,A
+01E8 A3                INC     DPTR
+01E9 E0                MOVX    A,@DPTR
+01EA FA                MOV     R2,A
+01EB A3                INC     DPTR
+01EC E0                MOVX    A,@DPTR
+01ED FB                MOV     R3,A
+01EE 900000      R     MOV     DPTR,#EndAddr
+01F1 E0                MOVX    A,@DPTR
+01F2 FC                MOV     R4,A
+01F3 A3                INC     DPTR
+01F4 E0                MOVX    A,@DPTR
+01F5 FD                MOV     R5,A
+01F6 A3                INC     DPTR
+01F7 E0                MOVX    A,@DPTR
+01F8 FE                MOV     R6,A
+01F9 A3                INC     DPTR
+01FA E0                MOVX    A,@DPTR
+01FB 9B                SUBB    A,R3
+01FC FF                MOV     R7,A
+01FD EE                MOV     A,R6
+01FE 9A                SUBB    A,R2
+01FF FE                MOV     R6,A
+0200 ED                MOV     A,R5
+0201 99                SUBB    A,R1
+0202 EC                MOV     A,R4
+0203 98                SUBB    A,R0
+0204 8004              SJMP    ?C0017
+0206         ?C0016:
+0206 E4                CLR     A
+0207 7F40              MOV     R7,#040H
+0209 FE                MOV     R6,A
+020A         ?C0017:
+020A 900000      R     MOV     DPTR,#BytesToWrite
+020D EE                MOV     A,R6
+020E F0                MOVX    @DPTR,A
+020F FA                MOV     R2,A
+0210 A3                INC     DPTR
+0211 EF                MOV     A,R7
+0212 F0                MOVX    @DPTR,A
+0213 FB                MOV     R3,A
+0214 CA                XCH     A,R2
+0215 CA                XCH     A,R2
+0216 CB                XCH     A,R3
+0217 CB                XCH     A,R3
+                                           ; SOURCE LINE # 56
+0218 900000      R     MOV     DPTR,#CurrentAddr
+021B E0                MOVX    A,@DPTR
+021C FC                MOV     R4,A
+021D A3                INC     DPTR
+021E E0                MOVX    A,@DPTR
+021F FD                MOV     R5,A
+0220 A3                INC     DPTR
+0221 E0                MOVX    A,@DPTR
+0222 FE                MOV     R6,A
+0223 A3                INC     DPTR
+0224 E0                MOVX    A,@DPTR
+0225 FF                MOV     R7,A
+0226 900000      R     MOV     DPTR,#?_BulkWriteFlash?BYTE+04H
+0229 EA                MOV     A,R2
+022A F0                MOVX    @DPTR,A
+022B EB                MOV     A,R3
+022C 120000      R     LCALL   L?0191
+                                           ; SOURCE LINE # 57
+022F 900000      R     MOV     DPTR,#CurrentAddr
+0232 E0                MOVX    A,@DPTR
+0233 F8                MOV     R0,A
+0234 A3                INC     DPTR
+0235 E0                MOVX    A,@DPTR
+0236 F9                MOV     R1,A
+0237 A3                INC     DPTR
+0238 E0                MOVX    A,@DPTR
+0239 FA                MOV     R2,A
+023A A3                INC     DPTR
+023B E0                MOVX    A,@DPTR
+023C FB                MOV     R3,A
+023D A3                INC     DPTR
+023E E0                MOVX    A,@DPTR
+023F FE                MOV     R6,A
+0240 A3                INC     DPTR
+0241 E0                MOVX    A,@DPTR
+0242 FF                MOV     R7,A
+0243 E4                CLR     A
+0244 FC                MOV     R4,A
+0245 FD                MOV     R5,A
+0246 EB                MOV     A,R3
+0247 2F                ADD     A,R7
+0248 FF                MOV     R7,A
+0249 EA                MOV     A,R2
+024A 3E                ADDC    A,R6
+024B FE                MOV     R6,A
+024C ED                MOV     A,R5
+024D 39                ADDC    A,R1
+024E FD                MOV     R5,A
+024F EC                MOV     A,R4
+0250 38                ADDC    A,R0
+0251 FC                MOV     R4,A
+0252 900000      R     MOV     DPTR,#CurrentAddr
+0255 120000      E     LCALL   ?C?LSTXDATA
+                                           ; SOURCE LINE # 58
+0258 020000      R     LJMP    ?C0014
+                                           ; SOURCE LINE # 59
+025B         ?C0018:
+025B 22                RET     
+             ; FUNCTION _WriteDataToFlash (END)
+
+             ; FUNCTION FormatFlash (BEGIN)
+                                           ; SOURCE LINE # 61
+                                           ; SOURCE LINE # 63
+0000 900000      R     MOV     DPTR,#i
+0003 120000      E     LCALL   ?C?LSTKXDATA
+0006 00                DB      00H
+0007 00                DB      00H
+0008 00                DB      00H
+0009 00                DB      00H
+000A         ?C0019:
+000A E4                CLR     A
+000B FF                MOV     R7,A
+000C FE                MOV     R6,A
+000D 7D08              MOV     R5,#08H
+000F FC                MOV     R4,A
+0010 900000      R     MOV     DPTR,#i
+0013 E0                MOVX    A,@DPTR
+0014 F8                MOV     R0,A
+0015 A3                INC     DPTR
+0016 E0                MOVX    A,@DPTR
+0017 F9                MOV     R1,A
+0018 A3                INC     DPTR
+0019 E0                MOVX    A,@DPTR
+001A FA                MOV     R2,A
+001B A3                INC     DPTR
+001C E0                MOVX    A,@DPTR
+001D FB                MOV     R3,A
+001E C3                CLR     C
+001F 120000      E     LCALL   ?C?ULCMP
+0022 5028              JNC     ?C0020
+                                           ; SOURCE LINE # 64
+                                           ; SOURCE LINE # 65
+0024 900000      R     MOV     DPTR,#i
+0027 120000      R     LCALL   L?0192
+                                           ; SOURCE LINE # 66
+002A 900000      R     MOV     DPTR,#i
+002D E0                MOVX    A,@DPTR
+002E FC                MOV     R4,A
+002F A3                INC     DPTR
+0030 E0                MOVX    A,@DPTR
+0031 FD                MOV     R5,A
+0032 A3                INC     DPTR
+0033 E0                MOVX    A,@DPTR
+0034 FE                MOV     R6,A
+0035 A3                INC     DPTR
+0036 E0                MOVX    A,@DPTR
+0037 2400              ADD     A,#00H
+0039 FF                MOV     R7,A
+003A EE                MOV     A,R6
+003B 3410              ADDC    A,#010H
+003D FE                MOV     R6,A
+003E E4                CLR     A
+003F 3D                ADDC    A,R5
+0040 FD                MOV     R5,A
+0041 E4                CLR     A
+0042 3C                ADDC    A,R4
+0043 FC                MOV     R4,A
+0044 900000      R     MOV     DPTR,#i
+0047 120000      E     LCALL   ?C?LSTXDATA
+004A 80BE              SJMP    ?C0019
+004C         ?C0020:
+                                           ; SOURCE LINE # 67
+004C 900000      R     MOV     DPTR,#i
+004F 120000      E     LCALL   ?C?LSTKXDATA
+0052 00                DB      00H
+0053 00                DB      00H
+0054 00                DB      00H
+0055 00                DB      00H
+0056         ?C0022:
+0056 E4                CLR     A
+0057 FF                MOV     R7,A
+0058 FE                MOV     R6,A
+0059 7D08              MOV     R5,#08H
+005B FC                MOV     R4,A
+005C 900000      R     MOV     DPTR,#i
+005F E0                MOVX    A,@DPTR
+0060 F8                MOV     R0,A
+0061 A3                INC     DPTR
+0062 E0                MOVX    A,@DPTR
+0063 F9                MOV     R1,A
+0064 A3                INC     DPTR
+0065 E0                MOVX    A,@DPTR
+0066 FA                MOV     R2,A
+0067 A3                INC     DPTR
+0068 E0                MOVX    A,@DPTR
+0069 FB                MOV     R3,A
+006A C3                CLR     C
+006B 120000      E     LCALL   ?C?ULCMP
+006E 5039              JNC     ?C0023
+                                           ; SOURCE LINE # 68
+                                           ; SOURCE LINE # 69
+0070 900000      R     MOV     DPTR,#i
+0073 E0                MOVX    A,@DPTR
+0074 FC                MOV     R4,A
+0075 A3                INC     DPTR
+0076 E0                MOVX    A,@DPTR
+0077 FD                MOV     R5,A
+0078 A3                INC     DPTR
+0079 E0                MOVX    A,@DPTR
+007A FE                MOV     R6,A
+007B A3                INC     DPTR
+007C E0                MOVX    A,@DPTR
+007D FF                MOV     R7,A
+007E 900000      R     MOV     DPTR,#?_BulkWriteFlash?BYTE+04H
+0081 E4                CLR     A
+0082 F0                MOVX    @DPTR,A
+0083 7480              MOV     A,#080H
+0085 120000      R     LCALL   L?0191
+                                           ; SOURCE LINE # 70
+0088 900000      R     MOV     DPTR,#i
+008B E0                MOVX    A,@DPTR
+008C FC                MOV     R4,A
+008D A3                INC     DPTR
+008E E0                MOVX    A,@DPTR
+008F FD                MOV     R5,A
+0090 A3                INC     DPTR
+0091 E0                MOVX    A,@DPTR
+0092 FE                MOV     R6,A
+0093 A3                INC     DPTR
+0094 E0                MOVX    A,@DPTR
+0095 2480              ADD     A,#080H
+0097 FF                MOV     R7,A
+0098 E4                CLR     A
+0099 3E                ADDC    A,R6
+009A FE                MOV     R6,A
+009B E4                CLR     A
+009C 3D                ADDC    A,R5
+009D FD                MOV     R5,A
+009E E4                CLR     A
+009F 3C                ADDC    A,R4
+00A0 FC                MOV     R4,A
+00A1 900000      R     MOV     DPTR,#i
+00A4 120000      E     LCALL   ?C?LSTXDATA
+00A7 80AD              SJMP    ?C0022
+00A9         ?C0023:
+                                           ; SOURCE LINE # 71
+00A9 900000      R     MOV     DPTR,#?_WriteDataToFlash?BYTE+04H
+00AC 7400        R     MOV     A,#HIGH ADDR_0x00
+00AE F0                MOVX    @DPTR,A
+00AF A3                INC     DPTR
+00B0 7400        R     MOV     A,#LOW ADDR_0x00
+00B2 F0                MOVX    @DPTR,A
+00B3 A3                INC     DPTR
+00B4 7402              MOV     A,#02H
+00B6 F0                MOVX    @DPTR,A
+00B7 A3                INC     DPTR
+00B8 E4                CLR     A
+00B9 F0                MOVX    @DPTR,A
+00BA FF                MOV     R7,A
+00BB FE                MOV     R6,A
+00BC FD                MOV     R5,A
+00BD FC                MOV     R4,A
+00BE 120000      R     LCALL   _WriteDataToFlash
+                                           ; SOURCE LINE # 72
+00C1 900000      R     MOV     DPTR,#?_WriteDataToFlash?BYTE+04H
+00C4 7400        R     MOV     A,#HIGH ADDR_0x1000_0x21000
+00C6 F0                MOVX    @DPTR,A
+00C7 A3                INC     DPTR
+00C8 7400        R     MOV     A,#LOW ADDR_0x1000_0x21000
+00CA F0                MOVX    @DPTR,A
+00CB A3                INC     DPTR
+00CC E4                CLR     A
+00CD F0                MOVX    @DPTR,A
+00CE A3                INC     DPTR
+00CF 7440              MOV     A,#040H
+00D1 F0                MOVX    @DPTR,A
+00D2 7D00              MOV     R5,#00H
+00D4 120000      R     LCALL   L?0190
+                                           ; SOURCE LINE # 73
+00D7 900000      R     MOV     DPTR,#?_WriteDataToFlash?BYTE+04H
+00DA 7400        R     MOV     A,#HIGH ADDR_0x1000_0x21000
+00DC F0                MOVX    @DPTR,A
+00DD A3                INC     DPTR
+00DE 7400        R     MOV     A,#LOW ADDR_0x1000_0x21000
+00E0 F0                MOVX    @DPTR,A
+00E1 A3                INC     DPTR
+00E2 E4                CLR     A
+00E3 F0                MOVX    @DPTR,A
+00E4 A3                INC     DPTR
+00E5 7440              MOV     A,#040H
+00E7 F0                MOVX    @DPTR,A
+00E8 7D02              MOV     R5,#02H
+00EA 120000      R     LCALL   L?0190
+                                           ; SOURCE LINE # 74
+00ED 900000      R     MOV     DPTR,#?_WriteDataToFlash?BYTE+04H
+00F0 7400        R     MOV     A,#HIGH ADDR_0x41000
+00F2 F0                MOVX    @DPTR,A
+00F3 A3                INC     DPTR
+00F4 7400        R     MOV     A,#LOW ADDR_0x41000
+00F6 F0                MOVX    @DPTR,A
+00F7 A3                INC     DPTR
+00F8 E4                CLR     A
+00F9 F0                MOVX    @DPTR,A
+00FA A3                INC     DPTR
+00FB 7480              MOV     A,#080H
+00FD F0                MOVX    @DPTR,A
+00FE 7F00              MOV     R7,#00H
+0100 7E10              MOV     R6,#010H
+0102 7D04              MOV     R5,#04H
+0104 7C00              MOV     R4,#00H
+0106 120000      R     LCALL   _WriteDataToFlash
+                                           ; SOURCE LINE # 75
+0109 900000      R     MOV     DPTR,#?_WriteDataToFlash?BYTE+04H
+010C 7400        R     MOV     A,#HIGH ADDR_0x45000
+010E F0                MOVX    @DPTR,A
+010F A3                INC     DPTR
+0110 7400        R     MOV     A,#LOW ADDR_0x45000
+0112 F0                MOVX    @DPTR,A
+0113 A3                INC     DPTR
+0114 7401              MOV     A,#01H
+0116 F0                MOVX    @DPTR,A
+0117 A3                INC     DPTR
+0118 E4                CLR     A
+0119 F0                MOVX    @DPTR,A
+011A FF                MOV     R7,A
+011B 7E50              MOV     R6,#050H
+011D 7D04              MOV     R5,#04H
+011F FC                MOV     R4,A
+0120 120000      R     LCALL   _WriteDataToFlash
+                                           ; SOURCE LINE # 76
+0123 900000      R     MOV     DPTR,#?_WriteDataToFlash?BYTE+04H
+0126 7400        R     MOV     A,#HIGH ADDR_0x55000
+0128 F0                MOVX    @DPTR,A
+0129 A3                INC     DPTR
+012A 7400        R     MOV     A,#LOW ADDR_0x55000
+012C F0                MOVX    @DPTR,A
+012D A3                INC     DPTR
+012E E4                CLR     A
+012F F0                MOVX    @DPTR,A
+0130 A3                INC     DPTR
+0131 7440              MOV     A,#040H
+0133 F0                MOVX    @DPTR,A
+0134 7F00              MOV     R7,#00H
+0136 7E50              MOV     R6,#050H
+0138 7D05              MOV     R5,#05H
+013A 7C00              MOV     R4,#00H
+013C 120000      R     LCALL   _WriteDataToFlash
+                                           ; SOURCE LINE # 77
+013F 900000      R     MOV     DPTR,#?_WriteDataToFlash?BYTE+04H
+0142 7400        R     MOV     A,#HIGH ADDR_0x5C000
+0144 F0                MOVX    @DPTR,A
+0145 A3                INC     DPTR
+0146 7400        R     MOV     A,#LOW ADDR_0x5C000
+0148 F0                MOVX    @DPTR,A
+0149 A3                INC     DPTR
+014A E4                CLR     A
+014B F0                MOVX    @DPTR,A
+014C A3                INC     DPTR
+014D 7480              MOV     A,#080H
+014F F0                MOVX    @DPTR,A
+0150 7F00              MOV     R7,#00H
+0152 7EC0              MOV     R6,#0C0H
+0154 7D05              MOV     R5,#05H
+0156 7C00              MOV     R4,#00H
+0158 120000      R     LCALL   _WriteDataToFlash
+                                           ; SOURCE LINE # 78
+015B 900000      R     MOV     DPTR,#?_WriteDataToFlash?BYTE+04H
+015E 7400        R     MOV     A,#HIGH ADDR_0x65000
+0160 F0                MOVX    @DPTR,A
+0161 A3                INC     DPTR
+0162 7400        R     MOV     A,#LOW ADDR_0x65000
+0164 F0                MOVX    @DPTR,A
+0165 A3                INC     DPTR
+0166 E4                CLR     A
+0167 F0                MOVX    @DPTR,A
+0168 A3                INC     DPTR
+0169 7480              MOV     A,#080H
+016B F0                MOVX    @DPTR,A
+016C 7F00              MOV     R7,#00H
+016E 7E50              MOV     R6,#050H
+0170 7D06              MOV     R5,#06H
+0172 7C00              MOV     R4,#00H
+0174 020000      R     LJMP    _WriteDataToFlash
+             ; FUNCTION FormatFlash (END)
+
+             ; FUNCTION ExecBadUSBPayload (BEGIN)
+                                           ; SOURCE LINE # 87
+                                           ; SOURCE LINE # 91
+0000 900000      R     MOV     DPTR,#ReadFlashAddr
+0003 120000      E     LCALL   ?C?LSTKXDATA
+0006 00                DB      00H
+0007 04                DB      04H
+0008 10                DB      010H
+0009 00                DB      00H
+                                           ; SOURCE LINE # 92
+000A E4                CLR     A
+000B 900000      R     MOV     DPTR,#foundINF
+000E F0                MOVX    @DPTR,A
+000F A3                INC     DPTR
+0010 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 94
+0011 74FF              MOV     A,#0FFH
+0013 A3                INC     DPTR
+0014 F0                MOVX    @DPTR,A
+0015 A3                INC     DPTR
+0016 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 95
+0017 E4                CLR     A
+0018 A3                INC     DPTR
+0019 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 96
+001A A3                INC     DPTR
+001B F0                MOVX    @DPTR,A
+001C A3                INC     DPTR
+001D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 97
+001E A3                INC     DPTR
+001F F0                MOVX    @DPTR,A
+0020 A3                INC     DPTR
+0021 7420              MOV     A,#020H
+0023 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 98
+0024 E4                CLR     A
+0025 A3                INC     DPTR
+0026 F0                MOVX    @DPTR,A
+0027 A3                INC     DPTR
+0028 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 100
+0029 C8                XCH     A,R0
+002A 7400        R     MOV     A,#LOW patterns
+002C C8                XCH     A,R0
+002D CC                XCH     A,R4
+002E 7400        R     MOV     A,#HIGH patterns
+0030 CC                XCH     A,R4
+0031 CD                XCH     A,R5
+0032 7401              MOV     A,#01H
+0034 CD                XCH     A,R5
+0035 7BFF              MOV     R3,#0FFH
+0037 7A00        R     MOV     R2,#HIGH _?ix1000
+0039 7900        R     MOV     R1,#LOW _?ix1000
+003B FE                MOV     R6,A
+003C 7F27              MOV     R7,#027H
+003E 120000      E     LCALL   ?C?COPY
+                                           ; SOURCE LINE # 115
+0041 C8                XCH     A,R0
+0042 7400        R     MOV     A,#LOW patternIndex
+0044 C8                XCH     A,R0
+0045 CC                XCH     A,R4
+0046 7400        R     MOV     A,#HIGH patternIndex
+0048 CC                XCH     A,R4
+0049 CD                XCH     A,R5
+004A 7401              MOV     A,#01H
+004C CD                XCH     A,R5
+004D 7BFF              MOV     R3,#0FFH
+004F 7A00        R     MOV     R2,#HIGH _?ix1001
+0051 7900        R     MOV     R1,#LOW _?ix1001
+0053 7E00              MOV     R6,#00H
+0055 7F1A              MOV     R7,#01AH
+0057 120000      E     LCALL   ?C?COPY
+                                           ; SOURCE LINE # 116
+005A E4                CLR     A
+005B 900000      R     MOV     DPTR,#patternIndexFlag
+005E F0                MOVX    @DPTR,A
+005F A3                INC     DPTR
+0060 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 117
+0061 C8                XCH     A,R0
+0062 7400        R     MOV     A,#LOW patternFound
+0064 C8                XCH     A,R0
+0065 CC                XCH     A,R4
+0066 7400        R     MOV     A,#HIGH patternFound
+0068 CC                XCH     A,R4
+0069 CD                XCH     A,R5
+006A 7401              MOV     A,#01H
+006C CD                XCH     A,R5
+006D 7BFF              MOV     R3,#0FFH
+006F 7A00        R     MOV     R2,#HIGH _?ix1002
+0071 7900        R     MOV     R1,#LOW _?ix1002
+0073 FE                MOV     R6,A
+0074 7F1A              MOV     R7,#01AH
+0076 120000      E     LCALL   ?C?COPY
+                                           ; SOURCE LINE # 118
+0079 900000      R     MOV     DPTR,#patternCount
+007C E4                CLR     A
+007D F0                MOVX    @DPTR,A
+007E A3                INC     DPTR
+007F 740D              MOV     A,#0DH
+0081 F0                MOVX    @DPTR,A
+0082         ?C0026:
+                                           ; SOURCE LINE # 120
+0082 900000      R     MOV     DPTR,#MaxRound
+0085 74FF              MOV     A,#0FFH
+0087 F5F0              MOV     B,A
+0089 120000      E     LCALL   ?C?ILDIX
+008C 45F0              ORL     A,B
+008E 7003              JNZ     $ + 5H
+0090 020000      R     LJMP    ?C0027
+0093 900000      R     MOV     DPTR,#foundINF
+0096 E0                MOVX    A,@DPTR
+0097 7002              JNZ     ?C0169
+0099 A3                INC     DPTR
+009A E0                MOVX    A,@DPTR
+009B         ?C0169:
+009B 6003              JZ      $ + 5H
+009D 020000      R     LJMP    ?C0027
+                                           ; SOURCE LINE # 121
+00A0 900000      R     MOV     DPTR,#ReadFlashAddr
+00A3 E0                MOVX    A,@DPTR
+00A4 FC                MOV     R4,A
+00A5 A3                INC     DPTR
+00A6 E0                MOVX    A,@DPTR
+00A7 FD                MOV     R5,A
+00A8 A3                INC     DPTR
+00A9 E0                MOVX    A,@DPTR
+00AA FE                MOV     R6,A
+00AB A3                INC     DPTR
+00AC E0                MOVX    A,@DPTR
+00AD FF                MOV     R7,A
+00AE 900000      R     MOV     DPTR,#?_BulkReadFlash?BYTE+04H
+00B1 E4                CLR     A
+00B2 F0                MOVX    @DPTR,A
+00B3 A3                INC     DPTR
+00B4 7480              MOV     A,#080H
+00B6 F0                MOVX    @DPTR,A
+00B7 A3                INC     DPTR
+00B8 7401              MOV     A,#01H
+00BA F0                MOVX    @DPTR,A
+00BB A3                INC     DPTR
+00BC 7400        R     MOV     A,#HIGH FATDirEntry
+00BE F0                MOVX    @DPTR,A
+00BF A3                INC     DPTR
+00C0 7400        R     MOV     A,#LOW FATDirEntry
+00C2 F0                MOVX    @DPTR,A
+00C3 120000      R     LCALL   _BulkReadFlash
+                                           ; SOURCE LINE # 124
+00C6 E4                CLR     A
+00C7 900000      R     MOV     DPTR,#i
+00CA F0                MOVX    @DPTR,A
+00CB A3                INC     DPTR
+00CC F0                MOVX    @DPTR,A
+00CD         ?C0028:
+00CD 900000      R     MOV     DPTR,#i
+00D0 E0                MOVX    A,@DPTR
+00D1 FE                MOV     R6,A
+00D2 A3                INC     DPTR
+00D3 E0                MOVX    A,@DPTR
+00D4 FF                MOV     R7,A
+00D5 C3                CLR     C
+00D6 9480              SUBB    A,#080H
+00D8 EE                MOV     A,R6
+00D9 9400              SUBB    A,#00H
+00DB 4003              JC      $ + 5H
+00DD 020000      R     LJMP    ?C0029
+                                           ; SOURCE LINE # 126
+00E0 7400        R     MOV     A,#LOW FATDirEntry
+00E2 2F                ADD     A,R7
+00E3 F582              MOV     DPL,A
+00E5 7400        R     MOV     A,#HIGH FATDirEntry
+00E7 3E                ADDC    A,R6
+00E8 F583              MOV     DPH,A
+00EA E0                MOVX    A,@DPTR
+00EB 6441              XRL     A,#041H
+00ED 6003              JZ      $ + 5H
+00EF 020000      R     LJMP    ?C0030
+00F2 900000      R     MOV     DPTR,#i
+00F5 A3                INC     DPTR
+00F6 E0                MOVX    A,@DPTR
+00F7 2400        R     ADD     A,#LOW FATDirEntry+01H
+00F9 F582              MOV     DPL,A
+00FB 7400        R     MOV     A,#HIGH FATDirEntry+01H
+00FD 3E                ADDC    A,R6
+00FE F583              MOV     DPH,A
+0100 E0                MOVX    A,@DPTR
+0101 6455              XRL     A,#055H
+0103 6003              JZ      $ + 5H
+0105 020000      R     LJMP    ?C0030
+0108 7400        R     MOV     A,#LOW FATDirEntry+02H
+010A 2F                ADD     A,R7
+010B F582              MOV     DPL,A
+010D 7400        R     MOV     A,#HIGH FATDirEntry+02H
+010F 3E                ADDC    A,R6
+0110 F583              MOV     DPH,A
+0112 E0                MOVX    A,@DPTR
+0113 6454              XRL     A,#054H
+0115 6003              JZ      $ + 5H
+0117 020000      R     LJMP    ?C0030
+011A 900000      R     MOV     DPTR,#i
+011D A3                INC     DPTR
+011E E0                MOVX    A,@DPTR
+011F 2400        R     ADD     A,#LOW FATDirEntry+03H
+0121 F582              MOV     DPL,A
+0123 7400        R     MOV     A,#HIGH FATDirEntry+03H
+0125 3E                ADDC    A,R6
+0126 F583              MOV     DPH,A
+0128 E0                MOVX    A,@DPTR
+0129 644F              XRL     A,#04FH
+012B 6003              JZ      $ + 5H
+012D 020000      R     LJMP    ?C0030
+0130 7400        R     MOV     A,#LOW FATDirEntry+04H
+0132 2F                ADD     A,R7
+0133 F582              MOV     DPL,A
+0135 7400        R     MOV     A,#HIGH FATDirEntry+04H
+0137 3E                ADDC    A,R6
+0138 F583              MOV     DPH,A
+013A E0                MOVX    A,@DPTR
+013B 6452              XRL     A,#052H
+013D 6003              JZ      $ + 5H
+013F 020000      R     LJMP    ?C0030
+0142 900000      R     MOV     DPTR,#i
+0145 A3                INC     DPTR
+0146 E0                MOVX    A,@DPTR
+0147 2400        R     ADD     A,#LOW FATDirEntry+05H
+0149 F582              MOV     DPL,A
+014B 7400        R     MOV     A,#HIGH FATDirEntry+05H
+014D 3E                ADDC    A,R6
+014E F583              MOV     DPH,A
+0150 E0                MOVX    A,@DPTR
+0151 6455              XRL     A,#055H
+0153 6003              JZ      $ + 5H
+0155 020000      R     LJMP    ?C0030
+0158 7400        R     MOV     A,#LOW FATDirEntry+06H
+015A 2F                ADD     A,R7
+015B F582              MOV     DPL,A
+015D 7400        R     MOV     A,#HIGH FATDirEntry+06H
+015F 3E                ADDC    A,R6
+0160 F583              MOV     DPH,A
+0162 E0                MOVX    A,@DPTR
+0163 644E              XRL     A,#04EH
+0165 6003              JZ      $ + 5H
+0167 020000      R     LJMP    ?C0030
+016A 900000      R     MOV     DPTR,#i
+016D A3                INC     DPTR
+016E E0                MOVX    A,@DPTR
+016F 2400        R     ADD     A,#LOW FATDirEntry+08H
+0171 F582              MOV     DPL,A
+0173 7400        R     MOV     A,#HIGH FATDirEntry+08H
+0175 3E                ADDC    A,R6
+0176 F583              MOV     DPH,A
+0178 E0                MOVX    A,@DPTR
+0179 6449              XRL     A,#049H
+017B 706D              JNZ     ?C0030
+017D 7400        R     MOV     A,#LOW FATDirEntry+09H
+017F 2F                ADD     A,R7
+0180 F582              MOV     DPL,A
+0182 7400        R     MOV     A,#HIGH FATDirEntry+09H
+0184 3E                ADDC    A,R6
+0185 F583              MOV     DPH,A
+0187 E0                MOVX    A,@DPTR
+0188 644E              XRL     A,#04EH
+018A 705E              JNZ     ?C0030
+018C 900000      R     MOV     DPTR,#i
+018F A3                INC     DPTR
+0190 E0                MOVX    A,@DPTR
+0191 2400        R     ADD     A,#LOW FATDirEntry+0AH
+0193 F582              MOV     DPL,A
+0195 7400        R     MOV     A,#HIGH FATDirEntry+0AH
+0197 3E                ADDC    A,R6
+0198 F583              MOV     DPH,A
+019A E0                MOVX    A,@DPTR
+019B 6446              XRL     A,#046H
+019D 704B              JNZ     ?C0030
+                                           ; SOURCE LINE # 130
+                                           ; SOURCE LINE # 132
+019F 900000      R     MOV     DPTR,#i
+01A2 E0                MOVX    A,@DPTR
+01A3 FC                MOV     R4,A
+01A4 A3                INC     DPTR
+01A5 E0                MOVX    A,@DPTR
+01A6 FD                MOV     R5,A
+01A7 2400        R     ADD     A,#LOW FATDirEntry+01BH
+01A9 F582              MOV     DPL,A
+01AB 7400        R     MOV     A,#HIGH FATDirEntry+01BH
+01AD 3C                ADDC    A,R4
+01AE F583              MOV     DPH,A
+01B0 E0                MOVX    A,@DPTR
+01B1 FE                MOV     R6,A
+01B2 7400        R     MOV     A,#LOW FATDirEntry+01AH
+01B4 2D                ADD     A,R5
+01B5 F582              MOV     DPL,A
+01B7 7400        R     MOV     A,#HIGH FATDirEntry+01AH
+01B9 3C                ADDC    A,R4
+01BA F583              MOV     DPH,A
+01BC E0                MOVX    A,@DPTR
+01BD 7C00              MOV     R4,#00H
+01BF 2400              ADD     A,#00H
+01C1 FF                MOV     R7,A
+01C2 EC                MOV     A,R4
+01C3 3E                ADDC    A,R6
+01C4 FE                MOV     R6,A
+01C5 EF                MOV     A,R7
+01C6 2402              ADD     A,#02H
+01C8 FF                MOV     R7,A
+01C9 E4                CLR     A
+01CA 3E                ADDC    A,R6
+01CB FE                MOV     R6,A
+01CC 33                RLC     A
+01CD 95E0              SUBB    A,ACC
+01CF FD                MOV     R5,A
+01D0 FC                MOV     R4,A
+01D1 E4                CLR     A
+01D2 FB                MOV     R3,A
+01D3 FA                MOV     R2,A
+01D4 7901              MOV     R1,#01H
+01D6 F8                MOV     R0,A
+01D7 120000      E     LCALL   ?C?LMUL
+01DA 900000      R     MOV     DPTR,#ReadFlashAddr
+01DD 120000      E     LCALL   ?C?LSTXDATA
+                                           ; SOURCE LINE # 133
+01E0 900000      R     MOV     DPTR,#foundINF
+01E3 E4                CLR     A
+01E4 F0                MOVX    @DPTR,A
+01E5 A3                INC     DPTR
+01E6 04                INC     A
+01E7 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 136
+01E8 8011              SJMP    ?C0029
+                                           ; SOURCE LINE # 137
+                                           ; SOURCE LINE # 138
+01EA         ?C0030:
+01EA 900000      R     MOV     DPTR,#i+01H
+01ED E0                MOVX    A,@DPTR
+01EE 2420              ADD     A,#020H
+01F0 F0                MOVX    @DPTR,A
+01F1 900000      R     MOV     DPTR,#i
+01F4 E0                MOVX    A,@DPTR
+01F5 3400              ADDC    A,#00H
+01F7 F0                MOVX    @DPTR,A
+01F8 020000      R     LJMP    ?C0028
+01FB         ?C0029:
+                                           ; SOURCE LINE # 139
+01FB 900000      R     MOV     DPTR,#ReadFlashAddr
+01FE E0                MOVX    A,@DPTR
+01FF FC                MOV     R4,A
+0200 A3                INC     DPTR
+0201 E0                MOVX    A,@DPTR
+0202 FD                MOV     R5,A
+0203 A3                INC     DPTR
+0204 E0                MOVX    A,@DPTR
+0205 FE                MOV     R6,A
+0206 A3                INC     DPTR
+0207 E0                MOVX    A,@DPTR
+0208 2480              ADD     A,#080H
+020A FF                MOV     R7,A
+020B E4                CLR     A
+020C 3E                ADDC    A,R6
+020D FE                MOV     R6,A
+020E E4                CLR     A
+020F 3D                ADDC    A,R5
+0210 FD                MOV     R5,A
+0211 E4                CLR     A
+0212 3C                ADDC    A,R4
+0213 FC                MOV     R4,A
+0214 900000      R     MOV     DPTR,#ReadFlashAddr
+0217 120000      E     LCALL   ?C?LSTXDATA
+                                           ; SOURCE LINE # 140
+021A 020000      R     LJMP    ?C0026
+021D         ?C0027:
+                                           ; SOURCE LINE # 143
+021D 900000      R     MOV     DPTR,#MaxRound
+0220 E4                CLR     A
+0221 F0                MOVX    @DPTR,A
+0222 A3                INC     DPTR
+0223 7420              MOV     A,#020H
+0225 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 144
+0226 900000      R     MOV     DPTR,#foundINF
+0229 E0                MOVX    A,@DPTR
+022A 7002              JNZ     ?C0170
+022C A3                INC     DPTR
+022D E0                MOVX    A,@DPTR
+022E         ?C0170:
+022E 700A              JNZ     ?C0033
+0230 900000      R     MOV     DPTR,#ReadFlashAddr
+0233 120000      E     LCALL   ?C?LSTKXDATA
+0236 00                DB      00H
+0237 06                DB      06H
+0238 00                DB      00H
+0239 00                DB      00H
+023A         ?C0033:
+                                           ; SOURCE LINE # 145
+023A 900000      R     MOV     DPTR,#MaxRound
+023D 74FF              MOV     A,#0FFH
+023F F5F0              MOV     B,A
+0241 120000      E     LCALL   ?C?ILDIX
+0244 45F0              ORL     A,B
+0246 7003              JNZ     $ + 5H
+0248 020000      R     LJMP    ?C0057
+                                           ; SOURCE LINE # 146
+024B C294              CLR     SPI_CS
+                                           ; SOURCE LINE # 147
+024D 75F90B            MOV     SPI0_DATA,#0BH
+0250         ?C0035:
+0250 30FBFD            JNB     S0_FREE,?C0035
+                                           ; SOURCE LINE # 148
+0253 900000      R     MOV     DPTR,#ReadFlashAddr
+0256 A3                INC     DPTR
+0257 E0                MOVX    A,@DPTR
+0258 FD                MOV     R5,A
+0259 A3                INC     DPTR
+025A E0                MOVX    A,@DPTR
+025B FE                MOV     R6,A
+025C A3                INC     DPTR
+025D E0                MOVX    A,@DPTR
+025E FF                MOV     R7,A
+025F E4                CLR     A
+0260 FC                MOV     R4,A
+0261 7810              MOV     R0,#010H
+0263 120000      E     LCALL   ?C?ULSHR
+0266 8FF9              MOV     SPI0_DATA,R7
+0268         ?C0037:
+0268 30FBFD            JNB     S0_FREE,?C0037
+                                           ; SOURCE LINE # 149
+026B 900000      R     MOV     DPTR,#ReadFlashAddr
+026E A3                INC     DPTR
+026F A3                INC     DPTR
+0270 E0                MOVX    A,@DPTR
+0271 FE                MOV     R6,A
+0272 A3                INC     DPTR
+0273 E0                MOVX    A,@DPTR
+0274 FF                MOV     R7,A
+0275 E4                CLR     A
+0276 FD                MOV     R5,A
+0277 FC                MOV     R4,A
+0278 7808              MOV     R0,#08H
+027A 120000      E     LCALL   ?C?ULSHR
+027D 8FF9              MOV     SPI0_DATA,R7
+027F         ?C0039:
+027F 30FBFD            JNB     S0_FREE,?C0039
+                                           ; SOURCE LINE # 150
+0282 900000      R     MOV     DPTR,#ReadFlashAddr
+0285 A3                INC     DPTR
+0286 A3                INC     DPTR
+0287 A3                INC     DPTR
+0288 E0                MOVX    A,@DPTR
+0289 FF                MOV     R7,A
+028A 8FF9              MOV     SPI0_DATA,R7
+028C         ?C0041:
+028C 30FBFD            JNB     S0_FREE,?C0041
+                                           ; SOURCE LINE # 151
+028F 75F9FF            MOV     SPI0_DATA,#0FFH
+0292         ?C0043:
+0292 30FBFD            JNB     S0_FREE,?C0043
+0295         ?C0045:
+                                           ; SOURCE LINE # 153
+0295 900000      R     MOV     DPTR,#blockLen
+0298 74FF              MOV     A,#0FFH
+029A F5F0              MOV     B,A
+029C 120000      E     LCALL   ?C?ILDIX
+029F 45F0              ORL     A,B
+02A1 7003              JNZ     $ + 5H
+02A3 020000      R     LJMP    ?C0046
+                                           ; SOURCE LINE # 154
+02A6 75F9FF            MOV     SPI0_DATA,#0FFH
+02A9         ?C0047:
+02A9 30FBFD            JNB     S0_FREE,?C0047
+02AC 900000      R     MOV     DPTR,#dat
+02AF E5F9              MOV     A,SPI0_DATA
+02B1 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 157
+02B2 E4                CLR     A
+02B3 900000      R     MOV     DPTR,#i
+02B6 F0                MOVX    @DPTR,A
+02B7 A3                INC     DPTR
+02B8 F0                MOVX    @DPTR,A
+02B9         ?C0049:
+02B9 900000      R     MOV     DPTR,#patternCount
+02BC E0                MOVX    A,@DPTR
+02BD FE                MOV     R6,A
+02BE A3                INC     DPTR
+02BF E0                MOVX    A,@DPTR
+02C0 FF                MOV     R7,A
+02C1 900000      R     MOV     DPTR,#i
+02C4 E0                MOVX    A,@DPTR
+02C5 FC                MOV     R4,A
+02C6 A3                INC     DPTR
+02C7 E0                MOVX    A,@DPTR
+02C8 FD                MOV     R5,A
+02C9 C3                CLR     C
+02CA 9F                SUBB    A,R7
+02CB EC                MOV     A,R4
+02CC 9E                SUBB    A,R6
+02CD 4003              JC      $ + 5H
+02CF 020000      R     LJMP    ?C0050
+                                           ; SOURCE LINE # 158
+02D2 ED                MOV     A,R5
+02D3 25E0              ADD     A,ACC
+02D5 FF                MOV     R7,A
+02D6 EC                MOV     A,R4
+02D7 33                RLC     A
+02D8 FE                MOV     R6,A
+02D9 7400        R     MOV     A,#LOW patternIndex
+02DB 2F                ADD     A,R7
+02DC F582              MOV     DPL,A
+02DE 7400        R     MOV     A,#HIGH patternIndex
+02E0 3E                ADDC    A,R6
+02E1 F583              MOV     DPH,A
+02E3 E0                MOVX    A,@DPTR
+02E4 FE                MOV     R6,A
+02E5 A3                INC     DPTR
+02E6 E0                MOVX    A,@DPTR
+02E7 FF                MOV     R7,A
+02E8 900000      R     MOV     DPTR,#patterns
+02EB 75F003            MOV     B,#03H
+02EE ED                MOV     A,R5
+02EF 120000      E     LCALL   ?C?OFFXADD
+02F2 EC                MOV     A,R4
+02F3 75F003            MOV     B,#03H
+02F6 A4                MUL     AB
+02F7 2583              ADD     A,DPH
+02F9 F583              MOV     DPH,A
+02FB E0                MOVX    A,@DPTR
+02FC FB                MOV     R3,A
+02FD A3                INC     DPTR
+02FE E0                MOVX    A,@DPTR
+02FF FA                MOV     R2,A
+0300 A3                INC     DPTR
+0301 E0                MOVX    A,@DPTR
+0302 F9                MOV     R1,A
+0303 8F82              MOV     DPL,R7
+0305 8E83              MOV     DPH,R6
+0307 120000      E     LCALL   ?C?CLDOPTR
+030A FF                MOV     R7,A
+030B 900000      R     MOV     DPTR,#dat
+030E E0                MOVX    A,@DPTR
+030F 6F                XRL     A,R7
+0310 6003              JZ      $ + 5H
+0312 020000      R     LJMP    ?C0052
+                                           ; SOURCE LINE # 159
+0315 900000      R     MOV     DPTR,#i
+0318 A3                INC     DPTR
+0319 E0                MOVX    A,@DPTR
+031A 25E0              ADD     A,ACC
+031C FF                MOV     R7,A
+031D EC                MOV     A,R4
+031E 33                RLC     A
+031F FE                MOV     R6,A
+0320 7400        R     MOV     A,#LOW patternIndex
+0322 2F                ADD     A,R7
+0323 F582              MOV     DPL,A
+0325 7400        R     MOV     A,#HIGH patternIndex
+0327 3E                ADDC    A,R6
+0328 F583              MOV     DPH,A
+032A E4                CLR     A
+032B 75F001            MOV     B,#01H
+032E 120000      E     LCALL   ?C?IILDX
+                                           ; SOURCE LINE # 160
+0331 7400        R     MOV     A,#LOW patternIndex
+0333 2F                ADD     A,R7
+0334 F582              MOV     DPL,A
+0336 7400        R     MOV     A,#HIGH patternIndex
+0338 3E                ADDC    A,R6
+0339 F583              MOV     DPH,A
+033B E0                MOVX    A,@DPTR
+033C FE                MOV     R6,A
+033D A3                INC     DPTR
+033E E0                MOVX    A,@DPTR
+033F FF                MOV     R7,A
+0340 900000      R     MOV     DPTR,#patterns
+0343 75F003            MOV     B,#03H
+0346 ED                MOV     A,R5
+0347 120000      E     LCALL   ?C?OFFXADD
+034A EC                MOV     A,R4
+034B 75F003            MOV     B,#03H
+034E A4                MUL     AB
+034F 2583              ADD     A,DPH
+0351 F583              MOV     DPH,A
+0353 E0                MOVX    A,@DPTR
+0354 FB                MOV     R3,A
+0355 A3                INC     DPTR
+0356 E0                MOVX    A,@DPTR
+0357 FA                MOV     R2,A
+0358 A3                INC     DPTR
+0359 E0                MOVX    A,@DPTR
+035A F9                MOV     R1,A
+035B 8F82              MOV     DPL,R7
+035D 8E83              MOV     DPH,R6
+035F 120000      E     LCALL   ?C?CLDOPTR
+0362 7060              JNZ     ?C0051
+                                           ; SOURCE LINE # 161
+0364 900000      R     MOV     DPTR,#i
+0367 E0                MOVX    A,@DPTR
+0368 FC                MOV     R4,A
+0369 A3                INC     DPTR
+036A E0                MOVX    A,@DPTR
+036B FD                MOV     R5,A
+036C 25E0              ADD     A,ACC
+036E FF                MOV     R7,A
+036F EC                MOV     A,R4
+0370 33                RLC     A
+0371 FE                MOV     R6,A
+0372 7400        R     MOV     A,#LOW patternFound
+0374 2F                ADD     A,R7
+0375 F582              MOV     DPL,A
+0377 7400        R     MOV     A,#HIGH patternFound
+0379 3E                ADDC    A,R6
+037A F583              MOV     DPH,A
+037C E4                CLR     A
+037D F0                MOVX    @DPTR,A
+037E A3                INC     DPTR
+037F 04                INC     A
+0380 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 162
+0381 7400        R     MOV     A,#LOW patternIndex
+0383 2F                ADD     A,R7
+0384 F582              MOV     DPL,A
+0386 7400        R     MOV     A,#HIGH patternIndex
+0388 3E                ADDC    A,R6
+0389 F583              MOV     DPH,A
+038B E4                CLR     A
+038C F0                MOVX    @DPTR,A
+038D A3                INC     DPTR
+038E F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 165
+038F ED                MOV     A,R5
+0390 4C                ORL     A,R4
+0391 7031              JNZ     ?C0051
+                                           ; SOURCE LINE # 166
+0393 900000      R     MOV     DPTR,#foundBadUSB
+0396 E0                MOVX    A,@DPTR
+0397 7002              JNZ     ?C0171
+0399 A3                INC     DPTR
+039A E0                MOVX    A,@DPTR
+039B         ?C0171:
+039B 7009              JNZ     ?C0055
+                                           ; SOURCE LINE # 167
+                                           ; SOURCE LINE # 168
+039D 900000      R     MOV     DPTR,#foundBadUSB
+03A0 F0                MOVX    @DPTR,A
+03A1 A3                INC     DPTR
+03A2 04                INC     A
+03A3 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 169
+03A4 801E              SJMP    ?C0051
+03A6         ?C0055:
+                                           ; SOURCE LINE # 170
+03A6 D294              SETB    SPI_CS
+03A8 22                RET     
+                                           ; SOURCE LINE # 172
+                                           ; SOURCE LINE # 173
+                                           ; SOURCE LINE # 174
+                                           ; SOURCE LINE # 175
+03A9         ?C0052:
+                                           ; SOURCE LINE # 176
+03A9 900000      R     MOV     DPTR,#i+01H
+03AC E0                MOVX    A,@DPTR
+03AD 25E0              ADD     A,ACC
+03AF FF                MOV     R7,A
+03B0 900000      R     MOV     DPTR,#i
+03B3 E0                MOVX    A,@DPTR
+03B4 33                RLC     A
+03B5 FE                MOV     R6,A
+03B6 7400        R     MOV     A,#LOW patternIndex
+03B8 2F                ADD     A,R7
+03B9 F582              MOV     DPL,A
+03BB 7400        R     MOV     A,#HIGH patternIndex
+03BD 3E                ADDC    A,R6
+03BE F583              MOV     DPH,A
+03C0 E4                CLR     A
+03C1 F0                MOVX    @DPTR,A
+03C2 A3                INC     DPTR
+03C3 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 177
+                                           ; SOURCE LINE # 178
+03C4         ?C0051:
+03C4 900000      R     MOV     DPTR,#i+01H
+03C7 E0                MOVX    A,@DPTR
+03C8 04                INC     A
+03C9 F0                MOVX    @DPTR,A
+03CA 7006              JNZ     ?C0172
+03CC 900000      R     MOV     DPTR,#i
+03CF E0                MOVX    A,@DPTR
+03D0 04                INC     A
+03D1 F0                MOVX    @DPTR,A
+03D2         ?C0172:
+03D2 020000      R     LJMP    ?C0049
+03D5         ?C0050:
+                                           ; SOURCE LINE # 181
+03D5 E4                CLR     A
+03D6 900000      R     MOV     DPTR,#patternIndexFlag
+03D9 F0                MOVX    @DPTR,A
+03DA A3                INC     DPTR
+03DB F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 182
+03DC 900000      R     MOV     DPTR,#i
+03DF F0                MOVX    @DPTR,A
+03E0 A3                INC     DPTR
+03E1 F0                MOVX    @DPTR,A
+03E2         ?C0059:
+03E2 900000      R     MOV     DPTR,#patternCount
+03E5 E0                MOVX    A,@DPTR
+03E6 FE                MOV     R6,A
+03E7 A3                INC     DPTR
+03E8 E0                MOVX    A,@DPTR
+03E9 FF                MOV     R7,A
+03EA 900000      R     MOV     DPTR,#i
+03ED E0                MOVX    A,@DPTR
+03EE FC                MOV     R4,A
+03EF A3                INC     DPTR
+03F0 E0                MOVX    A,@DPTR
+03F1 FD                MOV     R5,A
+03F2 C3                CLR     C
+03F3 9F                SUBB    A,R7
+03F4 EC                MOV     A,R4
+03F5 9E                SUBB    A,R6
+03F6 5032              JNC     ?C0060
+03F8 ED                MOV     A,R5
+03F9 25E0              ADD     A,ACC
+03FB FF                MOV     R7,A
+03FC EC                MOV     A,R4
+03FD 33                RLC     A
+03FE FE                MOV     R6,A
+03FF 7400        R     MOV     A,#LOW patternIndex
+0401 2F                ADD     A,R7
+0402 F582              MOV     DPL,A
+0404 7400        R     MOV     A,#HIGH patternIndex
+0406 3E                ADDC    A,R6
+0407 F583              MOV     DPH,A
+0409 E0                MOVX    A,@DPTR
+040A FE                MOV     R6,A
+040B A3                INC     DPTR
+040C E0                MOVX    A,@DPTR
+040D FF                MOV     R7,A
+040E 900000      R     MOV     DPTR,#patternIndexFlag+01H
+0411 E0                MOVX    A,@DPTR
+0412 2F                ADD     A,R7
+0413 F0                MOVX    @DPTR,A
+0414 900000      R     MOV     DPTR,#patternIndexFlag
+0417 E0                MOVX    A,@DPTR
+0418 3E                ADDC    A,R6
+0419 F0                MOVX    @DPTR,A
+041A 900000      R     MOV     DPTR,#i+01H
+041D E0                MOVX    A,@DPTR
+041E 04                INC     A
+041F F0                MOVX    @DPTR,A
+0420 70C0              JNZ     ?C0059
+0422 900000      R     MOV     DPTR,#i
+0425 E0                MOVX    A,@DPTR
+0426 04                INC     A
+0427 F0                MOVX    @DPTR,A
+0428         ?C0173:
+0428 80B8              SJMP    ?C0059
+042A         ?C0060:
+                                           ; SOURCE LINE # 183
+042A E4                CLR     A
+042B 900000      R     MOV     DPTR,#i
+042E F0                MOVX    @DPTR,A
+042F A3                INC     DPTR
+0430 F0                MOVX    @DPTR,A
+0431         ?C0062:
+0431 900000      R     MOV     DPTR,#patternCount
+0434 E0                MOVX    A,@DPTR
+0435 FE                MOV     R6,A
+0436 A3                INC     DPTR
+0437 E0                MOVX    A,@DPTR
+0438 FF                MOV     R7,A
+0439 900000      R     MOV     DPTR,#i
+043C E0                MOVX    A,@DPTR
+043D FC                MOV     R4,A
+043E A3                INC     DPTR
+043F E0                MOVX    A,@DPTR
+0440 FD                MOV     R5,A
+0441 C3                CLR     C
+0442 9F                SUBB    A,R7
+0443 EC                MOV     A,R4
+0444 9E                SUBB    A,R6
+0445 5032              JNC     ?C0063
+0447 ED                MOV     A,R5
+0448 25E0              ADD     A,ACC
+044A FF                MOV     R7,A
+044B EC                MOV     A,R4
+044C 33                RLC     A
+044D FE                MOV     R6,A
+044E 7400        R     MOV     A,#LOW patternFound
+0450 2F                ADD     A,R7
+0451 F582              MOV     DPL,A
+0453 7400        R     MOV     A,#HIGH patternFound
+0455 3E                ADDC    A,R6
+0456 F583              MOV     DPH,A
+0458 E0                MOVX    A,@DPTR
+0459 FE                MOV     R6,A
+045A A3                INC     DPTR
+045B E0                MOVX    A,@DPTR
+045C FF                MOV     R7,A
+045D 900000      R     MOV     DPTR,#patternIndexFlag+01H
+0460 E0                MOVX    A,@DPTR
+0461 2F                ADD     A,R7
+0462 F0                MOVX    @DPTR,A
+0463 900000      R     MOV     DPTR,#patternIndexFlag
+0466 E0                MOVX    A,@DPTR
+0467 3E                ADDC    A,R6
+0468 F0                MOVX    @DPTR,A
+0469 900000      R     MOV     DPTR,#i+01H
+046C E0                MOVX    A,@DPTR
+046D 04                INC     A
+046E F0                MOVX    @DPTR,A
+046F 70C0              JNZ     ?C0062
+0471 900000      R     MOV     DPTR,#i
+0474 E0                MOVX    A,@DPTR
+0475 04                INC     A
+0476 F0                MOVX    @DPTR,A
+0477         ?C0174:
+0477 80B8              SJMP    ?C0062
+0479         ?C0063:
+                                           ; SOURCE LINE # 184
+0479 900000      R     MOV     DPTR,#foundBadUSB
+047C E0                MOVX    A,@DPTR
+047D 7002              JNZ     ?C0175
+047F A3                INC     DPTR
+0480 E0                MOVX    A,@DPTR
+0481         ?C0175:
+0481 601E              JZ      ?C0065
+0483 900000      R     MOV     DPTR,#patternIndexFlag
+0486 E0                MOVX    A,@DPTR
+0487 7002              JNZ     ?C0176
+0489 A3                INC     DPTR
+048A E0                MOVX    A,@DPTR
+048B         ?C0176:
+048B 7014              JNZ     ?C0065
+048D 900000      R     MOV     DPTR,#dat
+0490 E0                MOVX    A,@DPTR
+0491 FF                MOV     R7,A
+0492 640A              XRL     A,#0AH
+0494 600B              JZ      ?C0065
+0496 EF                MOV     A,R7
+0497 640D              XRL     A,#0DH
+0499 6006              JZ      ?C0065
+049B EF                MOV     A,R7
+049C 6003              JZ      ?C0065
+                                           ; SOURCE LINE # 185
+049E 120000      E     LCALL   _SendChar
+                                           ; SOURCE LINE # 186
+04A1         ?C0065:
+                                           ; SOURCE LINE # 189
+04A1 E4                CLR     A
+04A2 900000      R     MOV     DPTR,#i
+04A5 F0                MOVX    @DPTR,A
+04A6 A3                INC     DPTR
+04A7 F0                MOVX    @DPTR,A
+04A8         ?C0066:
+04A8 900000      R     MOV     DPTR,#patternCount
+04AB E0                MOVX    A,@DPTR
+04AC FE                MOV     R6,A
+04AD A3                INC     DPTR
+04AE E0                MOVX    A,@DPTR
+04AF FF                MOV     R7,A
+04B0 900000      R     MOV     DPTR,#i
+04B3 E0                MOVX    A,@DPTR
+04B4 FC                MOV     R4,A
+04B5 A3                INC     DPTR
+04B6 E0                MOVX    A,@DPTR
+04B7 FD                MOV     R5,A
+04B8 C3                CLR     C
+04B9 9F                SUBB    A,R7
+04BA EC                MOV     A,R4
+04BB 9E                SUBB    A,R6
+04BC 4003              JC      $ + 5H
+04BE 020000      R     LJMP    ?C0045
+                                           ; SOURCE LINE # 190
+04C1 ED                MOV     A,R5
+04C2 25E0              ADD     A,ACC
+04C4 FF                MOV     R7,A
+04C5 EC                MOV     A,R4
+04C6 33                RLC     A
+04C7 FE                MOV     R6,A
+04C8 7400        R     MOV     A,#LOW patternFound
+04CA 2F                ADD     A,R7
+04CB F582              MOV     DPL,A
+04CD 7400        R     MOV     A,#HIGH patternFound
+04CF 3E                ADDC    A,R6
+04D0 F583              MOV     DPH,A
+04D2 E0                MOVX    A,@DPTR
+04D3 FE                MOV     R6,A
+04D4 A3                INC     DPTR
+04D5 E0                MOVX    A,@DPTR
+04D6 4E                ORL     A,R6
+04D7 7003              JNZ     $ + 5H
+04D9 020000      R     LJMP    ?C0068
+                                           ; SOURCE LINE # 191
+04DC EC                MOV     A,R4
+04DD 6003              JZ      $ + 5H
+04DF 020000      R     LJMP    ?C0070
+04E2 ED                MOV     A,R5
+04E3 14                DEC     A
+04E4 B40C00            CJNE    A,#0CH,?C0177
+04E7         ?C0177:
+04E7 4003              JC      $ + 5H
+04E9 020000      R     LJMP    ?C0070
+04EC 900000      R     MOV     DPTR,#?C0178
+04EF 75F003            MOV     B,#03H
+04F2 A4                MUL     AB
+04F3 C583              XCH     A,DPH
+04F5 25F0              ADD     A,B
+04F7 C583              XCH     A,DPH
+04F9 73                JMP     @A+DPTR
+04FA         ?C0178:
+04FA 020000      R     LJMP    ?C0071
+04FD 020000      R     LJMP    ?C0072
+0500 020000      R     LJMP    ?C0073
+0503 020000      R     LJMP    ?C0074
+0506 020000      R     LJMP    ?C0075
+0509 020000      R     LJMP    ?C0076
+050C 020000      R     LJMP    ?C0077
+050F 020000      R     LJMP    ?C0078
+0512 020000      R     LJMP    ?C0079
+0515 020000      R     LJMP    ?C0080
+0518 020000      R     LJMP    ?C0081
+051B 020000      R     LJMP    ?C0082
+                                           ; SOURCE LINE # 192
+051E         ?C0071:
+051E 7F0A              MOV     R7,#0AH
+0520 120000      E     LCALL   _SendChar
+0523 8068              SJMP    ?C0070
+                                           ; SOURCE LINE # 193
+0525         ?C0072:
+0525 E4                CLR     A
+0526 FD                MOV     R5,A
+0527 7F02              MOV     R7,#02H
+0529 8035              SJMP    ?C0189
+                                           ; SOURCE LINE # 194
+052B         ?C0073:
+052B 7D39              MOV     R5,#039H
+052D E4                CLR     A
+052E FF                MOV     R7,A
+052F         ?C0182:
+052F 802F              SJMP    ?C0189
+                                           ; SOURCE LINE # 195
+0531         ?C0074:
+0531 E4                CLR     A
+0532 FD                MOV     R5,A
+0533 7F08              MOV     R7,#08H
+0535         ?C0183:
+0535 8029              SJMP    ?C0189
+                                           ; SOURCE LINE # 196
+0537         ?C0075:
+0537 7D15              MOV     R5,#015H
+0539 7F08              MOV     R7,#08H
+053B         ?C0184:
+053B 8023              SJMP    ?C0189
+                                           ; SOURCE LINE # 197
+053D         ?C0076:
+053D 7D3D              MOV     R5,#03DH
+053F 7F04              MOV     R7,#04H
+0541         ?C0185:
+0541 801D              SJMP    ?C0189
+                                           ; SOURCE LINE # 198
+0543         ?C0077:
+0543 7D07              MOV     R5,#07H
+0545 7F08              MOV     R7,#08H
+0547         ?C0186:
+0547 8017              SJMP    ?C0189
+                                           ; SOURCE LINE # 199
+0549         ?C0078:
+0549 7D0F              MOV     R5,#0FH
+054B 7F08              MOV     R7,#08H
+054D         ?C0187:
+054D 8011              SJMP    ?C0189
+                                           ; SOURCE LINE # 200
+054F         ?C0079:
+054F 7D08              MOV     R5,#08H
+0551 7F08              MOV     R7,#08H
+0553         ?C0188:
+0553 800B              SJMP    ?C0189
+                                           ; SOURCE LINE # 201
+0555         ?C0080:
+0555 7D04              MOV     R5,#04H
+0557 7F10              MOV     R7,#010H
+0559 120000      E     LCALL   _SendKey
+055C E4                CLR     A
+055D FD                MOV     R5,A
+055E 7F4C              MOV     R7,#04CH
+0560         ?C0189:
+0560 120000      E     LCALL   _SendKey
+0563 8028              SJMP    ?C0070
+                                           ; SOURCE LINE # 202
+0565         ?C0081:
+0565 7FF4              MOV     R7,#0F4H
+0567 7E01              MOV     R6,#01H
+0569 120000      E     LCALL   _mDelaymS
+056C 801F              SJMP    ?C0070
+                                           ; SOURCE LINE # 203
+056E         ?C0082:
+056E 900000      R     MOV     DPTR,#?_WriteDataToFlash?BYTE+04H
+0571 7400        R     MOV     A,#HIGH ZERO
+0573 F0                MOVX    @DPTR,A
+0574 A3                INC     DPTR
+0575 7400        R     MOV     A,#LOW ZERO
+0577 F0                MOVX    @DPTR,A
+0578 A3                INC     DPTR
+0579 E4                CLR     A
+057A F0                MOVX    @DPTR,A
+057B A3                INC     DPTR
+057C 7480              MOV     A,#080H
+057E F0                MOVX    @DPTR,A
+057F 7F00              MOV     R7,#00H
+0581 7E00              MOV     R6,#00H
+0583 7D00              MOV     R5,#00H
+0585 7C00              MOV     R4,#00H
+0587 120000      R     LCALL   _WriteDataToFlash
+058A 120000      E     LCALL   CH554SoftReset
+                                           ; SOURCE LINE # 204
+058D         ?C0070:
+                                           ; SOURCE LINE # 205
+058D 900000      R     MOV     DPTR,#i+01H
+0590 E0                MOVX    A,@DPTR
+0591 25E0              ADD     A,ACC
+0593 FF                MOV     R7,A
+0594 900000      R     MOV     DPTR,#i
+0597 E0                MOVX    A,@DPTR
+0598 33                RLC     A
+0599 FE                MOV     R6,A
+059A 7400        R     MOV     A,#LOW patternIndex
+059C 2F                ADD     A,R7
+059D F582              MOV     DPL,A
+059F 7400        R     MOV     A,#HIGH patternIndex
+05A1 3E                ADDC    A,R6
+05A2 F583              MOV     DPH,A
+05A4 E4                CLR     A
+05A5 F0                MOVX    @DPTR,A
+05A6 A3                INC     DPTR
+05A7 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 206
+05A8 7400        R     MOV     A,#LOW patternFound
+05AA 2F                ADD     A,R7
+05AB F582              MOV     DPL,A
+05AD 7400        R     MOV     A,#HIGH patternFound
+05AF 3E                ADDC    A,R6
+05B0 F583              MOV     DPH,A
+05B2 E4                CLR     A
+05B3 F0                MOVX    @DPTR,A
+05B4 A3                INC     DPTR
+05B5 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 207
+                                           ; SOURCE LINE # 208
+05B6         ?C0068:
+05B6 900000      R     MOV     DPTR,#i+01H
+05B9 E0                MOVX    A,@DPTR
+05BA 04                INC     A
+05BB F0                MOVX    @DPTR,A
+05BC 7006              JNZ     ?C0179
+05BE 900000      R     MOV     DPTR,#i
+05C1 E0                MOVX    A,@DPTR
+05C2 04                INC     A
+05C3 F0                MOVX    @DPTR,A
+05C4         ?C0179:
+05C4 020000      R     LJMP    ?C0066
+                                           ; SOURCE LINE # 209
+05C7         ?C0046:
+                                           ; SOURCE LINE # 211
+05C7 900000      R     MOV     DPTR,#ReadFlashAddr
+05CA E0                MOVX    A,@DPTR
+05CB FC                MOV     R4,A
+05CC A3                INC     DPTR
+05CD E0                MOVX    A,@DPTR
+05CE FD                MOV     R5,A
+05CF A3                INC     DPTR
+05D0 E0                MOVX    A,@DPTR
+05D1 FE                MOV     R6,A
+05D2 A3                INC     DPTR
+05D3 E0                MOVX    A,@DPTR
+05D4 24FF              ADD     A,#0FFH
+05D6 FF                MOV     R7,A
+05D7 EE                MOV     A,R6
+05D8 34FF              ADDC    A,#0FFH
+05DA FE                MOV     R6,A
+05DB E4                CLR     A
+05DC 3D                ADDC    A,R5
+05DD FD                MOV     R5,A
+05DE E4                CLR     A
+05DF 3C                ADDC    A,R4
+05E0 FC                MOV     R4,A
+05E1 900000      R     MOV     DPTR,#ReadFlashAddr
+05E4 120000      E     LCALL   ?C?LSTXDATA
+                                           ; SOURCE LINE # 212
+05E7 75F9FF            MOV     SPI0_DATA,#0FFH
+05EA         ?C0083:
+05EA 30FBFD            JNB     S0_FREE,?C0083
+                                           ; SOURCE LINE # 213
+05ED D294              SETB    SPI_CS
+                                           ; SOURCE LINE # 214
+05EF 020000      R     LJMP    ?C0033
+                                           ; SOURCE LINE # 216
+05F2         ?C0057:
+05F2 22                RET     
+             ; FUNCTION ExecBadUSBPayload (END)
+
+             ; FUNCTION InitFlash (BEGIN)
+                                           ; SOURCE LINE # 226
+                                           ; SOURCE LINE # 227
+                                           ; SOURCE LINE # 228
+0000 120000      E     LCALL   mInitSTDIO
+                                           ; SOURCE LINE # 229
+0003 120000      R     LCALL   InitHostSPI0
+                                           ; SOURCE LINE # 230
+0006 120000      R     LCALL   WriteFlashEnable
+                                           ; SOURCE LINE # 231
+0009 E4                CLR     A
+000A FF                MOV     R7,A
+000B 020000      R     LJMP    _WriteFlashStatus
+             ; FUNCTION InitFlash (END)
+
+             ; FUNCTION InitHostSPI0 (BEGIN)
+                                           ; SOURCE LINE # 241
+                                           ; SOURCE LINE # 242
+                                           ; SOURCE LINE # 243
+0000 53FC77            ANL     SPI0_SETUP,#077H
+                                           ; SOURCE LINE # 244
+0003 75FA60            MOV     SPI0_CTRL,#060H
+                                           ; SOURCE LINE # 245
+0006 75FB02            MOV     SPI0_CK_SE,#02H
+                                           ; SOURCE LINE # 246
+0009 4392F0            ORL     P1_MOD_OC,#0F0H
+                                           ; SOURCE LINE # 247
+000C 4393F0            ORL     P1_DIR_PU,#0F0H
+                                           ; SOURCE LINE # 248
+000F 22                RET     
+             ; FUNCTION InitHostSPI0 (END)
+
+             ; FUNCTION ReadFlashStatus (BEGIN)
+                                           ; SOURCE LINE # 257
+                                           ; SOURCE LINE # 258
+                                           ; SOURCE LINE # 261
+0000 C294              CLR     SPI_CS
+                                           ; SOURCE LINE # 262
+0002 75F905            MOV     SPI0_DATA,#05H
+0005         ?C0087:
+0005 30FBFD            JNB     S0_FREE,?C0087
+                                           ; SOURCE LINE # 263
+0008 75F9FF            MOV     SPI0_DATA,#0FFH
+000B         ?C0089:
+000B 30FBFD            JNB     S0_FREE,?C0089
+;---- Variable 'FlashStatus' assigned to Register 'R7' ----
+000E AFF9              MOV     R7,SPI0_DATA
+                                           ; SOURCE LINE # 264
+0010 D294              SETB    SPI_CS
+                                           ; SOURCE LINE # 266
+                                           ; SOURCE LINE # 267
+0012 22                RET     
+             ; FUNCTION ReadFlashStatus (END)
+
+             ; FUNCTION WaitFlashBusy (BEGIN)
+                                           ; SOURCE LINE # 276
+                                           ; SOURCE LINE # 277
+0000         ?C0092:
+                                           ; SOURCE LINE # 278
+0000 120000      R     LCALL   ReadFlashStatus
+0003 EF                MOV     A,R7
+0004 20E0F9            JB      ACC.0,?C0092
+                                           ; SOURCE LINE # 279
+0007 22                RET     
+             ; FUNCTION WaitFlashBusy (END)
+
+             ; FUNCTION _WriteFlashStatus (BEGIN)
+                                           ; SOURCE LINE # 288
+;---- Variable 'status' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 289
+                                           ; SOURCE LINE # 290
+0000 C294              CLR     SPI_CS
+                                           ; SOURCE LINE # 291
+0002 75F901            MOV     SPI0_DATA,#01H
+0005         ?C0095:
+0005 30FBFD            JNB     S0_FREE,?C0095
+                                           ; SOURCE LINE # 292
+0008 8FF9              MOV     SPI0_DATA,R7
+000A         ?C0097:
+000A 30FBFD            JNB     S0_FREE,?C0097
+                                           ; SOURCE LINE # 293
+000D D294              SETB    SPI_CS
+                                           ; SOURCE LINE # 294
+000F 22                RET     
+             ; FUNCTION _WriteFlashStatus (END)
+
+             ; FUNCTION WriteFlashForbidden (BEGIN)
+                                           ; SOURCE LINE # 303
+                                           ; SOURCE LINE # 304
+                                           ; SOURCE LINE # 305
+0000 C294              CLR     SPI_CS
+                                           ; SOURCE LINE # 306
+0002 75F904            MOV     SPI0_DATA,#04H
+0005         ?C0100:
+0005 30FBFD            JNB     S0_FREE,?C0100
+                                           ; SOURCE LINE # 307
+0008 D294              SETB    SPI_CS
+                                           ; SOURCE LINE # 308
+000A 22                RET     
+             ; FUNCTION WriteFlashForbidden (END)
+
+             ; FUNCTION WriteFlashEnable (BEGIN)
+                                           ; SOURCE LINE # 317
+                                           ; SOURCE LINE # 318
+                                           ; SOURCE LINE # 319
+0000 C294              CLR     SPI_CS
+                                           ; SOURCE LINE # 320
+0002 75F906            MOV     SPI0_DATA,#06H
+0005         ?C0103:
+0005 30FBFD            JNB     S0_FREE,?C0103
+                                           ; SOURCE LINE # 321
+0008 D294              SETB    SPI_CS
+                                           ; SOURCE LINE # 322
+000A 22                RET     
+             ; FUNCTION WriteFlashEnable (END)
+
+             ; FUNCTION CheckFlashWriteEnable (BEGIN)
+                                           ; SOURCE LINE # 331
+                                           ; SOURCE LINE # 332
+                                           ; SOURCE LINE # 335
+0000 120000      R     LCALL   ReadFlashStatus
+;---- Variable 'WRENStatus' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 336
+0003 EF                MOV     A,R7
+0004 5402              ANL     A,#02H
+0006 6402              XRL     A,#02H
+0008 6003              JZ      ?C0107
+                                           ; SOURCE LINE # 337
+                                           ; SOURCE LINE # 338
+000A 120000      R     LCALL   WriteFlashEnable
+                                           ; SOURCE LINE # 339
+                                           ; SOURCE LINE # 340
+000D         ?C0107:
+000D 22                RET     
+             ; FUNCTION CheckFlashWriteEnable (END)
+
+             ; FUNCTION L?0192 (BEGIN)
+0000 E0                MOVX    A,@DPTR
+0001 FC                MOV     R4,A
+0002 A3                INC     DPTR
+0003 E0                MOVX    A,@DPTR
+0004 FD                MOV     R5,A
+0005 A3                INC     DPTR
+0006 E0                MOVX    A,@DPTR
+0007 FE                MOV     R6,A
+0008 A3                INC     DPTR
+0009 E0                MOVX    A,@DPTR
+000A FF                MOV     R7,A
+             ; FUNCTION _EraseFlash (BEGIN)
+                                           ; SOURCE LINE # 349
+000B 900000      R     MOV     DPTR,#Dst_Addr
+000E 120000      E     LCALL   ?C?LSTXDATA
+                                           ; SOURCE LINE # 350
+                                           ; SOURCE LINE # 351
+0011 120000      R     LCALL   CheckFlashWriteEnable
+                                           ; SOURCE LINE # 352
+0014 C294              CLR     SPI_CS
+                                           ; SOURCE LINE # 353
+0016 75F920            MOV     SPI0_DATA,#020H
+0019         ?C0108:
+0019 30FBFD            JNB     S0_FREE,?C0108
+                                           ; SOURCE LINE # 354
+001C 900000      R     MOV     DPTR,#Dst_Addr
+001F A3                INC     DPTR
+0020 E0                MOVX    A,@DPTR
+0021 FD                MOV     R5,A
+0022 A3                INC     DPTR
+0023 E0                MOVX    A,@DPTR
+0024 FE                MOV     R6,A
+0025 A3                INC     DPTR
+0026 E0                MOVX    A,@DPTR
+0027 FF                MOV     R7,A
+0028 E4                CLR     A
+0029 FC                MOV     R4,A
+002A 7810              MOV     R0,#010H
+002C 120000      E     LCALL   ?C?ULSHR
+002F 8FF9              MOV     SPI0_DATA,R7
+0031         ?C0110:
+0031 30FBFD            JNB     S0_FREE,?C0110
+                                           ; SOURCE LINE # 355
+0034 900000      R     MOV     DPTR,#Dst_Addr
+0037 A3                INC     DPTR
+0038 A3                INC     DPTR
+0039 E0                MOVX    A,@DPTR
+003A FE                MOV     R6,A
+003B A3                INC     DPTR
+003C E0                MOVX    A,@DPTR
+003D FF                MOV     R7,A
+003E E4                CLR     A
+003F FD                MOV     R5,A
+0040 FC                MOV     R4,A
+0041 7808              MOV     R0,#08H
+0043 120000      E     LCALL   ?C?ULSHR
+0046 8FF9              MOV     SPI0_DATA,R7
+0048         ?C0112:
+0048 30FBFD            JNB     S0_FREE,?C0112
+                                           ; SOURCE LINE # 356
+004B 900000      R     MOV     DPTR,#Dst_Addr
+004E E0                MOVX    A,@DPTR
+004F FC                MOV     R4,A
+0050 A3                INC     DPTR
+0051 E0                MOVX    A,@DPTR
+0052 FD                MOV     R5,A
+0053 A3                INC     DPTR
+0054 E0                MOVX    A,@DPTR
+0055 FE                MOV     R6,A
+0056 A3                INC     DPTR
+0057 E0                MOVX    A,@DPTR
+0058 FF                MOV     R7,A
+0059 8FF9              MOV     SPI0_DATA,R7
+005B         ?C0114:
+005B 30FBFD            JNB     S0_FREE,?C0114
+                                           ; SOURCE LINE # 357
+005E D294              SETB    SPI_CS
+                                           ; SOURCE LINE # 358
+0060 020000      R     LJMP    WaitFlashBusy
+             ; FUNCTION _EraseFlash (END)
+
+             ; FUNCTION _ByteReadFlash (BEGIN)
+                                           ; SOURCE LINE # 368
+0000 900000      R     MOV     DPTR,#StarAddr
+0003 120000      E     LCALL   ?C?LSTXDATA
+                                           ; SOURCE LINE # 369
+                                           ; SOURCE LINE # 370
+;---- Variable 'dat' assigned to Register 'R3' ----
+0006 E4                CLR     A
+0007 FB                MOV     R3,A
+                                           ; SOURCE LINE # 372
+0008 C294              CLR     SPI_CS
+                                           ; SOURCE LINE # 373
+000A 75F903            MOV     SPI0_DATA,#03H
+000D         ?C0117:
+000D 30FBFD            JNB     S0_FREE,?C0117
+                                           ; SOURCE LINE # 374
+0010 900000      R     MOV     DPTR,#StarAddr
+0013 A3                INC     DPTR
+0014 E0                MOVX    A,@DPTR
+0015 FD                MOV     R5,A
+0016 A3                INC     DPTR
+0017 E0                MOVX    A,@DPTR
+0018 FE                MOV     R6,A
+0019 A3                INC     DPTR
+001A E0                MOVX    A,@DPTR
+001B FF                MOV     R7,A
+001C E4                CLR     A
+001D FC                MOV     R4,A
+001E 7810              MOV     R0,#010H
+0020 120000      E     LCALL   ?C?ULSHR
+0023 8FF9              MOV     SPI0_DATA,R7
+0025         ?C0119:
+0025 30FBFD            JNB     S0_FREE,?C0119
+                                           ; SOURCE LINE # 375
+0028 900000      R     MOV     DPTR,#StarAddr
+002B A3                INC     DPTR
+002C A3                INC     DPTR
+002D E0                MOVX    A,@DPTR
+002E FE                MOV     R6,A
+002F A3                INC     DPTR
+0030 E0                MOVX    A,@DPTR
+0031 FF                MOV     R7,A
+0032 E4                CLR     A
+0033 FD                MOV     R5,A
+0034 FC                MOV     R4,A
+0035 7808              MOV     R0,#08H
+0037 120000      E     LCALL   ?C?ULSHR
+003A 8FF9              MOV     SPI0_DATA,R7
+003C         ?C0121:
+003C 30FBFD            JNB     S0_FREE,?C0121
+                                           ; SOURCE LINE # 376
+003F 900000      R     MOV     DPTR,#StarAddr
+0042 A3                INC     DPTR
+0043 A3                INC     DPTR
+0044 A3                INC     DPTR
+0045 E0                MOVX    A,@DPTR
+0046 FF                MOV     R7,A
+0047 E4                CLR     A
+0048 8FF9              MOV     SPI0_DATA,R7
+004A         ?C0123:
+004A 30FBFD            JNB     S0_FREE,?C0123
+                                           ; SOURCE LINE # 377
+004D 75F9FF            MOV     SPI0_DATA,#0FFH
+0050         ?C0125:
+0050 30FBFD            JNB     S0_FREE,?C0125
+0053 ABF9              MOV     R3,SPI0_DATA
+                                           ; SOURCE LINE # 378
+0055 D294              SETB    SPI_CS
+                                           ; SOURCE LINE # 380
+0057 CF                XCH     A,R7
+0058 EB                MOV     A,R3
+0059 CF                XCH     A,R7
+                                           ; SOURCE LINE # 381
+005A 22                RET     
+             ; FUNCTION _ByteReadFlash (END)
+
+             ; FUNCTION _ByteWriteFlash (BEGIN)
+                                           ; SOURCE LINE # 391
+0000 900000      R     MOV     DPTR,#StarAddr
+0003 120000      E     LCALL   ?C?LSTXDATA
+                                           ; SOURCE LINE # 392
+                                           ; SOURCE LINE # 393
+0006 120000      R     LCALL   WriteFlashEnable
+                                           ; SOURCE LINE # 394
+0009 C294              CLR     SPI_CS
+                                           ; SOURCE LINE # 395
+000B 75F902            MOV     SPI0_DATA,#02H
+000E         ?C0128:
+000E 30FBFD            JNB     S0_FREE,?C0128
+                                           ; SOURCE LINE # 396
+0011 900000      R     MOV     DPTR,#StarAddr
+0014 A3                INC     DPTR
+0015 E0                MOVX    A,@DPTR
+0016 FD                MOV     R5,A
+0017 A3                INC     DPTR
+0018 E0                MOVX    A,@DPTR
+0019 FE                MOV     R6,A
+001A A3                INC     DPTR
+001B E0                MOVX    A,@DPTR
+001C FF                MOV     R7,A
+001D E4                CLR     A
+001E FC                MOV     R4,A
+001F 7810              MOV     R0,#010H
+0021 120000      E     LCALL   ?C?ULSHR
+0024 8FF9              MOV     SPI0_DATA,R7
+0026         ?C0130:
+0026 30FBFD            JNB     S0_FREE,?C0130
+                                           ; SOURCE LINE # 397
+0029 900000      R     MOV     DPTR,#StarAddr
+002C A3                INC     DPTR
+002D A3                INC     DPTR
+002E E0                MOVX    A,@DPTR
+002F FE                MOV     R6,A
+0030 A3                INC     DPTR
+0031 E0                MOVX    A,@DPTR
+0032 FF                MOV     R7,A
+0033 E4                CLR     A
+0034 FD                MOV     R5,A
+0035 FC                MOV     R4,A
+0036 7808              MOV     R0,#08H
+0038 120000      E     LCALL   ?C?ULSHR
+003B 8FF9              MOV     SPI0_DATA,R7
+003D         ?C0132:
+003D 30FBFD            JNB     S0_FREE,?C0132
+                                           ; SOURCE LINE # 398
+0040 900000      R     MOV     DPTR,#StarAddr
+0043 E0                MOVX    A,@DPTR
+0044 FC                MOV     R4,A
+0045 A3                INC     DPTR
+0046 E0                MOVX    A,@DPTR
+0047 FD                MOV     R5,A
+0048 A3                INC     DPTR
+0049 E0                MOVX    A,@DPTR
+004A FE                MOV     R6,A
+004B A3                INC     DPTR
+004C E0                MOVX    A,@DPTR
+004D FF                MOV     R7,A
+004E 8FF9              MOV     SPI0_DATA,R7
+0050         ?C0134:
+0050 30FBFD            JNB     S0_FREE,?C0134
+                                           ; SOURCE LINE # 399
+0053 900000      R     MOV     DPTR,#dat
+0056 E0                MOVX    A,@DPTR
+0057 F5F9              MOV     SPI0_DATA,A
+0059         ?C0136:
+0059 30FBFD            JNB     S0_FREE,?C0136
+                                           ; SOURCE LINE # 400
+005C D294              SETB    SPI_CS
+                                           ; SOURCE LINE # 401
+005E 020000      R     LJMP    WaitFlashBusy
+             ; FUNCTION _ByteWriteFlash (END)
+
+             ; FUNCTION _BulkReadFlash (BEGIN)
+                                           ; SOURCE LINE # 413
+0000 900000      R     MOV     DPTR,#StarAddr
+0003 120000      E     LCALL   ?C?LSTXDATA
+                                           ; SOURCE LINE # 414
+                                           ; SOURCE LINE # 417
+0006 C294              CLR     SPI_CS
+                                           ; SOURCE LINE # 418
+0008 75F90B            MOV     SPI0_DATA,#0BH
+000B         ?C0139:
+000B 30FBFD            JNB     S0_FREE,?C0139
+                                           ; SOURCE LINE # 419
+000E 900000      R     MOV     DPTR,#StarAddr
+0011 A3                INC     DPTR
+0012 E0                MOVX    A,@DPTR
+0013 FD                MOV     R5,A
+0014 A3                INC     DPTR
+0015 E0                MOVX    A,@DPTR
+0016 FE                MOV     R6,A
+0017 A3                INC     DPTR
+0018 E0                MOVX    A,@DPTR
+0019 FF                MOV     R7,A
+001A E4                CLR     A
+001B FC                MOV     R4,A
+001C 7810              MOV     R0,#010H
+001E 120000      E     LCALL   ?C?ULSHR
+0021 8FF9              MOV     SPI0_DATA,R7
+0023         ?C0141:
+0023 30FBFD            JNB     S0_FREE,?C0141
+                                           ; SOURCE LINE # 420
+0026 900000      R     MOV     DPTR,#StarAddr
+0029 A3                INC     DPTR
+002A A3                INC     DPTR
+002B E0                MOVX    A,@DPTR
+002C FE                MOV     R6,A
+002D A3                INC     DPTR
+002E E0                MOVX    A,@DPTR
+002F FF                MOV     R7,A
+0030 E4                CLR     A
+0031 FD                MOV     R5,A
+0032 FC                MOV     R4,A
+0033 7808              MOV     R0,#08H
+0035 120000      E     LCALL   ?C?ULSHR
+0038 8FF9              MOV     SPI0_DATA,R7
+003A         ?C0143:
+003A 30FBFD            JNB     S0_FREE,?C0143
+                                           ; SOURCE LINE # 421
+003D 900000      R     MOV     DPTR,#StarAddr
+0040 A3                INC     DPTR
+0041 A3                INC     DPTR
+0042 A3                INC     DPTR
+0043 E0                MOVX    A,@DPTR
+0044 FF                MOV     R7,A
+0045 8FF9              MOV     SPI0_DATA,R7
+0047         ?C0145:
+0047 30FBFD            JNB     S0_FREE,?C0145
+                                           ; SOURCE LINE # 422
+004A E4                CLR     A
+004B F5F9              MOV     SPI0_DATA,A
+004D         ?C0147:
+004D 30FBFD            JNB     S0_FREE,?C0147
+                                           ; SOURCE LINE # 423
+;---- Variable 'i' assigned to Register 'R6/R7' ----
+0050 E4                CLR     A
+0051 FF                MOV     R7,A
+0052 FE                MOV     R6,A
+0053         ?C0149:
+0053 D3                SETB    C
+0054 900000      R     MOV     DPTR,#Len+01H
+0057 E0                MOVX    A,@DPTR
+0058 9F                SUBB    A,R7
+0059 900000      R     MOV     DPTR,#Len
+005C E0                MOVX    A,@DPTR
+005D 9E                SUBB    A,R6
+005E 4021              JC      ?C0150
+                                           ; SOURCE LINE # 424
+                                           ; SOURCE LINE # 425
+0060 75F9FF            MOV     SPI0_DATA,#0FFH
+0063         ?C0152:
+0063 30FBFD            JNB     S0_FREE,?C0152
+0066 900000      R     MOV     DPTR,#RcvBuffer
+0069 E0                MOVX    A,@DPTR
+006A FB                MOV     R3,A
+006B A3                INC     DPTR
+006C E0                MOVX    A,@DPTR
+006D FA                MOV     R2,A
+006E A3                INC     DPTR
+006F E0                MOVX    A,@DPTR
+0070 F9                MOV     R1,A
+0071 8F82              MOV     DPL,R7
+0073 8E83              MOV     DPH,R6
+0075 E5F9              MOV     A,SPI0_DATA
+0077 120000      E     LCALL   ?C?CSTOPTR
+                                           ; SOURCE LINE # 426
+007A 0F                INC     R7
+007B BF0001            CJNE    R7,#00H,?C0180
+007E 0E                INC     R6
+007F         ?C0180:
+007F 80D2              SJMP    ?C0149
+0081         ?C0150:
+                                           ; SOURCE LINE # 427
+0081 D294              SETB    SPI_CS
+                                           ; SOURCE LINE # 428
+0083 22                RET     
+             ; FUNCTION _BulkReadFlash (END)
+
+             ; FUNCTION L?0191 (BEGIN)
+0000 A3                INC     DPTR
+0001 F0                MOVX    @DPTR,A
+0002 A3                INC     DPTR
+0003 74FF              MOV     A,#0FFH
+0005 F0                MOVX    @DPTR,A
+0006 A3                INC     DPTR
+0007 7400        R     MOV     A,#HIGH ZERO
+0009 F0                MOVX    @DPTR,A
+000A A3                INC     DPTR
+000B 7400        R     MOV     A,#LOW ZERO
+000D F0                MOVX    @DPTR,A
+             ; FUNCTION _BulkWriteFlash (BEGIN)
+                                           ; SOURCE LINE # 439
+000E 900000      R     MOV     DPTR,#StarAddr
+0011 120000      E     LCALL   ?C?LSTXDATA
+                                           ; SOURCE LINE # 440
+                                           ; SOURCE LINE # 443
+0014 120000      R     LCALL   WaitFlashBusy
+                                           ; SOURCE LINE # 444
+0017 E4                CLR     A
+0018 FF                MOV     R7,A
+0019 120000      R     LCALL   _WriteFlashStatus
+                                           ; SOURCE LINE # 445
+001C 120000      R     LCALL   WriteFlashEnable
+                                           ; SOURCE LINE # 447
+001F C294              CLR     SPI_CS
+                                           ; SOURCE LINE # 448
+0021 75F902            MOV     SPI0_DATA,#02H
+0024         ?C0155:
+0024 30FBFD            JNB     S0_FREE,?C0155
+                                           ; SOURCE LINE # 449
+0027 900000      R     MOV     DPTR,#StarAddr
+002A A3                INC     DPTR
+002B E0                MOVX    A,@DPTR
+002C FD                MOV     R5,A
+002D A3                INC     DPTR
+002E E0                MOVX    A,@DPTR
+002F FE                MOV     R6,A
+0030 A3                INC     DPTR
+0031 E0                MOVX    A,@DPTR
+0032 FF                MOV     R7,A
+0033 E4                CLR     A
+0034 FC                MOV     R4,A
+0035 7810              MOV     R0,#010H
+0037 120000      E     LCALL   ?C?ULSHR
+003A 8FF9              MOV     SPI0_DATA,R7
+003C         ?C0157:
+003C 30FBFD            JNB     S0_FREE,?C0157
+                                           ; SOURCE LINE # 450
+003F 900000      R     MOV     DPTR,#StarAddr
+0042 A3                INC     DPTR
+0043 A3                INC     DPTR
+0044 E0                MOVX    A,@DPTR
+0045 FE                MOV     R6,A
+0046 A3                INC     DPTR
+0047 E0                MOVX    A,@DPTR
+0048 FF                MOV     R7,A
+0049 E4                CLR     A
+004A FD                MOV     R5,A
+004B FC                MOV     R4,A
+004C 7808              MOV     R0,#08H
+004E 120000      E     LCALL   ?C?ULSHR
+0051 8FF9              MOV     SPI0_DATA,R7
+0053         ?C0159:
+0053 30FBFD            JNB     S0_FREE,?C0159
+                                           ; SOURCE LINE # 451
+0056 900000      R     MOV     DPTR,#StarAddr
+0059 E0                MOVX    A,@DPTR
+005A FC                MOV     R4,A
+005B A3                INC     DPTR
+005C E0                MOVX    A,@DPTR
+005D FD                MOV     R5,A
+005E A3                INC     DPTR
+005F A3                INC     DPTR
+0060 E0                MOVX    A,@DPTR
+0061 FF                MOV     R7,A
+0062 8FF9              MOV     SPI0_DATA,R7
+0064         ?C0161:
+0064 30FBFD            JNB     S0_FREE,?C0161
+                                           ; SOURCE LINE # 452
+;---- Variable 'i' assigned to Register 'R6/R7' ----
+0067 E4                CLR     A
+0068 FF                MOV     R7,A
+0069 FE                MOV     R6,A
+006A         ?C0163:
+006A D3                SETB    C
+006B 900000      R     MOV     DPTR,#Len+01H
+006E E0                MOVX    A,@DPTR
+006F 9F                SUBB    A,R7
+0070 900000      R     MOV     DPTR,#Len
+0073 E0                MOVX    A,@DPTR
+0074 9E                SUBB    A,R6
+0075 401E              JC      ?C0164
+                                           ; SOURCE LINE # 453
+                                           ; SOURCE LINE # 454
+0077 900000      R     MOV     DPTR,#SendBuffer
+007A E0                MOVX    A,@DPTR
+007B FB                MOV     R3,A
+007C A3                INC     DPTR
+007D E0                MOVX    A,@DPTR
+007E FA                MOV     R2,A
+007F A3                INC     DPTR
+0080 E0                MOVX    A,@DPTR
+0081 F9                MOV     R1,A
+0082 8F82              MOV     DPL,R7
+0084 8E83              MOV     DPH,R6
+0086 120000      E     LCALL   ?C?CLDOPTR
+0089 F5F9              MOV     SPI0_DATA,A
+008B         ?C0166:
+008B 30FBFD            JNB     S0_FREE,?C0166
+                                           ; SOURCE LINE # 455
+008E 0F                INC     R7
+008F BF0001            CJNE    R7,#00H,?C0181
+0092 0E                INC     R6
+0093         ?C0181:
+0093 80D5              SJMP    ?C0163
+0095         ?C0164:
+                                           ; SOURCE LINE # 456
+0095 D294              SETB    SPI_CS
+                                           ; SOURCE LINE # 457
+0097 120000      R     LCALL   WriteFlashForbidden
+                                           ; SOURCE LINE # 458
+009A 020000      R     LJMP    WaitFlashBusy
+             ; FUNCTION _BulkWriteFlash (END)
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   3315    ----
+   CONSTANT SIZE    =   1614    ----
+   XDATA SIZE       =   ----     296
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

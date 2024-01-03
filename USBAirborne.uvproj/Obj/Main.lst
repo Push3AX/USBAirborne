@@ -1,0 +1,168 @@
+C51 COMPILER V9.60.0.0   MAIN                                                                          12/20/2023 15:15:29 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Obj\Main.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE Main.C LARGE OMF2 OPTIMIZE(8,SPEED) BROWSE INCDIR(..\) DEBUG CODE PRINT(.\Obj\Main.lst)
+                    - PAGEWIDTH(132) PAGELENGTH(5000) TABS(2) PREPRINT(.\Obj\Main.i) OBJECT(.\Obj\Main.obj)
+
+line level    source
+
+   1          /************************************** INFO ***********************************
+   2          * File Name          : Main.C
+   3          * Author             : PushEAX
+   4          * Version            : V2.1
+   5          * Date               : 2022-3-24 23:10:12
+   6          * Last Modified      : 2023-12-17 15:51:42
+   7          * Description        : USBAirborne Firmware: USB Mass Storage Device & HID Device on CH552
+   8          *******************************************************************************/
+   9          #include <stdio.h>
+  10          #include <string.h>
+  11          #include "lib\CH554.H"
+  12          #include "lib\Debug.H"
+  13          #include "lib\USB.h"
+  14          #include "lib\flash.h"
+  15          #include "lib\keyValue.h"
+  16          #pragma  NOAREGS
+  17          
+  18          UINT8   USBReady = 0;
+  19          UINT8   ExecBadUSB =  0;
+  20          UINT8   AttackEnabled = 1;
+  21          
+  22          /*******************************************************************************
+  23          如果你现在正在看这行字，那么说明你会自己编译USBAirborne的固件。
+  24          既然如此，我会更推荐你修改这个函数来执行BadUSB。
+  25          相比起读取Flash中的配置文件，在此执行的效率会更高，而且可以模拟更多种类的按键。
+  26          同时，通过在USB的不同UFI命令中将ExecBadUSB置1，可以实现例如在弹出U盘(STA_STO_UNIT)时执行BadUSB
+  27          *******************************************************************************/
+  28          //void BadUSBDemo()
+  29          //{
+  30          //  UINT8 Payload[]="https://www.bilibili.com/video/BV1uT4y1P7CX\n";
+  31          //  
+  32          //  mDelaymS(1000);
+  33          //  SendKey(KB_LeftShift, KB_NULL); //切换输入法
+  34          //  mDelaymS(500);
+  35          //  SendKey(KB_LeftGUI, KB_R);
+  36          //  mDelaymS(500);
+  37          //  SendString(Payload,sizeof(Payload)/sizeof(Payload[0]));
+  38          //  mDelaymS(500);
+  39          //}
+  40          
+  41          
+  42          void main(void)
+  43          {
+  44   1        CfgFsys();      // CH552时钟选择配置
+  45   1        mDelaymS(100);  // 上电延时,等待内部晶振稳定
+  46   1        InitFlash();
+  47   1        
+  48   1        if (P1_1 == 0)   AttackEnabled = 0; // 如果针脚1^1拉低，关闭攻击模式
+  49   1        mDelaymS(500);
+  50   1        if(CheckFilesystem() == 0)  FormatFlash();  //如果Flash的0x41000不是FAT目录信息，格式化Flash
+  51   1        InitUSB();
+  52   1        while(!USBReady); // 等待USB初始化
+  53   1        
+  54   1        mDelaymS(2000);
+  55   1        if(AttackEnabled == 1)  ExecBadUSBPayload();
+  56   1        while(1)
+  57   1        {
+  58   2          // 当ExecBadUSB为1时，执行BadUSB代码
+  59   2          if(ExecBadUSB == 1 && AttackEnabled == 1)
+  60   2          {
+  61   3            ExecBadUSB=0;
+  62   3            //BadUSBDemo();
+  63   3          }
+  64   2          mDelaymS(100);
+  65   2        }
+  66   1      }
+C51 COMPILER V9.60.0.0   MAIN                                                                          12/20/2023 15:15:29 PAGE 2   
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+             ; FUNCTION main (BEGIN)
+                                           ; SOURCE LINE # 42
+                                           ; SOURCE LINE # 43
+                                           ; SOURCE LINE # 44
+0000 120000      E     LCALL   CfgFsys
+                                           ; SOURCE LINE # 45
+0003 7F64              MOV     R7,#064H
+0005 7E00              MOV     R6,#00H
+0007 120000      E     LCALL   _mDelaymS
+                                           ; SOURCE LINE # 46
+000A 120000      E     LCALL   InitFlash
+                                           ; SOURCE LINE # 48
+000D 209105            JB      P1_1,?C0001
+0010 E4                CLR     A
+0011 900000      R     MOV     DPTR,#AttackEnabled
+0014 F0                MOVX    @DPTR,A
+0015         ?C0001:
+                                           ; SOURCE LINE # 49
+0015 7FF4              MOV     R7,#0F4H
+0017 7E01              MOV     R6,#01H
+0019 120000      E     LCALL   _mDelaymS
+                                           ; SOURCE LINE # 50
+001C 120000      E     LCALL   CheckFilesystem
+001F 4003              JC      ?C0002
+0021 120000      E     LCALL   FormatFlash
+0024         ?C0002:
+                                           ; SOURCE LINE # 51
+0024 120000      E     LCALL   InitUSB
+0027         ?C0003:
+                                           ; SOURCE LINE # 52
+0027 900000      R     MOV     DPTR,#USBReady
+002A E0                MOVX    A,@DPTR
+002B 60FA              JZ      ?C0003
+                                           ; SOURCE LINE # 54
+002D 7FD0              MOV     R7,#0D0H
+002F 7E07              MOV     R6,#07H
+0031 120000      E     LCALL   _mDelaymS
+                                           ; SOURCE LINE # 55
+0034 900000      R     MOV     DPTR,#AttackEnabled
+0037 E0                MOVX    A,@DPTR
+0038 6401              XRL     A,#01H
+003A 7003              JNZ     ?C0006
+003C 120000      E     LCALL   ExecBadUSBPayload
+003F         ?C0006:
+                                           ; SOURCE LINE # 56
+                                           ; SOURCE LINE # 57
+                                           ; SOURCE LINE # 59
+003F 900000      R     MOV     DPTR,#ExecBadUSB
+0042 E0                MOVX    A,@DPTR
+0043 6401              XRL     A,#01H
+0045 700C              JNZ     ?C0008
+0047 900000      R     MOV     DPTR,#AttackEnabled
+004A E0                MOVX    A,@DPTR
+004B 6401              XRL     A,#01H
+004D 7004              JNZ     ?C0008
+                                           ; SOURCE LINE # 60
+                                           ; SOURCE LINE # 61
+004F 900000      R     MOV     DPTR,#ExecBadUSB
+0052 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 63
+0053         ?C0008:
+                                           ; SOURCE LINE # 64
+0053 7F64              MOV     R7,#064H
+0055 7E00              MOV     R6,#00H
+0057 120000      E     LCALL   _mDelaymS
+                                           ; SOURCE LINE # 65
+005A 80E3              SJMP    ?C0006
+             ; FUNCTION main (END)
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     92    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =      3    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

