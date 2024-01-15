@@ -4,7 +4,7 @@ An Advanced BadUSB
 
 ------
 
- [**English**](https://github.com/Push3AX/USBAirborne/blob/main/readme.md)|[中文](https://github.com/Push3AX/USBAirborne/blob/main/readme_cn.md)
+ [**English**](https://github.com/Push3AX/USBAirborne/blob/main/readme.md) | [中文](https://github.com/Push3AX/USBAirborne/blob/main/readme_cn.md)
 
 USBAirborne masquerades as a USB drive, but when the victim plugs it into computer, it executes specified commands or programs.
 
