@@ -198,9 +198,9 @@ void ExecBadUSBPayload() {
                         case 7: SendKey(KB_LeftGUI, KB_D); break;  // [Win+D]
                         case 8: SendKey(KB_LeftGUI, KB_L); break;  // [Win+L]
                         case 9: SendKey(KB_LeftGUI, KB_E); break;  // [Win+E]
-                        case 10: SendKey(KB_RightControl, KB_LeftALT); SendKey(KB_DEL, KB_NULL); break;  // [Ctrl+Alt+Del]
-												case 11: mDelaymS(500); break;  // [Delay]
-												case 12: WriteDataToFlash(0x00, ZERO, sizeof(ZERO));CH554SoftReset(); break;  // [Format]
+                        case 10: SendKey(KB_LeftControl | KB_LeftALT, KB_DEL); break;  // [Ctrl+Alt+Del]
+                        case 11: mDelaymS(500); break;  // [Delay]
+                        case 12: WriteDataToFlash(0x00, ZERO, sizeof(ZERO));CH554SoftReset(); break;  // [Format]
                     }
 										patternIndex[i] = 0;
                     patternFound[i] = 0;  // Reset flag
