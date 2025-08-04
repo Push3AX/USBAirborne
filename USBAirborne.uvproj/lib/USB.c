@@ -453,11 +453,15 @@ void SendChar(UINT8 c)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void SendString(UINT8 *s,UINT8 length){
-	UINT8 i;
-	for(i=0;i<length;i++){
-		SendChar(s[i]);
-	}
+void SendString(UINT8 *s){
+    if(s == NULL) {
+        return;
+    }
+
+    UINT8 length = strlen(s);
+    for(UINT8 i = 0; i < length; i++){
+        SendChar(s[i]);
+    }
 }
 
 
