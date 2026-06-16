@@ -1,0 +1,2 @@
+USBAirborne marker file for CMD payload drive detection.
+Copy this file to the device root together with autorun.inf.

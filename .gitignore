@@ -1,0 +1,11 @@
+# Keil/uVision build outputs and local UI state
+USBAirborne.uvproj/Obj/
+USBAirborne.uvproj/*.log
+USBAirborne.uvproj/*.uvgui.*
+
+# Generic editor/OS temporary files
+*.tmp
+*.bak
+*~
+Thumbs.db
+Desktop.ini

@@ -1,9 +1,9 @@
 /************************************** INFO ***********************************
 * File Name          : Main.C
 * Author             : PushEAX
-* Version            : V2.1
+* Version            : V2.2
 * Date               : 2022-3-24 23:10:12
-* Last Modified      : 2023-12-17 15:51:42
+* Last Modified      : 2026-6-12 11:51:42
 * Description        : USBAirborne Firmware: USB Mass Storage Device & HID Device on CH552
 *******************************************************************************/
 #include <stdio.h>
@@ -18,6 +18,7 @@
 UINT8   USBReady = 0;
 UINT8   ExecBadUSB =	0;
 UINT8   AttackEnabled = 1;
+UINT8   AutoRunEnabled = 0;
 
 /*******************************************************************************
 如果你现在正在看这行字，那么说明你会自己编译USBAirborne的固件。
@@ -27,7 +28,7 @@ UINT8   AttackEnabled = 1;
 *******************************************************************************/
 void BadUSBDemo()
 {
-	UINT8 Payload[]="https://www.bilibili.com/video/BV1uT4y1P7CX\n";
+	UINT8 Payload[]="https://www.bilibili.com/video/av929340019\n";
 	
 	mDelaymS(1000);
 	SendKey(KB_LeftShift, KB_NULL);	//切换输入法
@@ -47,7 +48,8 @@ void main(void)
 	
 	if (P1_1 == 0)   AttackEnabled = 0;	// 如果针脚1^1拉低，关闭攻击模式
 	mDelaymS(500);
-	if(CheckFilesystem() == 0)	FormatFlash();	//如果Flash的0x41000不是FAT目录信息，格式化Flash
+	if(CheckFilesystem() == 0)  FormatFlash();    // quick-format metadata only
+	if(AttackEnabled == 1)  AutoRunEnabled = CheckAutoRunPayload();	//只有存在AutoRun条目时才枚举为CD-ROM
 	InitUSB();
 	while(!USBReady);	// 等待USB初始化
 	
