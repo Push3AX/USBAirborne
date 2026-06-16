@@ -46,14 +46,14 @@ label=USB
 ; Attack payload, here it opens a webpage
 ; To run an EXE or BAT from the USB root, place it there and change open to the file name
 ; Example: open=payload.exe
-open=explorer https://www.bilibili.com/video/BV1zK4y1S71s
+open=explorer https://www.bilibili.com/video/BV1zK4y1S71s/
 
 ; Hijack the right-click menu
 ; If the payload is changed, update these entries as well
 shell\AutoRun=Open Drive(&D)
-shell\AutoRun\Command=explorer https://www.bilibili.com/video/BV1zK4y1S71s
-shell\open\Command=explorer https://www.bilibili.com/video/BV1zK4y1S71s
-shell\opennewwindow\Command=explorer https://www.bilibili.com/video/BV1zK4y1S71s
+shell\AutoRun\Command=explorer https://www.bilibili.com/video/BV1zK4y1S71s/
+shell\open\Command=explorer https://www.bilibili.com/video/BV1zK4y1S71s/
+shell\opennewwindow\Command=explorer https://www.bilibili.com/video/BV1zK4y1S71s/
 ```
 
 ------
@@ -95,7 +95,7 @@ Hi! This is a test of USBAirborne
 [Win+R]
 [Delay]
 [Delay]
-https://www.bilibili.com/video/av929340019/[Enter]
+https://www.bilibili.com/video/BV1zK4y1S71s/[Enter]
 [BadUSB]
 ```
 
@@ -153,7 +153,7 @@ UINT8 ExecBadUSB = 1;
 
 void BadUSBDemo()
 {
-	UINT8 Payload[]="https://www.bilibili.com/video/av929340019\n";
+	UINT8 Payload[]="https://www.bilibili.com/video/BV1zK4y1S71s/\n";
 	mDelaymS(1000);
 	SendKey(KB_LeftShift, KB_NULL);
 	mDelaymS(500);

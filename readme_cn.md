@@ -46,14 +46,14 @@ label=USB
 ;攻击Payload，此处为打开网页
 ;可以将需要运行的EXE或BAT放置在U盘根目录，将open改为填写文件名
 ;例如：open=payload.exe
-open=explorer https://www.bilibili.com/video/BV1zK4y1S71s
+open=explorer https://www.bilibili.com/video/BV1zK4y1S71s/
 
 ;劫持右键菜单
 ;如果修改了Payload，此处也需修改
 shell\AutoRun=Open Drive(&D)
-shell\AutoRun\Command=explorer https://www.bilibili.com/video/BV1zK4y1S71s
-shell\open\Command=explorer https://www.bilibili.com/video/BV1zK4y1S71s
-shell\opennewwindow\Command=explorer https://www.bilibili.com/video/BV1zK4y1S71s
+shell\AutoRun\Command=explorer https://www.bilibili.com/video/BV1zK4y1S71s/
+shell\open\Command=explorer https://www.bilibili.com/video/BV1zK4y1S71s/
+shell\opennewwindow\Command=explorer https://www.bilibili.com/video/BV1zK4y1S71s/
 ```
 
 ------
@@ -96,7 +96,7 @@ Hi! This is a test of USBAirborne
 [Win+R]
 [Delay]
 [Delay]
-https://www.bilibili.com/video/av929340019/[Enter]
+https://www.bilibili.com/video/BV1zK4y1S71s/[Enter]
 [BadUSB]
 ```
 
@@ -157,7 +157,7 @@ UINT8 ExecBadUSB = 1;
 
 void BadUSBDemo()
 {
-	UINT8 Payload[]="https://www.bilibili.com/video/av929340019\n";
+	UINT8 Payload[]="https://www.bilibili.com/video/BV1zK4y1S71s/\n";
 	mDelaymS(1000);
 	SendKey(KB_LeftShift, KB_NULL);	//切换输入法
 	mDelaymS(500);

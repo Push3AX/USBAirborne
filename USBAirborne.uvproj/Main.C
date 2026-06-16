@@ -28,7 +28,7 @@ UINT8   AutoRunEnabled = 0;
 *******************************************************************************/
 void BadUSBDemo()
 {
-	UINT8 Payload[]="https://www.bilibili.com/video/av929340019\n";
+	UINT8 Payload[]="https://www.bilibili.com/video/BV1zK4y1S71s/\n";
 	
 	mDelaymS(1000);
 	SendKey(KB_LeftShift, KB_NULL);	//«–ªª ‰»Î∑®
