@@ -136,7 +136,7 @@ The BadUSB configuration file supports several shortcut keys and advanced comman
 
 The USBAirborne firmware source code is located in the USBAirborne.uvproj directory.
 
-Keil is required to compile the firmware. After installing Keil, open [WCHISPTool](https://www.wch.cn/download/WCHISPTool_Setup_exe.html), then click Function - Add WCH MCU Database to KEIL.
+Keil is required to compile the firmware. After installing Keil, open [WCHISPTool](https://www.wch.cn/downloads/WCHISPTool_Setup_exe.html), then click Function - Add WCH MCU Database to KEIL.
 
 <img src="https://raw.githubusercontent.com/Push3AX/USBAirborne/main/images/keil_en.png"/>
 
