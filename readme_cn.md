@@ -248,7 +248,7 @@ https://oshwhub.com/PushEAX/3079905e2c434c54902d77ab60f6c747
 
 <img src="https://raw.githubusercontent.com/Push3AX/USBAirborne/main/images/Switch_cn.png"/>
 
-4. 在 [此处](https://raw.githubusercontent.com/Push3AX/USBAirborne/main/USBAirborne.uvproj/USBAirborne_2.2.hex)下载USBAirborne的固件。使用[WCHISPTool](https://www.wch.cn/download/WCHISPTool_Setup_exe.html)烧录固件。
+4. 在 [此处](https://raw.githubusercontent.com/Push3AX/USBAirborne/main/USBAirborne.uvproj/USBAirborne_2.2.hex)下载USBAirborne的固件。使用[WCHISPTool](https://www.wch.cn/downloads/WCHISPTool_Setup_exe.html)烧录固件。
 
 <img src="https://raw.githubusercontent.com/Push3AX/USBAirborne/main/images/WCHISPTool_cn.png"/>
 
